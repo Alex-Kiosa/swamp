@@ -1,5 +1,9 @@
-# dependencies
+# Dependencies
 server/node_modules/
 client/node_modules/
 
+# Secret
+*.env
+
+# IDE
 .idea
