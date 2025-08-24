@@ -14,7 +14,7 @@ const router = express.Router();
 
 // test route
 router.get('/test', (req, res) => {
-    res.status(200).send('Hello World!')
+    res.status(200).send('Ok! You can use API')
 })
 
 
