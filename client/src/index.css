@@ -1,56 +1,33 @@
-:root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
-    font-weight: 400;
+@import "tailwindcss";
 
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
+@layer base {
+    body {
+        display: flex;
+        place-items: center;
+        min-height: 100vh;
+        background: oklch(96.7% 0.067 122.328);
+    }
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    h1 {
+        font-size: 3.2em;
+        line-height: 1.1;
+    }
 }
 
-/*a {*/
-/*    font-weight: 500;*/
-/*    color: #646cff;*/
-/*    text-decoration: inherit;*/
-/*}*/
+@layer components {
+    a {
+        @apply font-semibold text-lime-900 underline hover:text-lime-950 hover:no-underline
+    }
 
-/*a:hover {*/
-/*    color: #535bf2;*/
-/*}*/
+    .input-primary {
+        @apply w-full rounded-md px-3 py-1.5 text-base outline-1 outline-gray-700 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-lime-900 sm:text-sm/6
+    }
 
-body {
-    margin: 0;
-    display: flex;
-    place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
-    background: oklch(96.7% 0.067 122.328);
-}
+    .btn-primary {
+        @apply w-full text-white p-3 font-semibold bg-lime-900 hover:bg-lime-950 rounded-xl hover:cursor-pointer
+    }
 
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
-}
-
-button {
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-
-button:focus,
-button:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
+    [class^=btn] {
+        @apply focus:outline-none
     }
 }

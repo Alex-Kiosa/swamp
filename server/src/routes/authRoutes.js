@@ -1,20 +1,14 @@
 import express from "express";
 import {registration} from "../controlers/authController.js";
-import {check, query, validationResult} from "express-validator";
+import {check, validationResult} from "express-validator";
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-router.get('/test', (req, res) => {
-    res.status(200).send('Authorization API is working')
-})
-
-// router.post(
-//     '/registration',
-//     query('name').notEmpty(),
-//     registration
-// )
+// router.get('/test', (req, res) => {
+//     res.status(200).send('Authorization API is working')
+// })
 
 router.post(
     '/registration',
@@ -40,7 +34,6 @@ router.post(
 
             // Hash password
             const hashPassword = await bcrypt.hash(password, 10);
-
             const user = new User({ name, email, password: hashPassword })
             await user.save()
 
@@ -51,6 +44,5 @@ router.post(
         }
     }
 )
-
 
 export default router;

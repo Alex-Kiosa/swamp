@@ -1,4 +1,10 @@
+import {authApi} from "../../api/authAPI.ts";
+
 const RegisterForm = () => {
+    const loginHandler = () => {
+        return authApi.login()
+    }
+
     return (
         <div className="flex min-h-full flex-col justify-center p-6 lg:p-8 bg-white shadow-2xs rounded-2xl">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -6,7 +12,7 @@ const RegisterForm = () => {
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form action="#" method="POST" className="space-y-6">
+                <form action={()=> console.log("send form")} method="POST" className="space-y-6">
                     <div className="mt-2">
                         <label htmlFor="email"
                                className="block text-sm/6 font-medium ">Email</label>
@@ -19,7 +25,8 @@ const RegisterForm = () => {
                             <label htmlFor="password"
                                    className="block text-sm/6 font-medium ">Пароль</label>
                             <div className="text-sm">
-                                <a href="#" className="font-semibold text-lime-900 hover:text-lime-950">Забыли пароль</a>
+                                <a href="#" className="font-semibold text-lime-900 hover:text-lime-950">Забыли
+                                    пароль</a>
                             </div>
                         </div>
                         <div className="mt-2">
@@ -31,7 +38,7 @@ const RegisterForm = () => {
 
                     <div>
                         <button type="submit"
-                                className="flex w-full justify-center rounded-md text-white p-3 text-sm/6 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 bg-lime-900">Войти
+                                className="flex w-full justify-center rounded-md text-white p-3 text-sm/6 font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 bg-lime-900 hover:bg-lime-950">Войти
                         </button>
                     </div>
                 </form>

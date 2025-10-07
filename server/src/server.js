@@ -19,17 +19,6 @@ app.use(express.json())
 // Routes
 app.use('/api/auth', authRoutes)
 
-// app.post('/hello', query('name').notEmpty(), (req, res) => {
-//     const result = validationResult(req);
-//     console.log(req)
-//     if (result.isEmpty()) {
-//         const data = matchedData(req);
-//         return res.send(`Hello, ${req.query.name}!`);
-//     }
-//
-//     res.send({errors: result.array()});
-// })
-
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`)
 })

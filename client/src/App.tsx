@@ -1,10 +1,9 @@
 import './App.css'
-import RegisterForm from "./components/RegisterForm.tsx";
 
 function App() {
   return (
     <>
-      <RegisterForm/>
+      <h2 className="text-6xl">App</h2>
     </>
   )
 }
