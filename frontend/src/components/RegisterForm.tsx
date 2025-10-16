@@ -1,4 +1,4 @@
-import {authApi} from "../../api/authAPI.ts";
+import {authApi} from "../api/authAPI.ts";
 
 const RegisterForm = () => {
     const loginHandler = () => {

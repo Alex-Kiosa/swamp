@@ -916,7 +916,7 @@ snapshots:
       - '@mongodb-js/zstd'
       - gcp-metadata
       - kerberos
-      - mongodb-client-encryption
+      - mongodb-frontend-encryption
       - snappy
       - socks
       - supports-color
