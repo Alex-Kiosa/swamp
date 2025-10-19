@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
 
-const generateAccessToken1 = (id, email) => {
+const generateAccessToken1 = (id, email, roles) => {
     const secretKey = process.env.JWT_SECRET
     if (!secretKey) {
         throw new Error("JWT_SECRET is not defined");
@@ -28,12 +28,16 @@ export async function createUser(req, res) {
 
         // Hash password
         const hashPassword = await bcrypt.hash(password, 7);
-        const user = new User({name, email, password: hashPassword})
+        const user = new User({name, email, password: hashPassword, roles: ["USER"]})
         await user.save()
 
         res.status(201).json({
             message: "User was created",
-            user: {id: user._id, email: user.email}
+            user: {
+                id: user._id,
+                email: user.email,
+                roles: user.roles
+            }
         })
 
     } catch (error) {
@@ -55,7 +59,7 @@ export async function login(req, res) {
             return res.status(400).json({message: "Invalid email password"})
         }
 
-        const token = generateAccessToken1(user._id, user.email)
+        const token = generateAccessToken1(user._id, user.email, user.roles)
 
         return res.json({token})
 
