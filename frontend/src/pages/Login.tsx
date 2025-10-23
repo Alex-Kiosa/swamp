@@ -2,7 +2,8 @@ import {PasswordInput} from "../components/PasswordInput.tsx";
 import * as React from "react";
 import {type ChangeEvent, useState} from "react";
 import {validateEmail} from "../lib/helper.ts";
-import {Loader} from "../components/Loader.tsx";
+import {Loader} from "../components/loader/Loader.tsx";
+import {Link} from "react-router"
 
 export const Login = () => {
     const [email, setEmail] = useState("")
@@ -11,12 +12,12 @@ export const Login = () => {
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
 
-    const changePassHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    function changePassHandler(e: ChangeEvent<HTMLInputElement>) {
         setPassword(e.currentTarget.value)
         setErrorPass("")
     }
 
-    const changeEmailHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    function changeEmailHandler(e: ChangeEvent<HTMLInputElement>) {
         setEmail(e.currentTarget.value)
         setErrorEmail("")
     }
@@ -55,7 +56,7 @@ export const Login = () => {
         <form onSubmit={loginHandler} method="POST" className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm" noValidate>
             <div className="mb-5 text-center">
                 <h2 className="mb-3 text-2xl font-bold">Войти в аккаунт</h2>
-                <p>Еще нет аккаунта? <a href="#" className="link link-primary">Зарегистрируйтесь</a></p>
+                <p>Еще нет аккаунта? <Link to={"/signup"} className="link link-primary">Зарегистрируйтесь</Link></p>
             </div>
 
             <div className="mb-5">

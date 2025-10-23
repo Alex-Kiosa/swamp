@@ -1,31 +1,24 @@
-import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import {createBrowserRouter} from "react-router";
-import {RouterProvider} from "react-router/dom";
+import './main.css'
+import App from './app/App.tsx'
+import {BrowserRouter, Route, Routes} from "react-router";
 import {Login} from "./pages/Login.tsx";
-import {SignUp} from "./pages/SignUp.tsx";
-import { Toaster } from "react-hot-toast";
-
-const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <App/>,
-    },
-    {
-        path: "/login",
-        element: <Login/>,
-    },
-    {
-        path: "/signup",
-        element: <SignUp/>,
-    },
-]);
+import {Signup} from "./pages/Signup.tsx";
+import {Provider} from "react-redux";
+import {store} from "./app/store"
+import Breadcrumbs from "./components/breadcrumbs/Breadcrumbs.tsx";
+import {NotFound} from "./pages/NotFound.tsx";
 
 createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-        <RouterProvider router={router}/>
-        <Toaster/>
-    </StrictMode>
+    <Provider store={store}>
+        <BrowserRouter>
+            <Breadcrumbs/>
+            <Routes>
+                <Route path="/" element={<App/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/signup" element={<Signup/>}/>
+                <Route path="*" element={<NotFound/>}/>
+            </Routes>
+        </BrowserRouter>
+    </Provider>
 );
