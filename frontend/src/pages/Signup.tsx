@@ -1,77 +1,59 @@
-import {PasswordInput} from "../components/PasswordInput.tsx";
 import {Loader} from "../components/loader/Loader.tsx";
-import {type ChangeEvent, useState} from "react";
-import {Input} from "../components/input/Input.tsx";
+import {useState} from "react";
 import {Link} from "react-router"
+import {Input} from "../components/input/Input.tsx";
+import {FormProvider, useForm} from "react-hook-form";
+import {GrMail} from "react-icons/gr";
+import {email_validation, name_validation, pass_validation} from "../utils/inputValidations.ts";
+import {Alert} from "../components/alert/Alert.tsx";
+import {registration} from "../actions/user.ts";
 
 export const Signup = () => {
-    const [name, setName] = useState("")
-    const [errorName, setErrorName] = useState("")
-    const [email, setEmail] = useState("")
-    const [errorEmail, setErrorEmail] = useState("")
-    const [errorPass, setErrorPass] = useState("")
-    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)
 
-    function changeNameHandler(e: ChangeEvent<HTMLInputElement>) {
-        setName(e.currentTarget.value)
-        setErrorName("")
-    }
+    //     // Login API
+    //     // fetch()
+    //     //     .then((res)=> {
+    //     //         setTimeout(()=> setLoading(false), 3000)
+    //     //     })
+    //     registration(name, email, password)
+    // }
 
-    function changeEmailHandler(e: ChangeEvent<HTMLInputElement>) {
-        setEmail(e.currentTarget.value)
-        setErrorEmail("")
-    }
+    const methods = useForm()
 
-    function changePassHandler(e: ChangeEvent<HTMLInputElement>) {
-        setPassword(e.currentTarget.value)
-        setErrorPass("")
-    }
-
-    function signUpHandler() {
-
-    }
+    const onSubmit = methods.handleSubmit(data => {
+        registration(data["input-name"], data["input-email"], data["input-password"])
+        // methods.reset()
+        setSuccess(true)
+    })
 
     return (
-        <form onSubmit={signUpHandler} method="POST" className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
-              noValidate>
-            <div className="mb-5 text-center">
-                <h2 className="mb-3 text-2xl font-bold">Зарегистрироваться как ведущий</h2>
-                <p>Уже есть аккунт? <Link to="/login" className="link link-primary">Войти</Link></p>
-            </div>
+        <FormProvider {...methods}>
+            <form
+                onSubmit={(e) => e.preventDefault()}
+                noValidate
+                className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
+            >
+                <div className="mb-5 text-center">
+                    <h2 className="mb-3 text-2xl font-bold">Зарегистрироваться как ведущий</h2>
+                    <p>Уже есть аккаунт? <Link to="/login" className="link link-primary">Войти</Link></p>
+                </div>
 
-            <Input
-                type={"text"}
-                value={name}
-                setValue={setName}
-                placeholder={"Имя"}
-                autoComplete="name"
-                className="input-primary"
-                error={errorName}
-            />
-            <Input
-                type={"email"}
-                value={email}
-                setValue={setEmail}
-                placeholder={"Email"}
-                autoComplete="name"
-                className="input-primary"
-                error={errorEmail}
-            />
+                <Input {...name_validation}/>
+                <Input {...email_validation}/>
+                <Input {...pass_validation}/>
 
-            <div className="mb-5">
-                <PasswordInput
-                    value={password}
-                    onChange={changePassHandler}
-                />
-
-                {errorPass && <p className="text-red-700 text-xs mt-2">{errorPass}</p>}
-            </div>
-
-            <div>
-                <button type="submit" className="btn btn-primary w-full text-base" disabled={loading}>{loading ?
-                    <Loader/> : "Зарегистрироваться"}</button>
-            </div>
-        </form>
-    )
+                <button
+                    type="submit"
+                    onClick={onSubmit}
+                    className="btn btn-primary w-full text-base"
+                    disabled={loading}
+                >
+                    <GrMail/>
+                    {loading ? <Loader/> : "Зарегистрироваться"}
+                </button>
+            </form>
+        </FormProvider>
+    );
 }

@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import regRoutes from "./routes/authRoutes.js";
 import {connectDB} from "./db.js";
+import cors from "./middleware/corsMiddleware.js";
 
 dotenv.config()
 
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 5000
 // Connect to DB
 connectDB()
 
+app.use(cors)
 // Use express.json() middleware which parses successive requests with key data in JSON format, making it available in the req.body object
 app.use(express.json())
 

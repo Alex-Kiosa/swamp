@@ -1,7 +1,7 @@
 import {PasswordInput} from "../components/PasswordInput.tsx";
 import * as React from "react";
 import {type ChangeEvent, useState} from "react";
-import {validateEmail} from "../lib/helper.ts";
+import {validateEmail} from "../utils/helper.ts";
 import {Loader} from "../components/loader/Loader.tsx";
 import {Link} from "react-router"
 

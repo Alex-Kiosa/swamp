@@ -1,5 +1,5 @@
 import {Link, useLocation} from "react-router";
-import {convertSlugTotTile} from "../../lib/slugService.ts";
+import {convertSlugTotTile} from "../../utils/slugService.ts";
 
 const Breadcrumbs = () => {
     const location = useLocation()
