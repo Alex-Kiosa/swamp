@@ -1,5 +1,5 @@
-import {findInputError} from '../../utils/findInputError.ts'
-import {isFormInvalid} from '../../utils/isFormInvalid.ts'
+import {findInputError} from '../../common/utils/findInputError.ts'
+import {isFormInvalid} from '../../common/utils/isFormInvalid.ts'
 import {useFormContext} from 'react-hook-form'
 import {AnimatePresence} from 'framer-motion'
 import {InputError} from "../input/Input.tsx";

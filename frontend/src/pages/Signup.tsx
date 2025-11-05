@@ -4,21 +4,13 @@ import {Link} from "react-router"
 import {Input} from "../components/input/Input.tsx";
 import {FormProvider, useForm} from "react-hook-form";
 import {GrMail} from "react-icons/gr";
-import {email_validation, name_validation, pass_validation} from "../utils/inputValidations.ts";
-import {Alert} from "../components/alert/Alert.tsx";
-import {registration} from "../actions/user.ts";
+import {email_validation, name_validation, pass_validation} from "../common/utils/inputValidations.ts";
+import {registration} from "../features/users/actions/user.ts";
+import {Privacy} from "../components/privacy/Privacy.tsx";
 
 export const Signup = () => {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
-
-    //     // Login API
-    //     // fetch()
-    //     //     .then((res)=> {
-    //     //         setTimeout(()=> setLoading(false), 3000)
-    //     //     })
-    //     registration(name, email, password)
-    // }
 
     const methods = useForm()
 
@@ -42,7 +34,15 @@ export const Signup = () => {
 
                 <Input {...name_validation}/>
                 <Input {...email_validation}/>
-                <Input {...pass_validation}/>
+                <Input
+                    {...pass_validation}
+                    placeholder="пароль от 6 до 15 символов"
+                    validation={{
+                        ...pass_validation.validation,
+                        minLength: { value: 6, message: "Пароль должен содержать от 6 до 15 символов" },
+                        maxLength: { value: 15, message: "Пароль должен содержать от 6 до 15 символов" },
+                    }}
+                />
 
                 <button
                     type="submit"
@@ -53,6 +53,8 @@ export const Signup = () => {
                     <GrMail/>
                     {loading ? <Loader/> : "Зарегистрироваться"}
                 </button>
+
+                <Privacy/>
             </form>
         </FormProvider>
     );

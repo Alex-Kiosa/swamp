@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const roleSchema = new mongoose.Schema({
-    value: {type: String, unique: true, default: "USER"}
+    value: {type: "USER" || "HOST" || "ADMIN", unique: true, default: "USER"}
 })
 
-const User = mongoose.model('Role', roleSchema);
+const Role = mongoose.model('Role', roleSchema);
 
-export default Role;
+export default Role

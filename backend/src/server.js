@@ -10,9 +10,7 @@ dotenv.config()
 const app = express();
 const PORT = process.env.PORT || 5000
 
-// Connect to DB
-connectDB()
-
+// Middlewares
 app.use(cors)
 // Use express.json() middleware which parses successive requests with key data in JSON format, making it available in the req.body object
 app.use(express.json())
@@ -20,7 +18,13 @@ app.use(express.json())
 // Routes
 app.use('/api/auth', regRoutes)
 
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port: ${PORT}`)
-})
+// Start the server only after DB connection
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log("🚀 Server started on PORT:", PORT)
+        })
+    })
+    .catch((error) => {
+        console.error("❌ Failed to start server:", error)
+    })

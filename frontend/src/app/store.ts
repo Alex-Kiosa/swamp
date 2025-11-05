@@ -1,10 +1,14 @@
-import {configureStore} from "@reduxjs/toolkit";
+import {combineReducers, configureStore} from "@reduxjs/toolkit";
+import userReducer from "../features/users/model/user-reducer.ts";
+
+const rootReducer = combineReducers({
+    user: userReducer,
+    // app: appReducer,
+})
 
 export const store = configureStore({
-    reducer: {
-        // user: userReducer,
-        // app: appReducer,
-    }
+    reducer: rootReducer,
+    // devTools: process.env.NODE_ENV !== "production",
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

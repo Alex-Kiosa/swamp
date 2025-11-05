@@ -1,11 +1,12 @@
 import cn from 'classnames'
-import {findInputError} from '../../utils/findInputError.ts'
-import {isFormInvalid} from '../../utils/isFormInvalid.ts'
+import {findInputError} from '../../common/utils/findInputError.ts'
+import {isFormInvalid} from '../../common/utils/isFormInvalid.ts'
 import {useFormContext} from 'react-hook-form'
 import {AnimatePresence, motion} from 'framer-motion'
-import {EmailMyIcon} from "../../assets/customIcons/EmailMyIcon.tsx";
-import {PiKeyThin} from "react-icons/pi";
-import {RxCheck, RxFace, RxInfoCircled, RxMobile} from "react-icons/rx";
+import {RxCheck, RxEyeClosed, RxEyeOpen, RxFace, RxInfoCircled, RxMobile} from "react-icons/rx";
+import {useState} from "react";
+import {IoKeyOutline} from "react-icons/io5";
+import {CiMail} from "react-icons/ci";
 
 export type InputType = {
     label?: string
@@ -25,16 +26,21 @@ export type ValidationInputType = {
 
 export const Input = ({label, type, id, placeholder, validation, className}: InputType) => {
     const {register, formState: {errors}} = useFormContext()
+    const [showPass, setShowPass] = useState(false)
 
     const inputError = findInputError(errors, id)
     const isInvalid = isFormInvalid(inputError)
 
     const icons = {
-        text: <RxFace />,
-        email: <EmailMyIcon/>,
-        password: <PiKeyThin/>,
-        tel: <RxMobile />,
-        number: <RxCheck />,
+        text: <RxFace/>,
+        email: <CiMail />,
+        password: <IoKeyOutline />,
+        tel: <RxMobile/>,
+        number: <RxCheck/>,
+    }
+
+    const togglePassVisibility = () => {
+        setShowPass((prev) => !prev)
     }
 
     return (
@@ -42,11 +48,17 @@ export const Input = ({label, type, id, placeholder, validation, className}: Inp
             <label className={cn("input", className)}>
                 {label ? label : icons[type]}
                 <input
-                    type={type}
+                    type={type === "password" ? (showPass ? "text" : "password") : type}
                     id={id}
                     placeholder={placeholder}
                     {...register(id, validation)}
                 />
+                {type === "password" && (
+                    <span>
+                    {showPass ? <RxEyeClosed onClick={togglePassVisibility} size={20}/> :
+                        <RxEyeOpen onClick={togglePassVisibility} size={20}/>}
+                    </span>
+                )}
             </label>
             <AnimatePresence mode="wait" initial={false}>
                 {isInvalid && "error" in inputError && (
@@ -60,7 +72,7 @@ export const Input = ({label, type, id, placeholder, validation, className}: Inp
     )
 }
 
-export const InputError = ({message}: {message: string}) => {
+export const InputError = ({message}: { message: string }) => {
     return (
         <motion.p
             className="mt-2 flex items-center gap-2 py-1 px-2 font-medium text-sm text-red-500 bg-red-100 rounded-md"

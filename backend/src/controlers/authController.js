@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
 
-const generateAccessToken1 = (id, email, roles) => {
+export function generateAccessToken(id, email) {
     const secretKey = process.env.JWT_SECRET
     if (!secretKey) {
         throw new Error("JWT_SECRET is not defined");
@@ -50,7 +50,7 @@ export async function login(req, res) {
     try {
         const {email, password} = req.body
 
-        const user = await User.findOne({email})
+        const user = await User.findOne({ email })
         if (!user) {
             return res.status(400).json({message: `User not found`})
         }
@@ -59,13 +59,44 @@ export async function login(req, res) {
             return res.status(400).json({message: "Invalid email password"})
         }
 
-        const token = generateAccessToken1(user._id, user.email, user.roles)
+        const token = generateAccessToken(user.id, user.email)
 
-        return res.json({token})
+        return res.json({
+            token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                roles: user.roles,
+                createdAt: user.createdAt,
+            }
+        })
 
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Server error"})
+    }
+}
+
+export async function auth(req, res) {
+    try {
+        const user = await User.findOne({_id: req.user.id})
+        if (!user) {
+            return res.status(400).json({message: `User not found`})
+        }
+
+        return res.status(200).json({
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                roles: user.roles,
+                createdAt: user.createdAt,
+            }
+        })
+    } catch (error) {
+        console.error('Error in /auth:', error)
+        res.status(500).json({message: "Server error", error: error.message})
     }
 }
 

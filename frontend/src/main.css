@@ -1,12 +1,11 @@
 @import "tailwindcss";
+
 @plugin "daisyui" {
     themes: lemonade;
 }
 
 @layer base {
     body {
-        display: flex;
-        place-items: center;
         min-height: 100vh;
     }
 
@@ -22,5 +21,10 @@
 
     p {
         margin-bottom: 1rem;
+    }
+
+    .navbar a,
+    .breadcrumbs a {
+        text-decoration: none;
     }
 }
