@@ -1,5 +1,6 @@
 import womenAvatar from '../../assets/women-avatar.jpg';
 import {useAppSelector} from "../../common/hooks/hooks.ts";
+import {Link} from "react-router";
 
 export const Profile = () => {
     const {name, email, roles = []} = useAppSelector((state) => state.user.currentUser)
@@ -20,7 +21,9 @@ export const Profile = () => {
                 <p><b>Email:</b> {email}</p>
                 <p><b>Тип аккаунта:</b> {checkUserRole()}</p>
                 <div className="card-actions">
-                    <button className="btn btn-primary">Создать игру</button>
+                    <Link to="/account/create-game" role="button" className="btn btn-wide btn-primary text-base">
+                        Создать игру
+                    </Link>
                 </div>
             </div>
         </div>

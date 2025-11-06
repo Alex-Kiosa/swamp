@@ -1,24 +1,17 @@
-import * as React from "react";
 import {useState} from "react";
-import {Loader} from "../components/loader/Loader.tsx";
-import {Link} from "react-router"
+import {Loader} from "../loader/Loader.tsx";
 import {FormProvider, useForm} from "react-hook-form";
-import {loginThunk} from "../features/users/actions/user-actions.ts";
-import {Input} from "../components/input/Input.tsx";
-import {email_validation, pass_validation} from "../common/utils/inputValidations.ts";
-import {Privacy} from "../components/privacy/Privacy.tsx";
-import {useDispatch} from "react-redux";
+import {Input} from "../input/Input.tsx";
+import {email_validation, pass_validation} from "../../common/utils/inputValidations.ts";
+import {Privacy} from "../privacy/Privacy.tsx";
 
-export const Login = () => {
+export const Form = () => {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
     const methods = useForm()
-    const dispatch = useDispatch()
 
     const onSubmit = methods.handleSubmit(data => {
-        dispatch(loginThunk(data["input-email"], data["input-password"]))
-        // methods.reset()
-        setSuccess(true)
+        console.log(true)
     })
 
     return (
@@ -29,9 +22,7 @@ export const Login = () => {
                 className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
             >
                 <div className="mb-5 text-center">
-                    <h2 className="mb-3 text-2xl font-bold">Войти</h2>
-                    <p>Еще нет аккаунта? <Link to="/signup" className="link link-primary">Зарегистрироваться</Link>
-                    </p>
+                    <h2 className="mb-3 text-2xl font-bold">Форма стандартная</h2>
                 </div>
 
                 <Input {...email_validation} placeholder="Введите email"/>

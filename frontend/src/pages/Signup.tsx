@@ -5,7 +5,7 @@ import {Input} from "../components/input/Input.tsx";
 import {FormProvider, useForm} from "react-hook-form";
 import {GrMail} from "react-icons/gr";
 import {email_validation, name_validation, pass_validation} from "../common/utils/inputValidations.ts";
-import {registration} from "../features/users/actions/user.ts";
+import {registration} from "../features/users/actions/user-actions.ts";
 import {Privacy} from "../components/privacy/Privacy.tsx";
 
 export const Signup = () => {

@@ -3,13 +3,13 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
 
-export function generateAccessToken(id, email) {
+export function generateAccessToken(id, email, roles) {
     const secretKey = process.env.JWT_SECRET
     if (!secretKey) {
         throw new Error("JWT_SECRET is not defined");
     }
 
-    return jwt.sign({id, email}, secretKey, {expiresIn: "24h"})
+    return jwt.sign({id, email, roles}, secretKey, {expiresIn: "24h"})
 }
 
 export async function createUser(req, res) {
@@ -59,7 +59,7 @@ export async function login(req, res) {
             return res.status(400).json({message: "Invalid email password"})
         }
 
-        const token = generateAccessToken(user.id, user.email)
+        const token = generateAccessToken(user.id, user.email, user.roles)
 
         return res.json({
             token,

@@ -8,10 +8,12 @@ import {Home} from "../pages/Home";
 import {useSelector} from "react-redux";
 import type {RootState} from "./store.ts";
 import {useEffect} from "react";
-import {authThunk} from "../features/users/actions/user.ts";
+import {authThunk} from "../features/users/actions/user-actions.ts";
 import {Account} from "../pages/Account.tsx";
 import {useAppDispatch} from "../common/hooks/hooks.ts";
 import {PrivateRoute, PublicRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
+import {Game} from "../pages/Game.tsx";
+import {CreateGame} from "../pages/CreateGame.tsx";
 
 function App() {
     const isAuth = useSelector((state: RootState) => state.user.isAuth);
@@ -28,7 +30,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/privacy-notice" element={<PrivacyNotice />} />
 
-                    {/* Private */}
+                    {/* Public */}
                     <Route
                         path="/login"
                         element={
@@ -45,13 +47,31 @@ function App() {
                             </PublicRoute>
                         }
                     />
+                    <Route
+                        path="/game/:roomId"
+                        element={
+                            <PublicRoute isAuth={isAuth}>
+                                <Game />
+                            </PublicRoute>
+                        }
+                    />
 
-                    {/* Public */}
+                    {/* Private */}
+
                     <Route
                         path="/account"
                         element={
                             <PrivateRoute isAuth={isAuth}>
                                 <Account />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/account/create-game"
+                        element={
+                            <PrivateRoute isAuth={isAuth}>
+                                <CreateGame />
                             </PrivateRoute>
                         }
                     />

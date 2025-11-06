@@ -13,8 +13,10 @@ export function roleMiddleware(roles) {
             }
             const secretKey = process.env.JWT_SECRET
             const data = jwt.verify(token, secretKey)
-            const userRoles = data.roles
 
+            req.user = data
+
+            const userRoles = data.roles
             let hasRole = false
             userRoles.forEach(role => {
                 if (roles.includes(role)) {
