@@ -1,11 +1,17 @@
 import mongoose from 'mongoose';
 
 const chipSchema = new mongoose.Schema({
-    id: {type: String, unique: true},
-    positions: [{x: String, y: String}],
+    roomId: {
+        type: String,
+        index: true,
+    },
+    position: {
+        type: {x: Number, y: Number},
+        required: true,
+    },
     color: {type: String, required: true},
-    shape: {type: String, default: "Circle"},
-});
+    shape: {type: String, enum: ["Circle", "Square", "Triangle"], default: "Circle"},
+},{timestamps: true});
 
 const Chip = mongoose.model('Chip', chipSchema);
 

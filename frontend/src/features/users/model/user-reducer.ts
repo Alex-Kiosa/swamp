@@ -10,11 +10,13 @@ type UserType = {
 type UserStateType = {
     currentUser: Partial<UserType>
     isAuth: boolean
+    isInitialized: boolean
 }
 
 const initialState: UserStateType = {
     currentUser: {},
-    isAuth: false
+    isAuth: false,
+    isInitialized: false
 }
 
 export const userSlice = createSlice({
@@ -25,6 +27,9 @@ export const userSlice = createSlice({
             state.currentUser = action.payload
             state.isAuth = true
         },
+        setIsInitialized: (state, action) => {
+            state.isInitialized = action.payload
+        },
         logout: (state) => {
             localStorage.removeItem("token")
             state.currentUser = {}
@@ -34,5 +39,5 @@ export const userSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {setUser, logout} = userSlice.actions
+export const {setUser, logout, setIsInitialized} = userSlice.actions
 export default userSlice.reducer

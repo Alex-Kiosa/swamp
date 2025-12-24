@@ -1,3 +1,4 @@
+/*
 import cn from 'classnames'
 import {findInputError} from '../../common/utils/findInputError.ts'
 import {isFormInvalid} from '../../common/utils/isFormInvalid.ts'
@@ -14,6 +15,8 @@ export type InputType = {
     type: "text" | "email" | "password" | "tel" | "number"
     id: string
     placeholder: string
+    min?: number
+    max?: number
     validation: ValidationInputType
     className?: string
 }
@@ -22,12 +25,10 @@ export type ValidationInputType = {
     required?: { value: boolean; message: string }
     minLength?: { value: number; message: string }
     maxLength?: { value: number; message: string }
-    min?: { value: number; message: string }
-    max?: { value: number; message: string }
     pattern?: { value: RegExp; message: string }
 }
 
-export const Input = ({label, type, id, placeholder, validation, className, min, max}: InputType) => {
+export const Select = ({label, type, id, placeholder, validation, className, min, max}: InputType) => {
     const {register, formState: {errors}} = useFormContext()
     const [showPass, setShowPass] = useState(false)
 
@@ -56,10 +57,7 @@ export const Input = ({label, type, id, placeholder, validation, className, min,
                     placeholder={placeholder}
                     min={min}
                     max={max}
-                    {...register(id, {
-                        ...validation,
-                        ...(type === "number" ? { valueAsNumber: true } : {})
-                    })}
+                    {...register(id, validation)}
                 />
                 {type === "password" && (
                     <span>
@@ -72,7 +70,6 @@ export const Input = ({label, type, id, placeholder, validation, className, min,
                 {isInvalid && "error" in inputError && (
                     <InputError
                         message={inputError.error.message}
-                        // key={inputError.error.message}
                     />
                 )}
             </AnimatePresence>
@@ -97,4 +94,4 @@ export const framer_error = {
     animate: {opacity: 1, y: 0},
     exit: {opacity: 0, y: 10},
     transition: {duration: 0.2},
-}
+}*/

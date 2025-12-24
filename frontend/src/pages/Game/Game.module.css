@@ -1,0 +1,6 @@
+.wrap {
+    width: 100%;
+    height: 100vh;
+    background: #DEE8D0 url("./assets/room-bg.jpg") no-repeat right top;
+    background-size: cover;
+}

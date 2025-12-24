@@ -1,5 +1,4 @@
-import {Loader} from "../components/loader/Loader.tsx";
-import {useState} from "react";
+import {Loading} from "../components/loading/Loading.tsx";
 import {Link} from "react-router"
 import {Input} from "../components/input/Input.tsx";
 import {FormProvider, useForm} from "react-hook-form";
@@ -7,17 +6,18 @@ import {GrMail} from "react-icons/gr";
 import {email_validation, name_validation, pass_validation} from "../common/utils/inputValidations.ts";
 import {registration} from "../features/users/actions/user-actions.ts";
 import {Privacy} from "../components/privacy/Privacy.tsx";
+import {useAppSelector} from "../common/hooks/hooks.ts";
+import {selectAppStatus} from "../app/appSelectors.ts";
+import {useDispatch} from "react-redux";
 
 export const Signup = () => {
-    const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
-
     const methods = useForm()
+    const status = useAppSelector(selectAppStatus)
+    const dispatch = useDispatch()
 
     const onSubmit = methods.handleSubmit(data => {
         registration(data["input-name"], data["input-email"], data["input-password"])
         // methods.reset()
-        setSuccess(true)
     })
 
     return (
@@ -48,10 +48,10 @@ export const Signup = () => {
                     type="submit"
                     onClick={onSubmit}
                     className="btn btn-primary w-full text-base"
-                    disabled={loading}
+                    disabled={status === "loading"}
                 >
                     <GrMail/>
-                    {loading ? <Loader/> : "Зарегистрироваться"}
+                    {status === "loading" ? <Loading/> : "Зарегистрироваться"}
                 </button>
 
                 <Privacy/>

@@ -1,13 +1,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import http from 'http';
-import { Server } from 'socket.io';
+import {Server} from 'socket.io';
 import regRoutes from "./routes/authRoutes.js";
 import gameRoutes from "./routes/gameRoutes.js";
-import { connectDB } from "./db.js";
+import chipRoutes from "./routes/chipRoutes.js";
+import {connectDB} from "./db.js";
 import cors from "./middleware/corsMiddleware.js";
-import Game from "./models/gameModel.js";
-import { deleteGame } from "./controlers/gameController.js";
 
 dotenv.config()
 
@@ -30,6 +29,7 @@ app.use(express.json())
 // Routes
 app.use('/api/auth', regRoutes)
 app.use('/api/game', gameRoutes)
+app.use("/api/chips", chipRoutes);
 
 // Start the server only after DB connection
 connectDB()

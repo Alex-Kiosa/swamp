@@ -1,19 +1,21 @@
 import {FormProvider, useForm} from "react-hook-form";
 import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
-import {gameCreateThunk} from "../features/games/actions/games-actions.ts";
-import type {RootState} from "../app/store.ts";
 import {Input} from "../components/input/Input.tsx";
-import {email_validation, pass_validation} from "../common/utils/inputValidations.ts";
-import {Loader} from "../components/loader/Loader.tsx";
+import {users_number_validation} from "../common/utils/inputValidations.ts";
+import {createGameThunk} from "../features/games/actions/games-actions.ts";
+import {selectAppStatus} from "../app/appSelectors.ts";
+import {Loading} from "../components/loading/Loading.tsx";
 
 export const CreateGame = () => {
+    const status = useAppSelector(selectAppStatus)
+
     const methods = useForm()
     const dispatch = useAppDispatch();
-    const loading = useAppSelector((state: RootState) => state.app.status);
 
-    const createGameHandler = () => {
-        dispatch(gameCreateThunk)
-    }
+    const createGameHandler = methods.handleSubmit(data => {
+        dispatch(createGameThunk(data))
+        // console.log(data)
+    })
 
     return (
         <FormProvider {...methods}>
@@ -26,17 +28,15 @@ export const CreateGame = () => {
                     <h2 className="mb-3 text-2xl font-bold">Укажите параметры игры</h2>
                 </div>
 
-                <Input {...email_validation} placeholder="Введите email"/>
-                <Input {...pass_validation}/>
+                <Input {...users_number_validation}/>
 
                 <button
                     type="submit"
                     onClick={createGameHandler}
                     className="btn btn-primary w-full text-base"
-                    disabled={loading === "succeeded"}
+                    disabled={status === "loading"}
                 >
-
-                    {loading === "loading" ? <Loader/> : "Создать"}
+                    {status === "loading" ? <Loading/> : "Создать"}
                 </button>
             </form>
         </FormProvider>

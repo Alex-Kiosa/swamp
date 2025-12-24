@@ -1,7 +1,8 @@
 import axios from "axios";
-import {setUser} from "../model/user-reducer.ts";
+import {setIsInitialized, setUser} from "../model/user-reducer.ts";
 import {type Dispatch} from "@reduxjs/toolkit";
 import api from "../../../api/axios.ts";
+import {setAppStatus} from "../../../app/app-reducer.ts";
 
 export const registration = async (name: string, email: string, password: string) => {
     try {
@@ -34,17 +35,23 @@ export const loginThunk = (email: string, password: string) => {
 
 export const authThunk = () => {
     return (dispatch: Dispatch) => {
+        dispatch(setAppStatus("loading"))
         api.get("/auth/auth", {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         })
             .then(res => {
+                dispatch(setAppStatus("succeeded"))
                 dispatch((setUser(res.data.user)))
             })
             .catch(error => {
+                dispatch(setAppStatus("failed"))
                 console.log("Токен невалидный или истёк", error);
                 localStorage.removeItem("token");
+            })
+            .finally(()=> {
+                dispatch(setIsInitialized(true))
             })
     }
 }

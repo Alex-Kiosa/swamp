@@ -5,82 +5,50 @@ import {Signup} from "../pages/Signup";
 import {PrivacyNotice} from "../pages/PrivacyNotice";
 import {NotFound} from "../pages/NotFound";
 import {Home} from "../pages/Home";
-import {useSelector} from "react-redux";
-import type {RootState} from "./store.ts";
 import {useEffect} from "react";
 import {authThunk} from "../features/users/actions/user-actions.ts";
 import {Account} from "../pages/Account.tsx";
-import {useAppDispatch} from "../common/hooks/hooks.ts";
-import {PrivateRoute, PublicRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
-import {Game} from "../pages/Game.tsx";
+import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
+import {Game} from "../pages/Game/Game.tsx";
 import {CreateGame} from "../pages/CreateGame.tsx";
+import {PrivateRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
+import {selectAuth, selectIsInitialized} from "../features/users/model/userSelectors.ts";
+import {Loading} from "../components/loading/Loading.tsx";
 
 function App() {
-    const isAuth = useSelector((state: RootState) => state.user.isAuth);
+    const isInitialized = useAppSelector(selectIsInitialized);
+    const isAuth = useAppSelector(selectAuth);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(authThunk());
-    }, [dispatch]);
+    }, []);
 
-    return (
+    return <>
         <div className="@container mx-auto p-4 pb-10 max-w-5xl">
-            <Routes>
-                <Route element={<LayoutNavbarBreadcrumbs />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/privacy-notice" element={<PrivacyNotice />} />
-
-                    {/* Public */}
-                    <Route
-                        path="/login"
-                        element={
-                            <PublicRoute isAuth={isAuth}>
-                                <Login />
-                            </PublicRoute>
-                        }
-                    />
-                    <Route
-                        path="/signup"
-                        element={
-                            <PublicRoute isAuth={isAuth}>
-                                <Signup />
-                            </PublicRoute>
-                        }
-                    />
-                    <Route
-                        path="/game/:roomId"
-                        element={
-                            <PublicRoute isAuth={isAuth}>
-                                <Game />
-                            </PublicRoute>
-                        }
-                    />
-
-                    {/* Private */}
-
-                    <Route
-                        path="/account"
-                        element={
-                            <PrivateRoute isAuth={isAuth}>
-                                <Account />
-                            </PrivateRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/account/create-game"
-                        element={
-                            <PrivateRoute isAuth={isAuth}>
-                                <CreateGame />
-                            </PrivateRoute>
-                        }
-                    />
-
-                    <Route path="*" element={<NotFound />} />
-                </Route>
-            </Routes>
+            {isInitialized && (
+                <Routes>
+                    <Route element={<LayoutNavbarBreadcrumbs/>}>
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/signup" element={<Signup/>}/>
+                        <Route path="/game/:roomId" element={<Game/>}/>
+                        <Route element={<PrivateRoute isAuth={isAuth}/>}>
+                            <Route path="account" element={<Account/>}>
+                                <Route path="create-game" element={<CreateGame/>}/>
+                            </Route>
+                        </Route>
+                        <Route path="*" element={<NotFound/>}/>
+                    </Route>
+                </Routes>
+            )}
+            {!isInitialized && (
+                <Loading/>
+            )}
         </div>
-    );
+    </>;
 }
 
 export default App;

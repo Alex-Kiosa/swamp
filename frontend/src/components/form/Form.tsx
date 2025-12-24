@@ -1,13 +1,15 @@
-import {useState} from "react";
-import {Loader} from "../loader/Loader.tsx";
+import * as React from "react";
+import {Loading} from "../loading/Loading.tsx";
 import {FormProvider, useForm} from "react-hook-form";
 import {Input} from "../input/Input.tsx";
 import {email_validation, pass_validation} from "../../common/utils/inputValidations.ts";
 import {Privacy} from "../privacy/Privacy.tsx";
+import {useAppSelector} from "../../common/hooks/hooks.ts";
+import {selectAppStatus} from "../../app/appSelectors.ts";
 
 export const Form = () => {
-    const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
+    const status = useAppSelector(selectAppStatus)
+
     const methods = useForm()
 
     const onSubmit = methods.handleSubmit(data => {
@@ -32,10 +34,9 @@ export const Form = () => {
                     type="submit"
                     onClick={onSubmit}
                     className="btn btn-primary w-full text-base"
-                    disabled={loading}
+                    disabled={status === "loading"}
                 >
-
-                    {loading ? <Loader/> : "Войти"}
+                    {status === "loading" ? <Loading/> : "Войти"}
                 </button>
 
                 <Privacy/>

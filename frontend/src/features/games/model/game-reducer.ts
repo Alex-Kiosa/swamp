@@ -2,7 +2,7 @@ import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 export type ChipType = {
     id: string,
-    positions: { x: String, y: String },
+    positions: { x: number, y: number },
     color: string,
     shape: string,
 }
@@ -22,22 +22,22 @@ export type GameType = {
 }
 
 type GameStateType = {
-    currentGame: GameType | null
+    roomId: string | null
 }
 
 const initialState: GameStateType = {
-    currentGame: null
+    roomId: null
 }
 
 export const gameSlice = createSlice({
     name: "game",
     initialState,
     reducers: {
-        getGame: (state, action: PayloadAction<GameType>) => {
-            state.currentGame = action.payload
+        getGame: (state, action: PayloadAction<{ roomId: string }>) => {
+            state.roomId = action.payload.roomId
         },
-        createGame: (state, action: PayloadAction<GameType>) => {
-            state.currentGame = action.payload
+        createGame: (state, action: PayloadAction<{ roomId: string }>) => {
+            state.roomId = action.payload.roomId
         },
     }
 })

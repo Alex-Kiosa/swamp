@@ -15,7 +15,7 @@ export async function createGame(req, res) {
             hostId,
             roomId,
             players: [],
-            chips: []
+            chips: req.chips,
         })
 
         await game.save()
@@ -31,6 +31,23 @@ export async function createGame(req, res) {
     }
 }
 
+export async function getActiveGame(req, res) {
+    try {
+        const hostId = req.user.id
+
+        const game = await Game.findOne({hostId, isActive: true})
+
+        if (!game) {
+            return res.status(404).json({message: "Active game not found"})
+        }
+
+        return res.status(200).json({roomId: game.roomId})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Failed to get active game"})
+    }
+}
+
 export async function deleteGame(roomId) {
     try {
         const game = await Game.findOne({roomId})
@@ -42,6 +59,7 @@ export async function deleteGame(roomId) {
         await Game.deletOne({roomId})
         console.log(`🗑️ Game ${roomId} deleted`);
     } catch (error) {
-        console.log("Failed to create game", error)
+        console.log(error)
+        res.status(500).json({message: "Failed to delete game"})
     }
 }

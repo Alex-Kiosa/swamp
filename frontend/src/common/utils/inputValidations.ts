@@ -9,12 +9,23 @@ export const name_validation: InputType = {
     }
 }
 
-export const num_validation: InputType = {
+export const number_validation: InputType = {
     type: "number",
     id: "input-number",
     placeholder: "Число",
     validation: {
         required: {value: true, message: 'Введите число'},
+    }
+}
+
+export const users_number_validation: InputType = {
+    type: "number",
+    id: "input-number",
+    placeholder: "Укажите кол-во игроков от 2 до 15",
+    validation: {
+        required: {value: true, message: 'Укажите количество игроков'},
+        min: {value: 2, message: "Минимум 2 игрока"},
+        max: {value: 15, message: "Максимум 15 игроков"},
     }
 }
 

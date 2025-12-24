@@ -1,22 +1,9 @@
-import { Navigate } from "react-router";
-import * as React from "react";
+import {Navigate, Outlet} from "react-router"
 
 type RouteProps = {
-    isAuth: boolean;
-    children: React.ReactNode;
+    isAuth: boolean
 }
 
-export const PrivateRoute = ({ isAuth, children }: RouteProps) => {
-    if (!isAuth) {
-        return <Navigate to="/login" replace />;
-    }
-
-    return <>{children}</>;
-};
-
-export const PublicRoute = ({ isAuth, children }: RouteProps) => {
-    if (isAuth) {
-        return <Navigate to="/account" replace />;
-    }
-    return <>{children}</>;
-};
+export const PrivateRoute = ({isAuth}: RouteProps) => {
+    return isAuth ? <Outlet/> : <Navigate to="/login"/>
+}

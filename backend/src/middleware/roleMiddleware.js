@@ -3,14 +3,20 @@ import jwt from "jsonwebtoken";
 export function roleMiddleware(roles) {
     return function (req, res, next) {
         if (req.method === "OPTIONS") {
-            next()
+            return next()
         }
 
         try {
-            const token = req.headers.authorization.split(" ")[1]
-            if (!token) {
-                return res.status(403).json({message: "User is unauthorized"})
+            if (!req.headers.authorization) {
+                return res.status(401).json({message: "Authorization header is missing"})
             }
+
+            const token = req.headers.authorization.split(" ")[1]
+
+            if (!token) {
+                return res.status(401).json({message: "token is missing"})
+            }
+
             const secretKey = process.env.JWT_SECRET
             const data = jwt.verify(token, secretKey)
 
@@ -30,8 +36,22 @@ export function roleMiddleware(roles) {
 
             next()
         } catch (error) {
-            console.log(error)
-            return res.status(403).json({message: "User is unauthorized"})
+            console.error("JWT ERROR:", {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                ...error
+            });
+
+            if (error.name === "TokenExpiredError") {
+                return res.status(401).json({ message: "Token expired" });
+            }
+
+            if (error.name === "JsonWebTokenError") {
+                return res.status(401).json({ message: "Invalid token" });
+            }
+
+            return res.status(401).json({ message: "Authorization error" });
         }
     }
 }

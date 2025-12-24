@@ -1,25 +1,30 @@
 import * as React from "react";
-import {useState} from "react";
-import {Loader} from "../components/loader/Loader.tsx";
-import {Link} from "react-router"
+import {Loading} from "../components/loading/Loading.tsx";
+import {Link, Navigate} from "react-router"
 import {FormProvider, useForm} from "react-hook-form";
 import {loginThunk} from "../features/users/actions/user-actions.ts";
 import {Input} from "../components/input/Input.tsx";
 import {email_validation, pass_validation} from "../common/utils/inputValidations.ts";
 import {Privacy} from "../components/privacy/Privacy.tsx";
 import {useDispatch} from "react-redux";
+import {useAppSelector} from "../common/hooks/hooks.ts";
+import {selectAppStatus} from "../app/appSelectors.ts";
+import {selectAuth} from "../features/users/model/userSelectors.ts";
 
 export const Login = () => {
-    const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
+    const status = useAppSelector(selectAppStatus)
+    const isAuth = useAppSelector(selectAuth)
+
     const methods = useForm()
     const dispatch = useDispatch()
 
     const onSubmit = methods.handleSubmit(data => {
         dispatch(loginThunk(data["input-email"], data["input-password"]))
-        // methods.reset()
-        setSuccess(true)
     })
+
+    if (isAuth) {
+        return <Navigate to={"/account"} replace />
+    }
 
     return (
         <FormProvider {...methods}>
@@ -41,10 +46,9 @@ export const Login = () => {
                     type="submit"
                     onClick={onSubmit}
                     className="btn btn-primary w-full text-base"
-                    disabled={loading}
+                    disabled={status === "loading"}
                 >
-
-                    {loading ? <Loader/> : "Войти"}
+                    {status === "loading" ? <Loading/> : "Войти"}
                 </button>
 
                 <Privacy/>
