@@ -1,97 +1,67 @@
-/*
-import cn from 'classnames'
-import {findInputError} from '../../common/utils/findInputError.ts'
-import {isFormInvalid} from '../../common/utils/isFormInvalid.ts'
-import {useFormContext} from 'react-hook-form'
-import {AnimatePresence, motion} from 'framer-motion'
-import {RxEyeClosed, RxEyeOpen, RxFace, RxInfoCircled, RxMobile} from "react-icons/rx";
-import {useState} from "react";
-import {IoKeyOutline} from "react-icons/io5";
-import {CiMail} from "react-icons/ci";
-import {AiOutlineFieldNumber} from "react-icons/ai";
+import {type FieldValues, type RegisterOptions, useFormContext} from "react-hook-form"
+import {AnimatePresence} from "framer-motion"
+import {findInputError} from "../../common/utils/findInputError.ts"
+import {isFormInvalid} from "../../common/utils/isFormInvalid.ts"
+import {InputError} from "../input/Input.tsx";
 
-export type InputType = {
+export type SelectOption = {
+    label: string
+    value: string | number
+}
+
+export type SelectType = {
+    legend?: string
     label?: string
-    type: "text" | "email" | "password" | "tel" | "number"
     id: string
-    placeholder: string
-    min?: number
-    max?: number
-    validation: ValidationInputType
-    className?: string
+    placeholder?: string
+    options: SelectOption[]
+    validation?: RegisterOptions<FieldValues, string>
 }
 
-export type ValidationInputType = {
-    required?: { value: boolean; message: string }
-    minLength?: { value: number; message: string }
-    maxLength?: { value: number; message: string }
-    pattern?: { value: RegExp; message: string }
-}
 
-export const Select = ({label, type, id, placeholder, validation, className, min, max}: InputType) => {
+export const Select = ({
+                           legend,
+                           label,
+                           id,
+                           placeholder,
+                           options,
+                           validation,
+                       }: SelectType) => {
     const {register, formState: {errors}} = useFormContext()
-    const [showPass, setShowPass] = useState(false)
 
     const inputError = findInputError(errors, id)
     const isInvalid = isFormInvalid(inputError)
 
-    const icons = {
-        text: <RxFace/>,
-        email: <CiMail />,
-        password: <IoKeyOutline />,
-        tel: <RxMobile/>,
-        number: <AiOutlineFieldNumber />,
-    }
-
-    const togglePassVisibility = () => {
-        setShowPass((prev) => !prev)
-    }
-
     return (
         <div className="mb-5">
-            <label className={cn("input", className)}>
-                {label ? label : icons[type]}
-                <input
-                    type={type === "password" ? (showPass ? "text" : "password") : type}
-                    id={id}
-                    placeholder={placeholder}
-                    min={min}
-                    max={max}
-                    {...register(id, validation)}
-                />
-                {type === "password" && (
-                    <span>
-                    {showPass ? <RxEyeClosed onClick={togglePassVisibility} size={20}/> :
-                        <RxEyeOpen onClick={togglePassVisibility} size={20}/>}
-                    </span>
+            {legend && <legend className="fieldset-legend">{legend}</legend>}
+
+            <select
+                id={id}
+                defaultValue=""
+                className="select"
+                // регистрируем поле формы через useFormContext
+                {...register(id, validation)}
+            >
+                {placeholder && (
+                    <option value="" disabled>
+                        {placeholder}
+                    </option>
                 )}
-            </label>
+
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+            {label && <span className="label">{label}</span>}
+
             <AnimatePresence mode="wait" initial={false}>
                 {isInvalid && "error" in inputError && (
-                    <InputError
-                        message={inputError.error.message}
-                    />
+                    <InputError message={inputError.error.message}/>
                 )}
             </AnimatePresence>
         </div>
     )
 }
-
-export const InputError = ({message}: { message: string }) => {
-    return (
-        <motion.p
-            className="mt-2 flex items-center gap-2 py-1 px-2 font-medium text-sm text-red-500 bg-red-100 rounded-md"
-            {...framer_error}
-        >
-            <RxInfoCircled/>
-            {message}
-        </motion.p>
-    )
-}
-
-export const framer_error = {
-    initial: {opacity: 0, y: 10},
-    animate: {opacity: 1, y: 0},
-    exit: {opacity: 0, y: 10},
-    transition: {duration: 0.2},
-}*/

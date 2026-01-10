@@ -1,11 +1,12 @@
 import express from "express";
 import { roleMiddleware } from "../middleware/roleMiddleware.js";
-import {createChip, getChips, moveChip} from "../controlers/chipController.js";
+import {createChip, deleteChip, getChips, moveChip} from "../controlers/chipController.js";
 
 const router = express.Router();
 
-router.post("/create", roleMiddleware(["ADMIN", "HOST"]), createChip);
-router.get("/:roomId", getChips);
-router.patch("/:chipId/move", moveChip);
+router.post("/games/:gameId/chips", roleMiddleware(["ADMIN", "HOST"]), createChip);
+router.get("/games/:gameId/chips", getChips);
+router.patch("/chips/:chipId", moveChip);
+router.delete("/chips/:chipId", roleMiddleware(["ADMIN", "HOST"]), deleteChip);
 
 export default router;

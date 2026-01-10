@@ -1,35 +1,47 @@
 import Chip from "../models/chipModel.js";
+import Game from "../models/gameModel.js";
 
 // CRUD operations
 export async function createChip(req, res) {
     try {
-        const {roomId, position, color, shape} = req.body
+        const {gameId} = req.params
+        const {color, shape} = req.body
+        const game = await Game.findOne({gameId})
+        console.log(gameId)
+        console.log(game)
+        if(!game) return res.status(404).json({message: "Game not found"})
 
         const chip = new Chip({
-            roomId,
-            position,
+            game: game._id,
+            position: {x: 0, y: 0},
             color,
             shape,
         })
 
         await chip.save()
 
-        res.status(201).json({message: "Chip created"})
+        res.status(201).json({chip})
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: "Failed to create chip"})
+        res.status(500).json({message: "Failed to create chips"})
     }
 }
 
 export async function getChips(req, res) {
     try {
-        const {roomId} = req.params;
+        const {gameId} = req.params;
 
-        if (!roomId) {
-            return res.status(400).json({message: "roomId is required"});
+        if (!gameId) {
+            return res.status(400).json({message: "gameId is required"});
         }
 
-        const chips = await Chip.find({roomId});
+        const game = await Game.findOne({gameId})
+
+        if (!game) {
+            return res.status(400).json({message: "Game not found"});
+        }
+
+        const chips = await Chip.find({game: game._id});
 
         return res.status(200).json(chips);
     } catch (error) {
@@ -41,9 +53,9 @@ export async function getChips(req, res) {
 export async function moveChip(req, res) {
     try {
         const chipId = req.params.chipId
-        const {x, y} = req.body.position
+        const {x, y} = req.body.position || {}
 
-        if(!x || !y) {
+        if (!x || !y) {
             return res.status(400).json({message: "x and y are required"});
         }
 
@@ -53,14 +65,14 @@ export async function moveChip(req, res) {
             {new: true}
         )
 
-        if(!chip) {
+        if (!chip) {
             return res.status(404).json({message: "Chip not found"});
         }
 
         return res.status(200).json(chip)
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: "Failed to move chip"})
+        res.status(500).json({message: "Failed to move chips"})
     }
 }
 
@@ -76,6 +88,6 @@ export async function deleteChip(req, res) {
         return res.status(200).json({message: `Chip with id ${chipId} was deleted successfully`})
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: "Failed to delete chip"})
+        res.status(500).json({message: "Failed to delete chips"})
     }
 }

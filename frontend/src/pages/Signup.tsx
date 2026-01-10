@@ -34,15 +34,7 @@ export const Signup = () => {
 
                 <Input {...name_validation}/>
                 <Input {...email_validation}/>
-                <Input
-                    {...pass_validation}
-                    placeholder="пароль от 6 до 15 символов"
-                    validation={{
-                        ...pass_validation.validation,
-                        minLength: { value: 6, message: "Пароль должен содержать от 6 до 15 символов" },
-                        maxLength: { value: 15, message: "Пароль должен содержать от 6 до 15 символов" },
-                    }}
-                />
+                <Input {...pass_validation} placeholder="пароль от 6 до 15 символов"/>
 
                 <button
                     type="submit"

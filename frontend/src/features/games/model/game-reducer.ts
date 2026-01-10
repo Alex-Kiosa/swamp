@@ -1,47 +1,33 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import type {ChipType} from "../chips.types.ts";
+import type {GameType} from "../games.types.ts";
 
-export type ChipType = {
-    id: string,
-    positions: { x: number, y: number },
-    color: string,
-    shape: string,
-}
-
-export type PlayerType = {
-    name: string,
-    socketId: string
-}
-
-export type GameType = {
-    roomId: string
-    hostId: string
-    players: PlayerType[]
-    chips: ChipType[]
-    createdAt: string
-    isActive: boolean
-}
-
-type GameStateType = {
-    roomId: string | null
-}
-
-const initialState: GameStateType = {
-    roomId: null
+const initialState: GameType = {
+    gameId: null,
+    players: [],
+    chips: [],
+    isActive: false,
 }
 
 export const gameSlice = createSlice({
     name: "game",
     initialState,
     reducers: {
-        getGame: (state, action: PayloadAction<{ roomId: string }>) => {
-            state.roomId = action.payload.roomId
+        createGame: (state, action: PayloadAction<{ gameId: string }>) => {
+            state.gameId = action.payload.gameId
         },
-        createGame: (state, action: PayloadAction<{ roomId: string }>) => {
-            state.roomId = action.payload.roomId
+        getGame: (state, action: PayloadAction<{ gameId: string }>) => {
+            state.gameId = action.payload.gameId
+        },
+        createChip: (state, action: PayloadAction<ChipType>) => {
+            state.chips.push(action.payload)
+        },
+        getChips: (state, action: PayloadAction<ChipType[]>) => {
+            state.chips = action.payload
         },
     }
 })
 
 // Action creators are generated for each case reducer function
-export const {getGame, createGame} = gameSlice.actions
+export const {getGame, createGame, getChips, createChip} = gameSlice.actions
 export default gameSlice.reducer

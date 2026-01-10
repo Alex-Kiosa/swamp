@@ -13,7 +13,7 @@ type AvatarProps = {
 
 export const Profile = () => {
     const {name, email, roles = []} = useAppSelector(selectCurrentUser)
-    const roomId = useAppSelector(selectGame)
+    const gameId = useAppSelector(selectGame).gameId
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -32,8 +32,8 @@ export const Profile = () => {
                 <p><b>Email:</b> {email}</p>
                 <p><b>Тип аккаунта:</b> {checkUserRole()}</p>
                 {
-                    roomId ?
-                        <p><b>Ваша игра:</b> <Link to={`/game/${roomId}`} role="link" className="link link-primary ">Открыть
+                    gameId ?
+                        <p><b>Ваша игра:</b> <Link to={`/game/${gameId}`} role="link" className="link link-primary ">Открыть
                             игру</Link></p> :
                         <div className="card-actions">
                             <Link to="/account/create-game" role="button"

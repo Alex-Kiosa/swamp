@@ -1,4 +1,3 @@
-import * as React from "react";
 import {Loading} from "../components/loading/Loading.tsx";
 import {Link, Navigate} from "react-router"
 import {FormProvider, useForm} from "react-hook-form";

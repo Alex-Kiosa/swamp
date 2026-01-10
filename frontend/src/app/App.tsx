@@ -34,7 +34,7 @@ function App() {
                         <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/signup" element={<Signup/>}/>
-                        <Route path="/game/:roomId" element={<Game/>}/>
+                        <Route path="/game/:gameId" element={<Game/>}/>
                         <Route element={<PrivateRoute isAuth={isAuth}/>}>
                             <Route path="account" element={<Account/>}>
                                 <Route path="create-game" element={<CreateGame/>}/>

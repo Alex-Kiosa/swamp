@@ -1,12 +1,11 @@
-import {type Dispatch} from "@reduxjs/toolkit";
 import api from "../../../api/axios.ts";
-import {createGame, getGame} from "../model/game-reducer.ts";
+import {createChip, createGame, getChips, getGame} from "../model/game-reducer.ts";
+import type {AppDispatch} from "../../../app/store.ts";
 
 export const createGameThunk = (data) => {
-    return (dispatch: Dispatch) => {
-        api.post("/game/create", {
+    return (dispatch: AppDispatch) => {
+        api.post("/games", {
             userId: data.userId,
-            // chips: data.chips,
         }, {
             headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
         })
@@ -20,8 +19,8 @@ export const createGameThunk = (data) => {
 }
 
 export const getGameThunk = () => {
-    return (dispatch: Dispatch) => {
-        api.get("/game/active", {
+    return (dispatch: AppDispatch) => {
+        api.get("/games/active", {
             headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
         })
             .then(res => {
@@ -29,6 +28,44 @@ export const getGameThunk = () => {
             })
             .catch(error => {
                 console.log("Не удалось получить активную игру", error.response.data);
+            })
+    }
+}
+
+export const getChipsThunk = (gameId: string | null) => {
+    return (dispatch: AppDispatch) => {
+        api.get(`/games/${gameId}/chips`, {
+            headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+        })
+            .then(res => {
+                dispatch(getChips(res.data))
+            })
+            .catch(error => {
+                console.log("Не удалось получить фишки", error.response.data);
+            })
+    }
+}
+
+export const createChipThunk = (chip: {
+    gameId: string,
+    color: string,
+    shape: string
+}) => {
+    return (dispatch: AppDispatch) => {
+        api.post(`/games/${chip.gameId}/chips`,
+            {
+                color: chip.color,
+                shape: chip.shape
+            },
+            {
+                headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
+            })
+            .then(res => {
+                dispatch(createChip(res.data))
+
+            })
+            .catch(error => {
+                console.log("Ошибка при добавлении фишки", error.response.data);
             })
     }
 }

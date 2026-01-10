@@ -96,7 +96,7 @@ export async function auth(req, res) {
             }
         })
     } catch (error) {
-        console.error('Error in /auth:', error)
+        console.error('Error in auth:', error)
         res.status(500).json({message: "Server error", error: error.message})
     }
 }
