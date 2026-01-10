@@ -16,7 +16,7 @@ export const AddChipsForm = () => {
     const onSubmit = methods.handleSubmit(data => {
         const chip = {
             gameId: "1c9f6cd4",
-            shape: data["input-shape"],
+            shape: data["select-shape"],
             color: data["input-color"]
         }
         dispatch(createChipThunk(chip))
@@ -34,7 +34,7 @@ export const AddChipsForm = () => {
                 </div>
 
                 <Select
-                    id="chip-shape"
+                    id="select-shape"
                     placeholder="Выберите форму"
                     options={[
                         {label: "Круг", value: "Circle"},

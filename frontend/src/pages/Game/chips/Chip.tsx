@@ -5,7 +5,6 @@ type Props = {
 }
 
 export const Chip = ({chip}: Props) => {
-    debugger
     const {position, color, shape} = chip
 
     return (

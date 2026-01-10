@@ -7,8 +7,7 @@ export async function createChip(req, res) {
         const {gameId} = req.params
         const {color, shape} = req.body
         const game = await Game.findOne({gameId})
-        console.log(gameId)
-        console.log(game)
+
         if(!game) return res.status(404).json({message: "Game not found"})
 
         const chip = new Chip({
@@ -20,7 +19,7 @@ export async function createChip(req, res) {
 
         await chip.save()
 
-        res.status(201).json({chip})
+        res.status(201).json(chip)
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Failed to create chips"})
@@ -88,6 +87,27 @@ export async function deleteChip(req, res) {
         return res.status(200).json({message: `Chip with id ${chipId} was deleted successfully`})
     } catch (error) {
         console.log(error)
-        res.status(500).json({message: "Failed to delete chips"})
+        res.status(500).json({message: "Failed to delete 1 chip"})
+    }
+}
+
+export async function deleteChipsByGame(req, res) {
+    try {
+        const {gameId} = req.params
+        const game = await Game.findOne({gameId})
+
+        if (!game) {
+            return res.status(400).json({message: "Game not found"});
+        }
+
+        const result = await Chip.deleteMany({game: game._id})
+
+        return res.status(200).json({
+            message: `Chips for game ${gameId} deleted successfully`,
+            deletedCount: result.deletedCount,
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Failed to delete all chips by game"})
     }
 }
