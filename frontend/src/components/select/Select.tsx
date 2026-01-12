@@ -3,6 +3,7 @@ import {AnimatePresence} from "framer-motion"
 import {findInputError} from "../../common/utils/findInputError.ts"
 import {isFormInvalid} from "../../common/utils/isFormInvalid.ts"
 import {InputError} from "../input/Input.tsx";
+import cn from "classnames";
 
 export type SelectOption = {
     label: string
@@ -33,7 +34,7 @@ export const Select = ({
     const isInvalid = isFormInvalid(inputError)
 
     return (
-        <div className="mb-5">
+        <div className={'mb-5'}>
             {legend && <legend className="fieldset-legend">{legend}</legend>}
 
             <select
@@ -43,11 +44,7 @@ export const Select = ({
                 // регистрируем поле формы через useFormContext
                 {...register(id, validation)}
             >
-                {placeholder && (
-                    <option value="" disabled>
-                        {placeholder}
-                    </option>
-                )}
+                {placeholder && (<option value="" disabled>{placeholder}</option>)}
 
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -55,7 +52,7 @@ export const Select = ({
                     </option>
                 ))}
             </select>
-            {label && <span className="label">{label}</span>}
+             {label && <div className="label block mt-[3px]">{label}</div>}
 
             <AnimatePresence mode="wait" initial={false}>
                 {isInvalid && "error" in inputError && (

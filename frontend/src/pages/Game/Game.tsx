@@ -5,7 +5,7 @@ import {getGameThunk} from "../../features/games/actions/games-actions.ts";
 import styles from "./Game.module.css"
 import {Chips} from "./chips/Chips.tsx";
 import {selectGame} from "../../features/games/model/gameSelectors.ts";
-import {AddChipsForm} from "./addChipForm/AddChipsForm.tsx";
+import {Fab} from "./FAB/Fab.tsx";
 
 export const Game = () => {
     const game = useAppSelector(selectGame);
@@ -22,8 +22,8 @@ export const Game = () => {
     return (
         <div className={styles.wrap}>
             Hello. It's your game
-            <AddChipsForm />
             <Chips/>
+            <Fab/>
         </div>
     )
 }

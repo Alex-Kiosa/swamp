@@ -1,40 +1,49 @@
-import axios from "axios";
 import {setIsInitialized, setUser} from "../model/user-reducer.ts";
-import {type Dispatch} from "@reduxjs/toolkit";
 import api from "../../../api/axios.ts";
-import {setAppStatus} from "../../../app/app-reducer.ts";
+import {setAppError, setAppStatus} from "../../../app/app-reducer.ts";
+import type {AppDispatch} from "../../../app/store.ts";
 
-export const registration = async (name: string, email: string, password: string) => {
-    try {
-        const response = await axios.post("http://localhost:5000/api/auth/registration", {
-            name,
-            email,
-            password
-        })
-        console.log(response.data.message)
-    } catch (error) {
-        console.log(error.response.data.message)
+export const regThunk = (name: string, email: string, password: string) => {
+    return async (dispatch: AppDispatch) => {
+        try {
+            dispatch(setAppStatus("loading"))
+
+            const response = await api.post("/auth/registration", {
+                name,
+                email,
+                password
+            })
+
+            dispatch(setAppError(null))
+            dispatch(setAppStatus("succeeded"))
+        } catch (error: any) {
+            dispatch(setAppStatus("failed"))
+            dispatch(setAppError(error.response.data.message))
+            // пробрасываем ошибку дальше, чтобы прервать редирект, если promise перешел в состояние rejected
+            // поскольку dispacth() по умолчанию всегда возвращает promise с состоянием fulfilled
+            throw error
+        }
     }
 }
 
 export const loginThunk = (email: string, password: string) => {
-    return async (dispatch:Dispatch) => {
+    return async (dispatch: AppDispatch) => {
         try {
-            const response = await axios.post("http://localhost:5000/api/auth/login", {
+            const response = await api.post("/auth/login", {
                 email,
                 password
             })
+            dispatch(setAppError(null))
             dispatch(setUser(response.data.user))
             localStorage.setItem('token', response.data.token)
-            console.log(response.data)
         } catch (error) {
-            console.log(error.response.data.message)
+            dispatch(setAppError("Неверный Email или пароль"))
         }
     }
 }
 
 export const authThunk = () => {
-    return (dispatch: Dispatch) => {
+    return (dispatch: AppDispatch) => {
         dispatch(setAppStatus("loading"))
         api.get("/auth/auth", {
             headers: {
@@ -47,10 +56,10 @@ export const authThunk = () => {
             })
             .catch(error => {
                 dispatch(setAppStatus("failed"))
-                console.log("Токен невалидный или истёк", error);
+                console.log(error.response.data.message)
                 localStorage.removeItem("token");
             })
-            .finally(()=> {
+            .finally(() => {
                 dispatch(setIsInitialized(true))
             })
     }

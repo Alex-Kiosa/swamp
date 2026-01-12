@@ -14,7 +14,7 @@ export const CreateGame = () => {
 
     const createGameHandler = methods.handleSubmit(data => {
         dispatch(createGameThunk(data))
-        // console.log(data)
+        console.log(data)
     })
 
     return (

@@ -1,32 +1,41 @@
 import {Loading} from "../components/loading/Loading.tsx";
-import {Link} from "react-router"
+import {Link, useNavigate} from "react-router"
 import {Input} from "../components/input/Input.tsx";
 import {FormProvider, useForm} from "react-hook-form";
 import {GrMail} from "react-icons/gr";
 import {email_validation, name_validation, pass_validation} from "../common/utils/inputValidations.ts";
-import {registration} from "../features/users/actions/user-actions.ts";
+import {regThunk} from "../features/users/actions/user-actions.ts";
 import {Privacy} from "../components/privacy/Privacy.tsx";
-import {useAppSelector} from "../common/hooks/hooks.ts";
+import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
 import {selectAppStatus} from "../app/appSelectors.ts";
-import {useDispatch} from "react-redux";
 
 export const Signup = () => {
     const methods = useForm()
     const status = useAppSelector(selectAppStatus)
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
-    const onSubmit = methods.handleSubmit(data => {
-        registration(data["input-name"], data["input-email"], data["input-password"])
-        // methods.reset()
+    const onSubmit = methods.handleSubmit(async (data) => {
+        try {
+            await dispatch(
+                regThunk(
+                    data["input-name"],
+                    data["input-email"],
+                    data["input-password"]
+                )
+            )
+
+            // редирект, если promise, который вернул dispatch, зарезолвился
+            navigate("/login")
+        } catch (error) {
+            // если ошибка — редиректа не будет
+            console.log("Registration failed")
+        }
     })
 
     return (
         <FormProvider {...methods}>
-            <form
-                onSubmit={(e) => e.preventDefault()}
-                noValidate
-                className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
-            >
+            <form onSubmit={onSubmit} noValidate className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm">
                 <div className="mb-5 text-center">
                     <h2 className="mb-3 text-2xl font-bold">Зарегистрироваться как ведущий</h2>
                     <p>Уже есть аккаунт? <Link to="/login" className="link link-primary">Войти</Link></p>
@@ -38,8 +47,7 @@ export const Signup = () => {
 
                 <button
                     type="submit"
-                    onClick={onSubmit}
-                    className="btn btn-primary w-full text-base"
+                    className="w-full mt-2 btn btn-primary text-base"
                     disabled={status === "loading"}
                 >
                     <GrMail/>

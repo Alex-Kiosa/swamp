@@ -10,8 +10,10 @@ export const Chips = () => {
     const gameId = useAppSelector(selectGameId)
 
     useEffect(() => {
+        if (!gameId) return
+
         dispatch(getChipsThunk(gameId))
     }, [gameId]);
 
-    return chips.map(chip => <Chip chip={chip}/> )
+    return chips.map(chip => <Chip key={chip._id} chip={chip}/> )
 }

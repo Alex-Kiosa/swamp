@@ -14,6 +14,7 @@ import {CreateGame} from "../pages/CreateGame.tsx";
 import {PrivateRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
 import {selectAuth, selectIsInitialized} from "../features/users/model/userSelectors.ts";
 import {Loading} from "../components/loading/Loading.tsx";
+import {ErrorToast} from "../components/toast/ErrorToast.tsx";
 
 function App() {
     const isInitialized = useAppSelector(selectIsInitialized);
@@ -47,6 +48,7 @@ function App() {
             {!isInitialized && (
                 <Loading/>
             )}
+            <ErrorToast/>
         </div>
     </>;
 }

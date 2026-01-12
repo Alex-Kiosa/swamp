@@ -41,7 +41,7 @@ export async function createUser(req, res) {
         })
 
     } catch (error) {
-        res.status(500).json({message: 'server error'})
+        res.status(500).json({message: 'Server error during user registration'})
         console.log('Server error', error)
     }
 }

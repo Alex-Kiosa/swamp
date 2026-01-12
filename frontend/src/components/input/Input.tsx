@@ -11,7 +11,7 @@ import {TiPipette} from "react-icons/ti";
 
 export type InputTypeBase = {
     label?: string
-    labelClassName?: string
+    labelClassNames?: string
     id: string
     placeholder?: string
 }
@@ -23,7 +23,7 @@ export type InputType = InputTypeBase & {
 
 export const Input = ({
                           label,
-                          labelClassName,
+                          labelClassNames,
                           id,
                           placeholder,
                           type = 'text',
@@ -45,13 +45,14 @@ export const Input = ({
 
     return (
         <div className="mb-5">
-            <label className={cn('input', labelClassName)}>
+            <label className={cn('input', labelClassNames)}>
                 {label ?? icons[type]}
 
                 <input
                     type={type === 'password' ? (showPass ? 'text' : 'password') : type}
                     id={id}
                     placeholder={placeholder}
+                    defaultValue={type === 'color' ? '#D71919' : undefined}
                     // регистрируем поле формы через useFormContext
                     {...register(id, validation)}
                 />

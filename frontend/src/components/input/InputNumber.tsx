@@ -17,7 +17,7 @@ export type InputNumberType = InputTypeBase & {
 
 export const InputNumber = ({
                                 label,
-                                labelClassName,
+                                labelClassNames,
                                 id,
                                 placeholder,
                                 min,
@@ -31,7 +31,7 @@ export const InputNumber = ({
 
     return (
         <div className="mb-5">
-            <label className={cn('input', labelClassName)}>
+            <label className={cn('input', labelClassNames)}>
                 {label ?? <AiOutlineFieldNumber />}
 
                 <input

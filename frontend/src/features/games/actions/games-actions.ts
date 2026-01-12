@@ -1,6 +1,7 @@
 import api from "../../../api/axios.ts";
 import {createChip, createGame, getChips, getGame} from "../model/game-reducer.ts";
 import type {AppDispatch} from "../../../app/store.ts";
+import {setAppError} from "../../../app/app-reducer.ts";
 
 export const createGameThunk = (data) => {
     return (dispatch: AppDispatch) => {
@@ -13,7 +14,8 @@ export const createGameThunk = (data) => {
                 dispatch((createGame(res.data)))
             })
             .catch(error => {
-                console.log("Ошибка при создании игры", error.response.data);
+                dispatch(setAppError(error.response.data.message))
+                console.log("Ошибка при создании игры", error.response.data)
             })
     }
 }
@@ -27,7 +29,8 @@ export const getGameThunk = () => {
                 dispatch(getGame(res.data))
             })
             .catch(error => {
-                console.log("Не удалось получить активную игру", error.response.data);
+                dispatch(setAppError(error.response.data.message))
+                console.log("Не удалось получить игру", error.response.data)
             })
     }
 }
@@ -41,7 +44,8 @@ export const getChipsThunk = (gameId: string | null) => {
                 dispatch(getChips(res.data))
             })
             .catch(error => {
-                console.log("Не удалось получить фишки", error.response.data);
+                dispatch(setAppError(error.response.data.message))
+                console.log("Не удалось получить фишки", error.response.data)
             })
     }
 }
@@ -65,6 +69,7 @@ export const createChipThunk = (chip: {
 
             })
             .catch(error => {
+                dispatch(setAppError(error.response.data.message))
                 console.log("Ошибка при добавлении фишки", error.response.data);
             })
     }

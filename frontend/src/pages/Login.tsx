@@ -5,8 +5,7 @@ import {loginThunk} from "../features/users/actions/user-actions.ts";
 import {Input} from "../components/input/Input.tsx";
 import {email_validation, pass_validation} from "../common/utils/inputValidations.ts";
 import {Privacy} from "../components/privacy/Privacy.tsx";
-import {useDispatch} from "react-redux";
-import {useAppSelector} from "../common/hooks/hooks.ts";
+import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
 import {selectAppStatus} from "../app/appSelectors.ts";
 import {selectAuth} from "../features/users/model/userSelectors.ts";
 
@@ -15,7 +14,7 @@ export const Login = () => {
     const isAuth = useAppSelector(selectAuth)
 
     const methods = useForm()
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const onSubmit = methods.handleSubmit(data => {
         dispatch(loginThunk(data["input-email"], data["input-password"]))
@@ -27,11 +26,7 @@ export const Login = () => {
 
     return (
         <FormProvider {...methods}>
-            <form
-                onSubmit={(e) => e.preventDefault()}
-                noValidate
-                className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
-            >
+            <form onSubmit={onSubmit} noValidate className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm">
                 <div className="mb-5 text-center">
                     <h2 className="mb-3 text-2xl font-bold">Войти</h2>
                     <p>Еще нет аккаунта? <Link to="/signup" className="link link-primary">Зарегистрироваться</Link>
@@ -43,8 +38,7 @@ export const Login = () => {
 
                 <button
                     type="submit"
-                    onClick={onSubmit}
-                    className="btn btn-primary w-full text-base"
+                    className="w-full mt-2 btn btn-primary text-base"
                     disabled={status === "loading"}
                 >
                     {status === "loading" ? <Loading/> : "Войти"}
