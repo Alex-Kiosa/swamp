@@ -1,5 +1,5 @@
 import {Loading} from "../components/loading/Loading.tsx";
-import {Link, Navigate} from "react-router"
+import {Link, Navigate, useLocation} from "react-router"
 import {FormProvider, useForm} from "react-hook-form";
 import {loginThunk} from "../features/users/actions/user-actions.ts";
 import {Input} from "../components/input/Input.tsx";
@@ -8,8 +8,12 @@ import {Privacy} from "../components/privacy/Privacy.tsx";
 import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
 import {selectAppStatus} from "../app/appSelectors.ts";
 import {selectAuth} from "../features/users/model/userSelectors.ts";
+import {Alert} from "../components/alert/Alert.tsx";
 
 export const Login = () => {
+    const location = useLocation()
+    const fromRegistation = location.state?.fromRegistration
+
     const status = useAppSelector(selectAppStatus)
     const isAuth = useAppSelector(selectAuth)
 
@@ -21,10 +25,14 @@ export const Login = () => {
     })
 
     if (isAuth) {
-        return <Navigate to={"/account"} replace />
+        return <Navigate to={"/account"} replace/>
     }
 
-    return (
+    return <>
+        {fromRegistation && (<Alert
+                type={"success"}
+                message={"Вы успешно зарегистрировались на сайте. Теперь можете войти, используя свой Email и пароль, который вы указали при регистрации."}/>
+        )}
         <FormProvider {...methods}>
             <form onSubmit={onSubmit} noValidate className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm">
                 <div className="mb-5 text-center">
@@ -47,5 +55,5 @@ export const Login = () => {
                 <Privacy/>
             </form>
         </FormProvider>
-    );
+    </>
 }

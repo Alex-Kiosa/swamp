@@ -54,7 +54,7 @@ export async function moveChip(req, res) {
         const chipId = req.params.chipId
         const {x, y} = req.body.position || {}
 
-        if (!x || !y) {
+        if (typeof  x !== "number" && typeof y !== "number") {
             return res.status(400).json({message: "x and y are required"});
         }
 

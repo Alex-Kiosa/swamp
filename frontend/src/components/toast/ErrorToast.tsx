@@ -11,7 +11,7 @@ export const ErrorToast = () => {
     if (!error) return null
 
     return (
-        <div className="toast toast-center toast-bottom">
+        <div className="toast toast-center toast-top">
             <Alert
                 type={"error"}
                 message={error}

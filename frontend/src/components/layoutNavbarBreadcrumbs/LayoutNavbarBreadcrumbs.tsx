@@ -11,7 +11,7 @@ export const LayoutNavbarBreadcrumbs = () => {
         <div>
             <Navbar/>
             {!hideBreadcrumbs && <Breadcrumbs/>}
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center gap-8 flex-col">
                 <Outlet/>
             </div>
         </div>

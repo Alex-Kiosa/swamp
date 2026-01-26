@@ -26,7 +26,10 @@ export const Signup = () => {
             )
 
             // редирект, если promise, который вернул dispatch, зарезолвился
-            navigate("/login")
+            navigate("/login",{
+                replace: true,
+                state: {fromRegistration: true}
+            })
         } catch (error) {
             // если ошибка — редиректа не будет
             console.log("Registration failed")
@@ -57,5 +60,5 @@ export const Signup = () => {
                 <Privacy/>
             </form>
         </FormProvider>
-    );
+    )
 }

@@ -21,7 +21,6 @@ export const Game = () => {
 
     return (
         <div className={styles.wrap}>
-            Hello. It's your game
             <Chips/>
             <Fab/>
         </div>
