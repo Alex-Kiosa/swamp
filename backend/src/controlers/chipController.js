@@ -1,5 +1,6 @@
-import Chip from "../models/chipModel.js";
-import Game from "../models/gameModel.js";
+import Chip from "../models/chipModel.js"
+import Game from "../models/gameModel.js"
+import {io} from "../server.js"
 
 // CRUD operations
 export async function createChip(req, res) {
@@ -67,6 +68,8 @@ export async function moveChip(req, res) {
         if (!chip) {
             return res.status(404).json({message: "Chip not found"});
         }
+
+        io.emit("chip:moved", chip)
 
         return res.status(200).json(chip)
     } catch (error) {

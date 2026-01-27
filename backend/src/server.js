@@ -13,12 +13,23 @@ dotenv.config()
 // Create backend
 const app = express()
 const server = http.createServer(app);
-const io = new  Server(server, {
+
+// Socket
+export const io = new Server(server, {
     cors: {
-        origin: `http://localhost:${process.env.PORT}`,
+        origin: `${process.env.URI}:${process.env.PORT}`,
         methods: ["GET", "POST"],
-    }
+        credentials: true,
+    },
+    transports: ["websocket", "polling"],
 })
+io.on('connection', (socket) => {
+    console.log('🟢 Client connected')
+    socket.on('disconnect', () => {
+        console.log('🔴 Client disconnected');
+    })
+})
+
 const PORT = process.env.PORT || 5000
 
 // Middlewares
