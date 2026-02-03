@@ -6,7 +6,7 @@ import {Chips} from "./chips/Chips.tsx"
 import {Fab} from "./FAB/Fab.tsx"
 import {socket} from "../../socket.ts"
 import {selectGame} from "../../features/games/model/gameSelectors.ts";
-import {Navigate, useNavigate, useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {Form} from "../../components/form/Form.tsx";
 import {name_validation} from "../../common/utils/inputValidations.ts";
 import {Input} from "../../components/input/Input.tsx";
@@ -56,12 +56,23 @@ export const Game = () => {
     }, [gameId])
 
     useEffect(() => {
-        socket.connect()
+        if(!gameId) return
 
+        // socket.auth = {
+        //     token: localStorage.getItem("token") ?? localStorage.getItem("guestToken")
+        // }
+
+        socket.connect()
+        socket.on("connect", () => {
+            console.log("🟢 socket connected", socket.id);
+        });
+        socket.emit("join-room", gameId)
+
+        // Функция очистки
         return () => {
             socket.disconnect()
         }
-    }, [])
+    }, [gameId])
 
     return (
         <div className={styles.wrap}>

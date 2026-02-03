@@ -12,6 +12,7 @@ export const Chip = ({chip}: Props) => {
     const dispatch = useAppDispatch()
     const {position, color, shape} = chip
     const [tempPos, setTempPos] = useState(chip.position)
+    const [isMoving, setIsMoving] = useState(false)
 
     const posRef = useRef(position)
     const draggingRef = useRef(false)
@@ -20,10 +21,13 @@ export const Chip = ({chip}: Props) => {
     // synchronization if final position get from the server
     useEffect(() => {
         setTempPos(position)
-        // posRef.current = position
+        setIsMoving(false)
     }, [position])
 
     const onMouseDownHandler = (e: React.MouseEvent) => {
+        if (isMoving) return
+
+        setIsMoving(true)
         draggingRef.current = true
 
         offsetRef.current = {
@@ -56,6 +60,8 @@ export const Chip = ({chip}: Props) => {
         window.removeEventListener("mouseup", onMouseUpHandler)
 
         dispatch(moveChipThunk(chip._id, posRef.current))
+
+        setIsMoving(false)
     }
 
     return (
@@ -73,7 +79,9 @@ export const Chip = ({chip}: Props) => {
                     shape === "Triangle"
                         ? "polygon(50% 0%, 0% 100%, 100% 100%)"
                         : "none",
-                cursor: "grab",
+                cursor: isMoving ? "not-allowed" : "grab",
+                opacity: isMoving ? 0.5 : 1,
+                transition: draggingRef.current ? "none" : "left 0.2s ease, top 0.2s ease", // <- ключ
             }}
         />
     )

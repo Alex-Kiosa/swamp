@@ -22,7 +22,6 @@ export function optionalAuthMiddleware(req, res, next) {
         req.user = decodedData
         return next()
     } catch (error) {
-        // 7. Любая ошибка = просто гость
         console.log("Optional auth failed:", error.message)
         return next()
     }

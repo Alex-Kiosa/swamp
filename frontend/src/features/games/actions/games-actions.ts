@@ -2,6 +2,7 @@ import api from "../../../api/axios.ts";
 import {createChip, createGame, deleteChipsByGame, getChips, getGame} from "../model/game-reducer.ts";
 import type {AppDispatch} from "../../../app/store.ts";
 import {setAppError} from "../../../app/app-reducer.ts";
+import {socket} from "../../../socket.ts";
 
 export const createGameThunk = (data) => {
     return (dispatch: AppDispatch) => {
@@ -89,10 +90,11 @@ export const createChipThunk = (chip: {
             {
                 headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
             })
-            .then(res => {
-                dispatch(createChip(res.data))
-
-            })
+            // .then(res => {
+            //     dispatch(createChip(res.data))
+            //
+            //     socket.emit("chip-create", res.data)
+            // })
             .catch(error => {
                 dispatch(setAppError(error.response.data.message))
                 console.log("Ошибка при добавлении фишки", error.response.data);
@@ -106,10 +108,10 @@ export const moveChipThunk = (
 ) => {
     return (dispatch: AppDispatch) => {
         api.patch(`/chips/${chipId}`,
-            {position},
-            {
-                headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
-            })
+            {position})
+            // .then(res => {
+            //
+            // })
             .catch(error => {
                 dispatch(setAppError(error.response.data.message))
                 console.log("Ошибка при перемещении фишки", error.response.data);

@@ -20,6 +20,8 @@ export async function createChip(req, res) {
 
         await chip.save()
 
+        io.to(game.gameId).emit("chip:created", chip)
+
         res.status(201).json(chip)
     } catch (error) {
         console.log(error)
@@ -55,7 +57,7 @@ export async function moveChip(req, res) {
         const chipId = req.params.chipId
         const {x, y} = req.body.position || {}
 
-        if (typeof  x !== "number" && typeof y !== "number") {
+        if (typeof  x !== "number" || typeof y !== "number") {
             return res.status(400).json({message: "x and y are required"});
         }
 
@@ -69,7 +71,11 @@ export async function moveChip(req, res) {
             return res.status(404).json({message: "Chip not found"});
         }
 
-        io.emit("chip:moved", chip)
+        const game = await Game.findById(chip.game)
+        if (!game) {
+            return res.status(404).json({ message: "Game not found" })
+        }
+        io.to(game.gameId).emit("chip:moved", chip)
 
         return res.status(200).json(chip)
     } catch (error) {
@@ -86,6 +92,12 @@ export async function deleteChip(req, res) {
         if (!deletedChip) {
             return res.status(400).json({message: "Chip not found"})
         }
+
+        const game = await Game.findById(chip.game)
+        if (!game) {
+            return res.status(404).json({ message: "Game not found" })
+        }
+        io.to(gameId).emit("chip:deleted")
 
         return res.status(200).json({message: `Chip with id ${chipId} was deleted successfully`})
     } catch (error) {
@@ -104,6 +116,8 @@ export async function deleteChipsByGame(req, res) {
         }
 
         const result = await Chip.deleteMany({game: game._id})
+
+        io.to(gameId).emit("chips:deleted")
 
         return res.status(200).json({
             message: `Chips for game ${gameId} deleted successfully`,
