@@ -1,12 +1,15 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {ChipType} from "../chips.types.ts";
-import type {GameType} from "../games.types.ts";
+import type {GameType, GameTypeWithChips} from "../games.types.ts";
 
-const initialState: GameType = {
+const initialState: GameTypeWithChips = {
     gameId: null,
+    hostId: null,
     players: [],
     chips: [],
     isActive: false,
+    limitPlayers: 15,
+    gameInitialized: false
 }
 
 export const gameSlice = createSlice({
@@ -16,8 +19,10 @@ export const gameSlice = createSlice({
         createGame: (state, action: PayloadAction<{ gameId: string }>) => {
             state.gameId = action.payload.gameId
         },
-        getGame: (state, action: PayloadAction<{ gameId: string }>) => {
-            state.gameId = action.payload.gameId
+        getGame: (state, action: PayloadAction<GameType>) => {
+            const game = action.payload
+            Object.assign(state, game)
+            state.gameInitialized = true
         },
         createChip: (state, action: PayloadAction<ChipType>) => {
             state.chips.push(action.payload)
@@ -34,10 +39,13 @@ export const gameSlice = createSlice({
                 chip.position.x = action.payload.position.x
                 chip.position.y = action.payload.position.y
             }
+        },
+        deleteChipsByGame: (state) => {
+            state.chips = []
         }
     }
 })
 
 // Action creators are generated for each case reducer function
-export const {getGame, createGame, getChips, createChip, moveChip} = gameSlice.actions
+export const {getGame, createGame, getChips, createChip, moveChip, deleteChipsByGame} = gameSlice.actions
 export default gameSlice.reducer

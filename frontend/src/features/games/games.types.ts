@@ -7,8 +7,10 @@ export type PlayerType = {
 
 export type GameType = {
     gameId: string | null
-    hostId?: string
+    hostId: string | null
     players: PlayerType[]
-    chips: ChipType[]
     isActive: boolean
+    limitPlayers: number
 }
+
+export type GameTypeWithChips = GameType & { chips: ChipType[], gameInitialized: boolean }

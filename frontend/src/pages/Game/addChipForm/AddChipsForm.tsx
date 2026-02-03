@@ -6,44 +6,29 @@ import {Select} from "../../../components/select/Select.tsx";
 import {Input} from "../../../components/input/Input.tsx";
 import {color_validation} from "../../../common/utils/inputValidations.ts";
 import {createChipThunk} from "../../../features/games/actions/games-actions.ts";
+import {selectGame} from "../../../features/games/model/gameSelectors.ts";
 
 type Props = {
-    onSuccess?: () => void
+    onSuccess: () => void
 }
 
 export const AddChipsForm = ({onSuccess}: Props) => {
     const status = useAppSelector(selectAppStatus)
+    const {gameId} = useAppSelector(selectGame)
 
     const methods = useForm()
     const dispatch = useAppDispatch()
 
     const onSubmit = methods.handleSubmit(data => {
         const chip = {
-            gameId: "1c9f6cd4",
+            gameId: gameId!,
             shape: data["select-shape"],
             color: data["input-color"]
         }
         dispatch(createChipThunk(chip))
-        if (onSuccess) onSuccess()
+        onSuccess()
         methods.reset()
     })
-
-    // Async logic
-    // const onSubmit = methods.handleSubmit(async data => {
-    //     const chip = {
-    //         gameId: "1c9f6cd4",
-    //         shape: data["select-shape"],
-    //         color: data["input-color"]
-    //     }
-    //
-    //     try {
-    //         await dispatch(createChipThunk(chip)).unwrap()
-    //         if (onSuccess) onSuccess()
-    //         methods.reset()
-    //     } catch (e) {
-    //         console.error("Ошибка создания фишки", e)
-    //     }
-    // })
 
     return (
         <FormProvider {...methods}>

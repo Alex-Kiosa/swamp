@@ -15,11 +15,8 @@ router.post('/registration',
     ],
     createUser
 )
-
 router.post('/login', login)
-
 router.get('/auth', authMiddleware, auth)
-
-router.get('/users', roleMiddleware, getUsers)
+router.get('/users', roleMiddleware(["ADMIN", "USER", "DEMO_USER"]), getUsers)
 
 export default router;

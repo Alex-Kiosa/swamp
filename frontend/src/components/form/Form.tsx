@@ -8,7 +8,7 @@ type FormType = {
     title?: string
     submitText?: string
     onSubmit: (data: any) => void
-    children: React.ReactNode
+    children?: React.ReactNode
 }
 
 export const Form = ({
@@ -25,7 +25,7 @@ export const Form = ({
         <FormProvider {...methods}>
             <form
                 onSubmit={methods.handleSubmit(onSubmit)}
-                className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm"
+                className="mx-auto w-xs rounded-2xl"
             >
                 {title && (
                     <div className="text-center">
@@ -37,13 +37,13 @@ export const Form = ({
 
                 <button
                     type="submit"
-                    className="btn btn-primary w-full"
+                    className="w-full mt-2 btn btn-primary text-base"
                     disabled={status === "loading"}
                 >
                     {status === "loading" ? <Loading/> : submitText}
                 </button>
 
-                <Privacy/>
+                <div className={"mt-4"}><Privacy/></div>
             </form>
         </FormProvider>
     )

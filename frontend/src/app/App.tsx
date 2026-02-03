@@ -15,16 +15,23 @@ import {PrivateRoute} from "../components/privatePublicRoute/PrivatePublicRoute.
 import {selectAuth, selectIsInitialized} from "../features/users/model/userSelectors.ts";
 import {Loading} from "../components/loading/Loading.tsx";
 import {ErrorToast} from "../components/toast/ErrorToast.tsx";
+import {setIsInitialized} from "../features/users/model/user-reducer.ts";
 
 function App() {
-    const isInitialized = useAppSelector(selectIsInitialized);
-    const isAuth = useAppSelector(selectAuth);
+    const isInitialized = useAppSelector(selectIsInitialized)
+    const isAuth = useAppSelector(selectAuth)
 
-    const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(authThunk());
-    }, []);
+        const token = localStorage.getItem("token")
+
+        if(token) {
+            dispatch(authThunk())
+        } else {
+            dispatch(setIsInitialized(true))
+        }
+    }, [])
 
     return <>
         <div className="@container mx-auto p-4 pb-10 max-w-5xl">

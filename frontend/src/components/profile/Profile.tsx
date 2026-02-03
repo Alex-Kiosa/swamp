@@ -2,7 +2,7 @@ import womenAvatar from '../../assets/women-avatar.jpg';
 import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks.ts";
 import {Link} from "react-router";
 import {useEffect} from "react";
-import {getGameThunk} from "../../features/games/actions/games-actions.ts";
+import {getGameByUserThunk} from "../../features/games/actions/games-actions.ts";
 import {selectGame} from "../../features/games/model/gameSelectors.ts";
 import {selectCurrentUser} from "../../features/users/model/userSelectors.ts";
 
@@ -17,8 +17,9 @@ export const Profile = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(getGameThunk())
-    }, []);
+        // протестировать санку с несколькими юзерами
+        dispatch(getGameByUserThunk())
+    }, [])
 
     const checkUserRole = () => {
         return roles.includes("ADMIN") ? "Админ" : roles.includes("HOST") ? "Ведущий" : "Гость"

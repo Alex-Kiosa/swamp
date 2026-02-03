@@ -34,7 +34,7 @@ export function roleMiddleware(roles) {
                 return res.status(403).json({message: "Access denied. User don't have permissions"})
             }
 
-            next()
+            return next()
         } catch (error) {
             console.error("JWT ERROR:", {
                 name: error.name,
