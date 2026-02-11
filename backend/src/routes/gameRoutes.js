@@ -4,11 +4,12 @@ import {
     createGame,
     deleteGame,
     getActiveGameByHost,
-    getGameById,
+    getGamePublic,
     joinGameAsPlayer
 } from "../controlers/gameController.js";
 import {authMiddleware} from "../middleware/authMiddleware.js";
 import {optionalAuthMiddleware} from "../middleware/optionalAuthMiddleware.js";
+import {socketAuthMiddleware} from "../sockets/socketAuth.js";
 
 const router = express.Router();
 
@@ -18,6 +19,6 @@ router.delete("/:gameId", authMiddleware, deleteGame)
 
 // PUBLIC
 router.post("/:gameId/join", joinGameAsPlayer)
-router.get("/:gameId", optionalAuthMiddleware, getGameById)
+router.get("/:gameId", optionalAuthMiddleware, getGamePublic)
 
 export default router;

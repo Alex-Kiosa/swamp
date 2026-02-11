@@ -2,27 +2,54 @@ import Game from "../models/gameModel.js";
 import {v4 as uuidv4} from "uuid";
 import jwt from "jsonwebtoken";
 
+export function generateSocketToken(gameId, playerId, role) {
+    const secretKey = process.env.JWT_SECRET
+    const socketToken = jwt.sign(
+        {
+            gameId,
+            playerId,
+            role
+        },
+        secretKey,
+        { expiresIn: "72h" }
+    )
+
+    return socketToken
+}
+
 export async function createGame(req, res) {
     try {
-        const hostUserId = req.user.id
+        const hostId = req.user.id
         const gameId = uuidv4().slice(0, 8)
-        const existingGame = await Game.findOne({hostUserId, isActive: true})
+        const existingGame = await Game.findOne({hostId: hostId, isActive: true})
 
         if (existingGame) {
             return res.status(403).json({message: "Each user can have only one active game"})
         }
 
         const game = new Game({
-            hostUserId,
+            hostId: hostId,
             gameId: gameId,
+            players: [
+                {
+                    playerId: hostId,
+                    name: "HOST",
+                    role: "HOST",
+                    socketId: null,
+                    isOnline: false
+                }
+            ]
         })
 
         await game.save()
 
+        const socketToken = generateSocketToken(gameId, hostId, "HOST")
+
         res.status(201).json({
             message: "Game created",
             gameId: game.gameId,
-            link: `http://localhost:${process.env.PORT}/game/${game.gameId}`
+            link: `http://localhost:${process.env.PORT}/game/${game.gameId}`,
+            socketToken
         })
     } catch (error) {
         console.log(error)
@@ -39,6 +66,9 @@ export async function joinGameAsPlayer(req, res) {
         if (!game) {
             return res.status(404).json({message: "Game not found"})
         }
+        if (game.players.length >= game.limitPlayers) {
+            return res.status(403).json({message: "Превышен лимит подключений. Максимум - 15"})
+        }
 
         const playerId = uuidv4()
 
@@ -46,23 +76,16 @@ export async function joinGameAsPlayer(req, res) {
             playerId,
             name,
             role: "PLAYER",
+            "socketId": null,
+            isOnline: false,
         })
 
         await game.save()
 
-        const secretKey = process.env.JWT_SECRET
-        const guestToken = jwt.sign(
-            {
-                type: "player",
-                gameId,
-                playerId
-            },
-            secretKey,
-            {expiresIn: "6h"}
-        )
+        const socketToken = generateSocketToken(gameId, playerId, "PLAYER")
 
         res.status(201).json({
-            guestToken,
+            socketToken,
             gameId,
             playerId
         })
@@ -73,28 +96,32 @@ export async function joinGameAsPlayer(req, res) {
     }
 }
 
-export async function getGameById(req, res) {
+export async function getGamePublic(req, res) {
     try {
-        const user = req.user
-        if (user) {
-            console.log("Авторизованный пользователь:", user.id);
-        } else {
-            console.log("Гость");
-        }
-
         const gameId = req.params.gameId
 
         // Find game and return only necessary fields using the Mongo projection
         const game = await Game.findOne(
             {gameId, isActive: true},
-            {hostUserId: 1, gameId: 1, players: 1, limitPlayers: 1, isActive: 1, _id: 0}
+            {hostId: 1, gameId: 1, players: 1, limitPlayers: 1, isActive: 1, _id: 0}
         )
 
         if (!game) {
             return res.status(404).json({message: "Game not found"})
         }
 
-        return res.status(200).json(game)
+        let isHost = false
+        if (req.user) {
+            isHost = req.user.id === String(game.hostId)
+            // console.log(req.user.id)
+            // console.log(String(game.hostId))
+        }
+
+        //Преобразуем Mongoose документ в обычный документ
+        const gameObj = game.toObject()
+        gameObj.isHost = isHost
+
+        return res.status(200).json(gameObj)
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Failed to get game"})
@@ -103,12 +130,12 @@ export async function getGameById(req, res) {
 
 export async function getActiveGameByHost(req, res) {
     try {
-        const hostUserId = req.user.id
+        const hostId = req.user.id
 
         // Find game and return only necessary fields using the Mongo projection
         const game = await Game.findOne(
-            {hostUserId, isActive: true},
-            {hostUserId: 1, gameId: 1, players: 1, limitPlayers: 1, isActive: 1, _id: 0}
+            {hostId, isActive: true},
+            {hostId: 1, gameId: 1, players: 1, limitPlayers: 1, isActive: 1, _id: 0}
         )
 
         if (!game) {
@@ -125,11 +152,11 @@ export async function getActiveGameByHost(req, res) {
 export async function deleteGame(req, res) {
     try {
         const gameId = req.params.gameId
-        const hostUserId = req.user.id
+        const hostId = req.user.id
 
         const game = await Game.findOneAndDelete({
             gameId,
-            hostUserId,
+            hostId,
             isActive: true
         })
         if (!game) {

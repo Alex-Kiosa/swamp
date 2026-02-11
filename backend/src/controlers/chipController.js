@@ -9,7 +9,7 @@ export async function createChip(req, res) {
         const {color, shape} = req.body
         const game = await Game.findOne({gameId})
 
-        if(!game) return res.status(404).json({message: "Game not found"})
+        if (!game) return res.status(404).json({message: "Game not found"})
 
         const chip = new Chip({
             game: game._id,
@@ -57,7 +57,7 @@ export async function moveChip(req, res) {
         const chipId = req.params.chipId
         const {x, y} = req.body.position || {}
 
-        if (typeof  x !== "number" || typeof y !== "number") {
+        if (typeof x !== "number" || typeof y !== "number") {
             return res.status(400).json({message: "x and y are required"});
         }
 
@@ -73,7 +73,7 @@ export async function moveChip(req, res) {
 
         const game = await Game.findById(chip.game)
         if (!game) {
-            return res.status(404).json({ message: "Game not found" })
+            return res.status(404).json({message: "Game not found"})
         }
         io.to(game.gameId).emit("chip:moved", chip)
 
@@ -86,18 +86,21 @@ export async function moveChip(req, res) {
 
 export async function deleteChip(req, res) {
     try {
-        const chipId = req.params.chipId
+        const {chipId} = req.params
         const deletedChip = await Chip.findByIdAndDelete(chipId)
 
         if (!deletedChip) {
             return res.status(400).json({message: "Chip not found"})
         }
 
-        const game = await Game.findById(chip.game)
+        const gameId = deletedChip.game
+        const game = await Game.findById(gameId)
+
         if (!game) {
-            return res.status(404).json({ message: "Game not found" })
+            return res.status(404).json({message: "Game not found"})
         }
-        io.to(gameId).emit("chip:deleted")
+
+        io.to(gameId.toString()).emit("chip:deleted")
 
         return res.status(200).json({message: `Chip with id ${chipId} was deleted successfully`})
     } catch (error) {

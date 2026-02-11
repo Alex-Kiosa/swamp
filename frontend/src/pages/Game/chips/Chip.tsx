@@ -1,18 +1,20 @@
 import type {ChipType} from "../../../features/games/chips.types.ts";
-import {useEffect, useRef, useState} from "react";
-import {useAppDispatch} from "../../../common/hooks/hooks.ts";
-import {moveChipThunk} from "../../../features/games/actions/games-actions.ts";
 import * as React from "react";
+import {useEffect, useRef, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../../common/hooks/hooks.ts";
+import {moveChipThunk} from "../../../features/games/actions/games-actions.ts";
+import {socket} from "../../../socket.ts";
+import { selectGame } from "../../../features/games/model/gameSelectors.ts";
 
 type Props = {
     chip: ChipType
 }
 
 export const Chip = ({chip}: Props) => {
+    const {gameId} = useAppSelector(selectGame)
     const dispatch = useAppDispatch()
-    const {position, color, shape} = chip
+    const {position, color, shape, isLocked} = chip
     const [tempPos, setTempPos] = useState(chip.position)
-    const [isMoving, setIsMoving] = useState(false)
 
     const posRef = useRef(position)
     const draggingRef = useRef(false)
@@ -20,15 +22,18 @@ export const Chip = ({chip}: Props) => {
 
     // synchronization if final position get from the server
     useEffect(() => {
-        setTempPos(position)
-        setIsMoving(false)
+        if (!draggingRef.current) {
+            setTempPos(position)
+            posRef.current = position
+        }
     }, [position])
 
     const onMouseDownHandler = (e: React.MouseEvent) => {
-        if (isMoving) return
+        if (isLocked) return
 
-        setIsMoving(true)
         draggingRef.current = true
+
+        socket.emit("chip:drag:start", {chipId: chip._id, gameId})
 
         offsetRef.current = {
             x: e.clientX - tempPos.x,
@@ -61,7 +66,7 @@ export const Chip = ({chip}: Props) => {
 
         dispatch(moveChipThunk(chip._id, posRef.current))
 
-        setIsMoving(false)
+        socket.emit("chip:drag:end", {chipId: chip._id, gameId})
     }
 
     return (
@@ -79,9 +84,9 @@ export const Chip = ({chip}: Props) => {
                     shape === "Triangle"
                         ? "polygon(50% 0%, 0% 100%, 100% 100%)"
                         : "none",
-                cursor: isMoving ? "not-allowed" : "grab",
-                opacity: isMoving ? 0.5 : 1,
-                transition: draggingRef.current ? "none" : "left 0.2s ease, top 0.2s ease", // <- ключ
+                cursor: isLocked ? "not-allowed" : "grab",
+                opacity: isLocked ? 0.5 : 1,
+                transition: draggingRef.current ? "none" : "left 0.2s ease, top 0.2s ease",
             }}
         />
     )

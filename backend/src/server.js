@@ -7,6 +7,8 @@ import gameRoutes from "./routes/gameRoutes.js";
 import chipRoutes from "./routes/chipRoutes.js";
 import {connectDB} from "./db.js";
 import cors from "./middleware/corsMiddleware.js";
+import {socketAuthMiddleware} from "./sockets/socketAuth.js";
+import {index} from "./sockets/index.js";
 
 dotenv.config()
 
@@ -17,34 +19,20 @@ const server = http.createServer(app);
 // Socket
 export const io = new Server(server, {
     cors: {
-        // в проде указать домен фронта
+        // TODO: в проде указать домен фронта
         origin: `${process.env.URI}:${process.env.PORT_FRONT}`,
         methods: ["GET", "POST"],
     },
     transports: ["websocket", "polling"],
 })
 
-//Клиент при подключении сообщает gameId → попадает в комнату
-//Сервер ретранслирует события изменения всем в комнате
-io.on('connection', (socket) => {
-    console.log('🟢 Client connected')
+socketAuthMiddleware(io)
 
-    socket.on("join-room", (gameId) => {
-        socket.join(gameId)
-        console.log(`👥 ${socket.id} joined room ${gameId}`)
-    })
-    //
-    // // события фишки
-    // socket.on("chip:move", ({ chipId, position, gameId }) => {
-    //     io.to(gameId).emit("chip:moved", { chipId, position })
-    // })
-    //
-    socket.on('disconnect', () => {
-        console.log('🔴 Client disconnected ', socket.id)
-    })
-})
+// регистрация всех сокет-хендлеров
+index(io)
 
 const PORT = process.env.PORT || 5000
+
 
 // Middlewares
 app.use(cors)

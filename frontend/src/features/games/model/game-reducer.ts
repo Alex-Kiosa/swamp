@@ -8,6 +8,7 @@ const initialState: GameTypeWithChips = {
     players: [],
     chips: [],
     isActive: false,
+    isHost: false,
     limitPlayers: 15,
     gameInitialized: false
 }
@@ -24,6 +25,9 @@ export const gameSlice = createSlice({
             Object.assign(state, game)
             state.gameInitialized = true
         },
+        deleteGame: () => {
+            return initialState
+        },
         createChip: (state, action: PayloadAction<ChipType>) => {
             state.chips.push(action.payload)
         },
@@ -35,17 +39,25 @@ export const gameSlice = createSlice({
                 chip => chip._id === action.payload._id
             )
 
-            if(chip) {
+            if (chip) {
                 chip.position.x = action.payload.position.x
                 chip.position.y = action.payload.position.y
             }
         },
         deleteChipsByGame: (state) => {
             state.chips = []
-        }
+        },
+        lockChip: (state, action: PayloadAction<string>) => {
+            const chip = state.chips.find(c => c._id === action.payload)
+            if (chip) chip.isLocked = true
+        },
+        unlockChip: (state, action: PayloadAction<string>) => {
+            const chip = state.chips.find(c => c._id === action.payload)
+            if (chip) chip.isLocked = false
+        },
     }
 })
 
 // Action creators are generated for each case reducer function
-export const {getGame, createGame, getChips, createChip, moveChip, deleteChipsByGame} = gameSlice.actions
+export const {getGame, createGame, deleteGame, getChips, createChip, moveChip, deleteChipsByGame, lockChip, unlockChip} = gameSlice.actions
 export default gameSlice.reducer

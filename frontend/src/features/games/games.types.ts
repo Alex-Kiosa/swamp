@@ -11,6 +11,7 @@ export type GameType = {
     players: PlayerType[]
     isActive: boolean
     limitPlayers: number
+    isHost: boolean
 }
 
 export type GameTypeWithChips = GameType & { chips: ChipType[], gameInitialized: boolean }

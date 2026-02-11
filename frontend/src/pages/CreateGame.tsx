@@ -5,17 +5,27 @@ import {users_number_validation} from "../common/utils/inputValidations.ts";
 import {createGameThunk} from "../features/games/actions/games-actions.ts";
 import {selectAppStatus} from "../app/appSelectors.ts";
 import {Loading} from "../components/loading/Loading.tsx";
+import {useEffect} from "react";
+import {selectGame} from "../features/games/model/gameSelectors.ts";
+import {useNavigate} from "react-router";
 
 export const CreateGame = () => {
     const status = useAppSelector(selectAppStatus)
+    const {gameInitialized, isActive, gameId} = useAppSelector(selectGame)
 
     const methods = useForm()
-    const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
 
     const createGameHandler = methods.handleSubmit(data => {
-        dispatch(createGameThunk(data))
-        console.log(data)
+        // dispatch(createGameThunk(data))
     })
+
+    useEffect(() => {
+        if (gameInitialized && isActive) {
+            navigate(`/game/${gameId}`, {replace: true})
+        }
+    }, [gameInitialized, isActive])
 
     return (
         <FormProvider {...methods}>
@@ -40,5 +50,5 @@ export const CreateGame = () => {
                 </button>
             </form>
         </FormProvider>
-    );
+    )
 }

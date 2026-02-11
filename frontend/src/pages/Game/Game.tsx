@@ -1,27 +1,40 @@
 import {useEffect, useRef, useState} from "react"
-import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks.ts"
-import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-actions.ts"
+import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks"
+import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-actions"
 import styles from "./Game.module.css"
-import {Chips} from "./chips/Chips.tsx"
-import {Fab} from "./FAB/Fab.tsx"
-import {socket} from "../../socket.ts"
-import {selectGame} from "../../features/games/model/gameSelectors.ts";
-import {useNavigate, useParams} from "react-router";
-import {Form} from "../../components/form/Form.tsx";
-import {name_validation} from "../../common/utils/inputValidations.ts";
-import {Input} from "../../components/input/Input.tsx";
-import {Modal, type ModalHandle} from "./modal/Modal.tsx";
+import {Chips} from "./chips/Chips"
+import {Fab} from "./FAB/Fab"
+import {socket} from "../../socket"
+import {selectGame} from "../../features/games/model/gameSelectors"
+import {useNavigate, useParams} from "react-router"
+import {Form} from "../../components/form/Form"
+import {name_validation} from "../../common/utils/inputValidations"
+import {Input} from "../../components/input/Input"
+import {Modal, type ModalHandle} from "./modal/Modal"
+import {Cube} from "./cube/Cube"
+import {useSocketConnection} from "../../common/hooks/sockets/useSocketConnection.ts";
+import {useChipSockets} from "../../common/hooks/sockets/useChipSockets.ts";
+import {useCubeSockets} from "../../common/hooks/sockets/useCubeSockets.ts";
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
     const navigate = useNavigate()
-    const {isActive, gameInitialized} = useAppSelector(selectGame)
+    const {isActive, gameInitialized, isHost} = useAppSelector(selectGame)
     const modalRef = useRef<ModalHandle>(null)
     const dispatch = useAppDispatch()
     const [showJoinForm, setShowJoinForm] = useState(false)
 
+    // состояние кубика
+    const [cubeValue, setCubeValue] = useState(1)
+    const [isRolling, setIsRolling] = useState(false)
+
+    // sockets
+    useSocketConnection(gameId)
+    useChipSockets()
+    useCubeSockets(setIsRolling, setCubeValue)
+
     const token = localStorage.getItem("token")
-    const questToken = localStorage.getItem("guestToken")
+    const socketToken = localStorage.getItem("socketToken")
 
     const joinFormSubmit = (data) => {
         if (gameId) {
@@ -30,11 +43,16 @@ export const Game = () => {
         }
     }
 
+    const rollCube = () => {
+        if (!gameId) return
+        socket.emit("cube:roll", {gameId})
+    }
+
     useEffect(() => {
         if (gameInitialized && !isActive) {
             navigate("/404", {replace: true})
         }
-    }, [gameInitialized, isActive]);
+    }, [gameInitialized, isActive])
 
     useEffect(() => {
         if (showJoinForm && modalRef.current) {
@@ -42,12 +60,12 @@ export const Game = () => {
         } else if (modalRef.current) {
             modalRef.current.close()
         }
-    }, [showJoinForm]);
+    }, [showJoinForm])
 
     useEffect(() => {
         if (!gameId) return
 
-        if (token || questToken) {
+        if (token || socketToken) {
             dispatch(getGameThunk(gameId))
             return
         }
@@ -55,36 +73,34 @@ export const Game = () => {
         setShowJoinForm(true)
     }, [gameId])
 
-    useEffect(() => {
-        if(!gameId) return
-
-        // socket.auth = {
-        //     token: localStorage.getItem("token") ?? localStorage.getItem("guestToken")
-        // }
-
-        socket.connect()
-        socket.on("connect", () => {
-            console.log("🟢 socket connected", socket.id);
-        });
-        socket.emit("join-room", gameId)
-
-        // Функция очистки
-        return () => {
-            socket.disconnect()
-        }
-    }, [gameId])
-
     return (
         <div className={styles.wrap}>
-            {showJoinForm ?
-                <Modal ref={modalRef} closeOnBackdropClick={false} showCloseButton={false}>
-                    <Form onSubmit={joinFormSubmit} submitText={"Подтвердить"}><Input {...name_validation}/></Form>
-                </Modal> :
+            {showJoinForm ? (
+                <Modal
+                    ref={modalRef}
+                    closeOnBackdropClick={false}
+                    showCloseButton={false}
+                >
+                    <Form onSubmit={joinFormSubmit} submitText="Подтвердить">
+                        <Input {...name_validation} />
+                    </Form>
+                </Modal>
+            ) : (
                 <>
                     <Chips/>
+                    <Cube value={cubeValue} isRolling={isRolling}/>
+                    {isHost && (
+                        <button
+                            className={styles.rollButton}
+                            disabled={isRolling}
+                            onClick={rollCube}
+                        >
+                            🎲 Бросить кубик
+                        </button>
+                    )}
                     <Fab/>
                 </>
-            }
+            )}
         </div>
     )
 }

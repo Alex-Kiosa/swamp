@@ -4,13 +4,14 @@ import { Alert } from "../alert/Alert"
 export type ToastType = {
     type: "info" | "success" | "warning"
     message: string
+    styles?: string
 }
 
-export const Toast = ({type, message}: ToastType) => {
+export const Toast = ({type, message, styles}: ToastType) => {
     const [showToast, setShowToast] = useState(true)
 
     return (
-        <div className="toast toast-center toast-bottom">
+        <div className={`toast  ${styles}`}>
             {showToast && (
                 <Alert
                     type={type}

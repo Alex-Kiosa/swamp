@@ -14,50 +14,61 @@ import {CreateGame} from "../pages/CreateGame.tsx";
 import {PrivateRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
 import {selectAuth, selectIsInitialized} from "../features/users/model/userSelectors.ts";
 import {Loading} from "../components/loading/Loading.tsx";
-import {ErrorToast} from "../components/toast/ErrorToast.tsx";
 import {setIsInitialized} from "../features/users/model/user-reducer.ts";
+import {useToast} from "../contexts/ToastContext.tsx";
+import {selectAppError} from "./appSelectors.ts";
+import {setAppError} from "./app-reducer.ts";
 
 function App() {
     const isInitialized = useAppSelector(selectIsInitialized)
     const isAuth = useAppSelector(selectAuth)
+    const error = useAppSelector(selectAppError)
 
     const dispatch = useAppDispatch()
+    const {showToast} = useToast()
 
     useEffect(() => {
         const token = localStorage.getItem("token")
 
-        if(token) {
+        if (token) {
             dispatch(authThunk())
         } else {
             dispatch(setIsInitialized(true))
         }
     }, [])
 
-    return <>
-        <div className="@container mx-auto p-4 pb-10 max-w-5xl">
-            {isInitialized && (
-                <Routes>
-                    <Route element={<LayoutNavbarBreadcrumbs/>}>
-                        <Route path="/" element={<Home/>}/>
-                        <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
-                        <Route path="/login" element={<Login/>}/>
-                        <Route path="/signup" element={<Signup/>}/>
-                        <Route path="/game/:gameId" element={<Game/>}/>
-                        <Route element={<PrivateRoute isAuth={isAuth}/>}>
-                            <Route path="account" element={<Account/>}>
-                                <Route path="create-game" element={<CreateGame/>}/>
-                            </Route>
-                        </Route>
-                        <Route path="*" element={<NotFound/>}/>
+    useEffect(() => {
+        if (!error) return
+
+        showToast({
+            type: "warning",
+            message: error
+        })
+
+        dispatch(setAppError(null))
+    }, [error])
+
+    return <div className="@container mx-auto p-4 pb-10 max-w-5xl">
+        {isInitialized && (
+            <Routes>
+                <Route element={<LayoutNavbarBreadcrumbs/>}>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/signup" element={<Signup/>}/>
+                    <Route path="/game/:gameId" element={<Game/>}/>
+                    <Route element={<PrivateRoute isAuth={isAuth}/>}>
+                        <Route path="/account" element={<Account/>}/>
+                        {/*<Route path="/account/create-game" element={<CreateGame/>}/>*/}
                     </Route>
-                </Routes>
-            )}
-            {!isInitialized && (
-                <Loading/>
-            )}
-            <ErrorToast/>
-        </div>
-    </>;
+                    <Route path="*" element={<NotFound/>}/>
+                </Route>
+            </Routes>
+        )}
+        {!isInitialized && (
+            <Loading/>
+        )}
+    </div>
 }
 
 export default App;

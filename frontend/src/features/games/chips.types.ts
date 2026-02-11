@@ -1,4 +1,4 @@
-export type ChipType = {
+export type ChipDomainType = {
     _id: string
     position: {
         x: number
@@ -6,4 +6,8 @@ export type ChipType = {
     }
     color: string
     shape: "Circle" | "Square" | "Triangle"
+}
+
+export type ChipType = ChipDomainType & {
+    isLocked: boolean
 }

@@ -4,11 +4,13 @@ import {AddChipsForm} from "../addChipForm/AddChipsForm.tsx";
 import {useAppDispatch, useAppSelector} from "../../../common/hooks/hooks.ts";
 import {deleteChipsByGameThunk} from "../../../features/games/actions/games-actions.ts";
 import {selectGame} from "../../../features/games/model/gameSelectors.ts";
+import {ShareLinkButton} from "../../../components/button/shareLinkButton.tsx";
 
 export const Fab = () => {
     const modalRef = useRef<ModalHandle>(null)
     const dispatch = useAppDispatch()
     const {gameId, chips} = useAppSelector(selectGame)
+    const gameUrl =  `${window.location.origin}/game/${gameId}`
 
     const deleteChipsHandler = () => {
         if (gameId) dispatch(deleteChipsByGameThunk(gameId))
@@ -39,7 +41,8 @@ export const Fab = () => {
             </div>
 
             {/* buttons that show up when FAB is open */}
-            <button className="btn btn-primary" onClick={() => modalRef.current?.open()}>Добавить фишку</button>
+            <button className="btn btn-neutral" onClick={() => modalRef.current?.open()}>Добавить фишку</button>
+            <ShareLinkButton styles={"btn"} urlForCopy={gameUrl}/>
             <button className="btn btn-error" onClick={deleteChipsHandler} disabled={chips.length === 0 || false}>Удалить все фишки</button>
         </div>
         <Modal ref={modalRef}>
