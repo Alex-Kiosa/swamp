@@ -4,17 +4,15 @@ import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-ac
 import styles from "./Game.module.css"
 import {Chips} from "./chips/Chips"
 import {Fab} from "./FAB/Fab"
-import {socket} from "../../socket"
 import {selectGame} from "../../features/games/model/gameSelectors"
 import {useNavigate, useParams} from "react-router"
 import {Form} from "../../components/form/Form"
 import {name_validation} from "../../common/utils/inputValidations"
 import {Input} from "../../components/input/Input"
 import {Modal, type ModalHandle} from "./modal/Modal"
-import {Cube} from "./cube/Cube"
 import {useSocketConnection} from "../../common/hooks/sockets/useSocketConnection.ts";
 import {useChipSockets} from "../../common/hooks/sockets/useChipSockets.ts";
-import {useCubeSockets} from "../../common/hooks/sockets/useCubeSockets.ts";
+import {Cube} from "./cube/Cube";
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
@@ -24,14 +22,9 @@ export const Game = () => {
     const dispatch = useAppDispatch()
     const [showJoinForm, setShowJoinForm] = useState(false)
 
-    // состояние кубика
-    const [cubeValue, setCubeValue] = useState(1)
-    const [isRolling, setIsRolling] = useState(false)
-
     // sockets
     useSocketConnection(gameId)
     useChipSockets()
-    useCubeSockets(setIsRolling, setCubeValue)
 
     const token = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
@@ -41,11 +34,6 @@ export const Game = () => {
             dispatch(joinGameThunk(gameId, data["input-name"]))
             setShowJoinForm(false)
         }
-    }
-
-    const rollCube = () => {
-        if (!gameId) return
-        socket.emit("cube:roll", {gameId})
     }
 
     useEffect(() => {
@@ -88,16 +76,7 @@ export const Game = () => {
             ) : (
                 <>
                     <Chips/>
-                    <Cube value={cubeValue} isRolling={isRolling}/>
-                    {isHost && (
-                        <button
-                            className={styles.rollButton}
-                            disabled={isRolling}
-                            onClick={rollCube}
-                        >
-                            🎲 Бросить кубик
-                        </button>
-                    )}
+                    {gameId && <Cube gameId={gameId} isHost={isHost}/>}
                     <Fab/>
                 </>
             )}
