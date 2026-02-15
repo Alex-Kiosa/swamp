@@ -111,10 +111,9 @@ export async function getGamePublic(req, res) {
         }
 
         let isHost = false
+
         if (req.user) {
             isHost = req.user.id === String(game.hostId)
-            // console.log(req.user.id)
-            // console.log(String(game.hostId))
         }
 
         //Преобразуем Mongoose документ в обычный документ

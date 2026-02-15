@@ -8,7 +8,7 @@ export const LayoutNavbarBreadcrumbs = () => {
     const hideBreadcrumbs = location.pathname === "/";
 
     return (
-        <div>
+        <div className="@container mx-auto p-4 pb-10 max-w-5xl">
             <Navbar/>
             {!hideBreadcrumbs && <Breadcrumbs/>}
             <div className="flex justify-center items-center gap-8 flex-col">

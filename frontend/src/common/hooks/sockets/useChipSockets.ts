@@ -14,7 +14,9 @@ export const useChipSockets = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        const onMoved = (chip: any) => dispatch(moveChip(chip))
+        const onMoved = (chip: any) => {
+            dispatch(moveChip(chip))
+        }
         const onCreated = (chip: any) => dispatch(createChip(chip))
         const onDeleted = () => dispatch(deleteChipsByGame())
         const onLocked = ({ chipId }: any) => dispatch(lockChip(chipId))

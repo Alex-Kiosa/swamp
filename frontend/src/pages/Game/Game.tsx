@@ -75,9 +75,16 @@ export const Game = () => {
                 </Modal>
             ) : (
                 <>
-                    <Chips/>
-                    {gameId && <Cube gameId={gameId} isHost={isHost}/>}
-                    <Fab/>
+                    <div className={styles.tools}>
+                        {gameId && <Cube gameId={gameId} isHost={isHost}/>}
+                    </div>
+                    <div className={styles.game__filed}>
+                        <Chips/>
+                    </div>
+                    <div className="cards">
+                        карты
+                    </div>
+                    {isHost && <Fab/>}
                 </>
             )}
         </div>

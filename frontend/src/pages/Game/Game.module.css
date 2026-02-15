@@ -1,7 +1,24 @@
 .wrap {
     width: 100%;
-    height: 100vh;
+    height: 100%;
+    padding: 3rem 5rem;
+    display: grid;
+    grid-template-areas:
+            "tools field field"
+            "tools field field"
+            "tools field field"
+            "cards cards cards";
+}
+
+.tools {
+    grid-area: tools;
+    width: 30%;
+}
+
+.game__filed {
+    grid-area: field;
+    flex-grow: 1;
+    position: relative;
     background: #DEE8D0 url("./assets/room-bg.jpg") no-repeat right top;
     background-size: cover;
-    position: relative;
 }

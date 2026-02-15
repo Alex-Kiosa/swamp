@@ -4,7 +4,6 @@ export function registerCubeSockets(io, socket) {
 
         const value = Math.ceil(Math.random() * 6)
 
-
         io.to(gameId).emit("cube:rolled", {
             value,
             rollId: Date.now()

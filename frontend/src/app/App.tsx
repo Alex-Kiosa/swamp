@@ -10,7 +10,6 @@ import {authThunk} from "../features/users/actions/user-actions.ts";
 import {Account} from "../pages/Account.tsx";
 import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
 import {Game} from "../pages/Game/Game.tsx";
-import {CreateGame} from "../pages/CreateGame.tsx";
 import {PrivateRoute} from "../components/privatePublicRoute/PrivatePublicRoute.tsx";
 import {selectAuth, selectIsInitialized} from "../features/users/model/userSelectors.ts";
 import {Loading} from "../components/loading/Loading.tsx";
@@ -18,6 +17,7 @@ import {setIsInitialized} from "../features/users/model/user-reducer.ts";
 import {useToast} from "../contexts/ToastContext.tsx";
 import {selectAppError} from "./appSelectors.ts";
 import {setAppError} from "./app-reducer.ts";
+import {GameLayout} from "../pages/Game/GameLayout.tsx";
 
 function App() {
     const isInitialized = useAppSelector(selectIsInitialized)
@@ -48,7 +48,7 @@ function App() {
         dispatch(setAppError(null))
     }, [error])
 
-    return <div className="@container mx-auto p-4 pb-10 max-w-5xl">
+    return <>
         {isInitialized && (
             <Routes>
                 <Route element={<LayoutNavbarBreadcrumbs/>}>
@@ -56,19 +56,20 @@ function App() {
                     <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
-                    <Route path="/game/:gameId" element={<Game/>}/>
                     <Route element={<PrivateRoute isAuth={isAuth}/>}>
                         <Route path="/account" element={<Account/>}/>
-                        {/*<Route path="/account/create-game" element={<CreateGame/>}/>*/}
                     </Route>
                     <Route path="*" element={<NotFound/>}/>
+                </Route>
+                <Route element={<GameLayout/>}>
+                    <Route path="/game/:gameId" element={<Game/>}/>
                 </Route>
             </Routes>
         )}
         {!isInitialized && (
             <Loading/>
         )}
-    </div>
+    </>
 }
 
 export default App;
