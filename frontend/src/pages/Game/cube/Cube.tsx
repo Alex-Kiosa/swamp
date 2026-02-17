@@ -5,7 +5,6 @@ import { useCubeSockets } from "../../../common/hooks/sockets/useCubeSockets.ts"
 
 type CubeProps = {
     gameId: string
-    isHost: boolean
 }
 
 const rotations: Record<number, { x: number; y: number }> = {
@@ -20,7 +19,7 @@ const rotations: Record<number, { x: number; y: number }> = {
 // небольшой базовый наклон чтобы куб был 3D даже в статике
 const BASE_TILT = { x: -15, y: 20 }
 
-export const Cube: React.FC<CubeProps> = ({ gameId, isHost }) => {
+export const Cube: React.FC<CubeProps> = ({ gameId}) => {
     const [rotation, setRotation] = useState(BASE_TILT)
     const [isRolling, setIsRolling] = useState(false)
     const [cubeValue, setCubeValue] = useState(1)
@@ -43,7 +42,7 @@ export const Cube: React.FC<CubeProps> = ({ gameId, isHost }) => {
     }, [rollId])
 
     const rollCube = () => {
-        if (!isHost || isRolling) return
+        if (isRolling) return
         socket.emit("cube:roll", { gameId })
     }
 

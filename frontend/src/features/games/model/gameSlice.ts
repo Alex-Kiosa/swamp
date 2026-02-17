@@ -1,6 +1,6 @@
-import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
-import type {ChipType} from "../chips.types.ts";
-import type {GameType, GameTypeWithChips} from "../games.types.ts";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import type { ChipType } from "../chips.types.ts"
+import type { GameType, GameTypeWithChips } from "../games.types.ts"
 
 const initialState: GameTypeWithChips = {
     gameId: null,
@@ -17,23 +17,27 @@ export const gameSlice = createSlice({
     name: "game",
     initialState,
     reducers: {
-        createGame: (state, action: PayloadAction<{ gameId: string }>) => {
-            state.gameId = action.payload.gameId
+        createGame: (state, action: PayloadAction<{ game: GameType }>) => {
+            Object.assign(state, action.payload)
+            state.gameInitialized = true
+            state.isHost = true
         },
+
         getGame: (state, action: PayloadAction<GameType>) => {
-            const game = action.payload
-            Object.assign(state, game)
+            Object.assign(state, action.payload)
             state.gameInitialized = true
         },
-        deleteGame: () => {
-            return initialState
-        },
+
+        deleteGame: () => initialState,
+
         createChip: (state, action: PayloadAction<ChipType>) => {
             state.chips.push(action.payload)
         },
+
         getChips: (state, action: PayloadAction<ChipType[]>) => {
             state.chips = action.payload
         },
+
         moveChip: (state, action: PayloadAction<ChipType>) => {
             const chip = state.chips.find(
                 chip => chip._id === action.payload._id
@@ -44,20 +48,33 @@ export const gameSlice = createSlice({
                 chip.position.y = action.payload.position.y
             }
         },
+
         deleteChipsByGame: (state) => {
             state.chips = []
         },
+
         lockChip: (state, action: PayloadAction<string>) => {
             const chip = state.chips.find(c => c._id === action.payload)
             if (chip) chip.isLocked = true
         },
+
         unlockChip: (state, action: PayloadAction<string>) => {
             const chip = state.chips.find(c => c._id === action.payload)
             if (chip) chip.isLocked = false
-        },
+        }
     }
 })
 
-// Action creators are generated for each case reducer function
-export const {getGame, createGame, deleteGame, getChips, createChip, moveChip, deleteChipsByGame, lockChip, unlockChip} = gameSlice.actions
+export const {
+    getGame,
+    createGame,
+    deleteGame,
+    getChips,
+    createChip,
+    moveChip,
+    deleteChipsByGame,
+    lockChip,
+    unlockChip
+} = gameSlice.actions
+
 export default gameSlice.reducer

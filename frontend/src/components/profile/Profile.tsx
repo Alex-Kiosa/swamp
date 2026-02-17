@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks.ts";
 import {Link} from "react-router";
 import {useEffect} from "react";
 import {createGameThunk, deleteGameThunk, getGameByUserThunk} from "../../features/games/actions/games-actions.ts";
-import {selectGame} from "../../features/games/model/gameSelectors.ts";
+import {selectGame, selectGameId} from "../../features/games/model/gameSelectors.ts";
 import {selectCurrentUser} from "../../features/users/model/userSelectors.ts";
 import {ShareLinkButton} from "../button/shareLinkButton.tsx";
 
@@ -14,7 +14,7 @@ type AvatarProps = {
 
 export const Profile = () => {
     const {name, email, roles = []} = useAppSelector(selectCurrentUser)
-    const gameId = useAppSelector(selectGame).gameId
+    const gameId = useAppSelector(selectGameId)
     const dispatch = useAppDispatch()
     const gameUrl =  `${window.location.origin}/game/${gameId}`
 

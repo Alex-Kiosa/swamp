@@ -76,8 +76,8 @@ export const Chip = ({chip}: Props) => {
                 position: "absolute",
                 left: tempPos.x,
                 top: tempPos.y,
-                width: 50,
-                height: 50,
+                width: 30,
+                height: 30,
                 backgroundColor: color,
                 borderRadius: shape === "Circle" ? "50%" : "4px",
                 clipPath:

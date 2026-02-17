@@ -1,7 +1,6 @@
 import express from "express"
-import { roleMiddleware } from "../middleware/roleMiddleware.js"
+import {roleMiddleware} from "../middleware/roleMiddleware.js"
 import {createChip, deleteChip, deleteChipsByGame, getChips, moveChip} from "../controlers/chipController.js"
-import {optionalAuthMiddleware} from "../middleware/optionalAuthMiddleware.js";
 
 const router = express.Router()
 

@@ -1,5 +1,5 @@
 import api from "../../../api/axios.ts";
-import {createChip, createGame, deleteChipsByGame, deleteGame, getChips, getGame} from "../model/game-reducer.ts";
+import {createGame, deleteChipsByGame, deleteGame, getChips, getGame} from "../model/gameSlice.ts";
 import type {AppDispatch} from "../../../app/store.ts";
 import {setAppError} from "../../../app/app-reducer.ts";
 
@@ -9,7 +9,7 @@ export const createGameThunk = () => {
             headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
         })
             .then(res => {
-                dispatch((createGame(res.data)))
+                dispatch((createGame(res.data.game)))
                 localStorage.setItem("socketToken", res.data.socketToken)
             })
             .catch(error => {

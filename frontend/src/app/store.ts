@@ -1,19 +1,28 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import gameReducer from "../features/games/model/game-reducer.ts";
-import userReducer from "../features/users/model/user-reducer.ts";
-import appReducer from "./app-reducer.ts";
+import { combineReducers, configureStore } from "@reduxjs/toolkit"
+import gameReducer from "../features/games/model/gameSlice.ts"
+import userReducer from "../features/users/model/user-reducer.ts"
+import appReducer from "./app-reducer.ts"
+import cardReducer from "../features/cards/model/cardSlice.ts"
 
-const rootReducer = combineReducers({
-    user: userReducer,
-    game: gameReducer,
-    app: appReducer,
-})
+// const rootReducer = combineReducers({
+//     app: appReducer,
+//     user: userReducer,
+//     game: gameReducer,
+//     cards: cardReducer
+// })
+//
+// export const store = configureStore({
+//     reducer: rootReducer,
+// })
 
 export const store = configureStore({
-    reducer: rootReducer,
-    // devTools: process.env.NODE_ENV !== "production",
+    reducer: {
+        app: appReducer,
+        user: userReducer,
+        game: gameReducer,
+        cards: cardReducer
+    }
 })
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

@@ -13,6 +13,9 @@ import {Modal, type ModalHandle} from "./modal/Modal"
 import {useSocketConnection} from "../../common/hooks/sockets/useSocketConnection.ts";
 import {useChipSockets} from "../../common/hooks/sockets/useChipSockets.ts";
 import {Cube} from "./cube/Cube";
+import {Players} from "./players/Players.tsx";
+import {Cards} from "../../features/cards/ui/Cards.tsx";
+import {useCardSockets} from "../../common/hooks/sockets/useCardSockets.ts";
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
@@ -25,6 +28,7 @@ export const Game = () => {
     // sockets
     useSocketConnection(gameId)
     useChipSockets()
+    useCardSockets()
 
     const token = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
@@ -76,13 +80,22 @@ export const Game = () => {
             ) : (
                 <>
                     <div className={styles.tools}>
-                        {gameId && <Cube gameId={gameId} isHost={isHost}/>}
+                        <div className={styles.cube}>
+                            {gameId && <Cube gameId={gameId}/>}
+                        </div>
+                        <div className={styles.players}>
+                            <div className="text-lg font-bold text-center">Список игроков</div>
+                            <Players/>
+                        </div>
+                        <div className={" mt-8"}>
+                            <div className="text-lg font-bold text-center">Текущая карта</div>
+                        </div>
                     </div>
-                    <div className={styles.game__filed}>
+                    <div className={styles.board}>
                         <Chips/>
-                    </div>
-                    <div className="cards">
-                        карты
+                        <div className={styles.cards}>
+                            <Cards/>
+                        </div>
                     </div>
                     {isHost && <Fab/>}
                 </>

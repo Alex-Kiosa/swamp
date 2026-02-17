@@ -2,23 +2,34 @@
     width: 100%;
     height: 100%;
     padding: 3rem 5rem;
-    display: grid;
-    grid-template-areas:
-            "tools field field"
-            "tools field field"
-            "tools field field"
-            "cards cards cards";
+    display: flex;
+    gap: 30px;
+    /*grid-template-areas: "tools field field field";*/
 }
 
 .tools {
-    grid-area: tools;
-    width: 30%;
+    /*grid-area: tools;*/
+    width: 25%;
 }
 
-.game__filed {
-    grid-area: field;
+.cube {
+    margin: 20px 0 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.board {
+    /*grid-area: field;*/
     flex-grow: 1;
     position: relative;
-    background: #DEE8D0 url("./assets/room-bg.jpg") no-repeat right top;
-    background-size: cover;
+    background: url("./assets/board.jpg") no-repeat right top;
+    background-size: contain;
+    position: relative;
+}
+
+.cards {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
 }

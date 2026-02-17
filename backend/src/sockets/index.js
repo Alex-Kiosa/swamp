@@ -1,5 +1,6 @@
 import { registerChipSockets } from "./socketChips.js"
 import { registerCubeSockets } from "./socketCube.js"
+import {registerCardSockets} from "./socketCards.js";
 
 export function index(io) {
     io.on("connection", (socket) => {
@@ -10,5 +11,6 @@ export function index(io) {
 
         registerChipSockets(io, socket)
         registerCubeSockets(io, socket)
+        registerCardSockets(io, socket)
     })
 }

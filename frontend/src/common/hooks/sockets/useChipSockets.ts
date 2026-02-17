@@ -6,7 +6,7 @@ import {
     lockChip,
     moveChip,
     unlockChip
-} from "../../../features/games/model/game-reducer.ts";
+} from "../../../features/games/model/gameSlice.ts";
 import {useAppDispatch} from "../hooks.ts";
 
 

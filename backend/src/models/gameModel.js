@@ -50,6 +50,18 @@ const gameSchema = new mongoose.Schema(
             enum: [1, 2, 3, 4, 5, 6],
             default: 1,
         },
+        decks: {
+            plants: [String],
+            animals: [String],
+            wisdom: [String],
+            creatures: [String],
+        },
+        discardPiles: {
+            plants: [String],
+            animals: [String],
+            wisdom: [String],
+            creatures: [String],
+        },
         isActive: {
             type: Boolean,
             default: true,

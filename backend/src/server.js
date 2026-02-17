@@ -40,9 +40,9 @@ app.use(express.json())
 
 
 // Routes
-app.use('/api/auth', regRoutes)
-app.use('/api/games', gameRoutes)
-app.use("/api/", chipRoutes);
+app.use("/api/auth", regRoutes)
+app.use("/api/games", gameRoutes)
+app.use("/api/", chipRoutes)
 
 // Start the server only after DB connection
 connectDB()
