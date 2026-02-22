@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import styles from "./Cube.module.css"
-import { socket } from "../../../socket"
-import { useCubeSockets } from "../../../common/hooks/sockets/useCubeSockets.ts"
+import { socket } from "../../../sockets/socket.ts"
+import { useCubeSockets } from "../../../sockets/useCubeSockets.ts"
 
 type CubeProps = {
     gameId: string

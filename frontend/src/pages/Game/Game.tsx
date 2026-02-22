@@ -10,12 +10,14 @@ import {Form} from "../../components/form/Form"
 import {name_validation} from "../../common/utils/inputValidations"
 import {Input} from "../../components/input/Input"
 import {Modal, type ModalHandle} from "./modal/Modal"
-import {useSocketConnection} from "../../common/hooks/sockets/useSocketConnection.ts";
-import {useChipSockets} from "../../common/hooks/sockets/useChipSockets.ts";
+import {useSocketConnection} from "../../sockets/useSocketConnection.ts";
+import {useChipSockets} from "../../sockets/useChipSockets.ts";
 import {Cube} from "./cube/Cube";
 import {Players} from "./players/Players.tsx";
 import {Cards} from "../../features/cards/ui/Cards.tsx";
-import {useCardSockets} from "../../common/hooks/sockets/useCardSockets.ts";
+import {useCardSockets} from "../../sockets/useCardSockets.ts";
+import {usePlayerSockets} from "../../sockets/usePlayerSockets.ts";
+import {TableCards} from "../../features/cards/ui/TableCards.tsx";
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
@@ -24,12 +26,6 @@ export const Game = () => {
     const modalRef = useRef<ModalHandle>(null)
     const dispatch = useAppDispatch()
     const [showJoinForm, setShowJoinForm] = useState(false)
-
-    // sockets
-    useSocketConnection(gameId)
-    useChipSockets()
-    useCardSockets()
-
     const token = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
 
@@ -39,6 +35,13 @@ export const Game = () => {
             setShowJoinForm(false)
         }
     }
+    // added sockets listeners before connection
+    usePlayerSockets(gameId)
+    useChipSockets()
+    useCardSockets()
+    // socket connection
+    useSocketConnection(gameId, socketToken)
+
 
     useEffect(() => {
         if (gameInitialized && !isActive) {
@@ -89,6 +92,8 @@ export const Game = () => {
                         </div>
                         <div className={" mt-8"}>
                             <div className="text-lg font-bold text-center">Текущая карта</div>
+                            <TableCards isHost={isHost} gameId={gameId}/>
+
                         </div>
                     </div>
                     <div className={styles.board}>

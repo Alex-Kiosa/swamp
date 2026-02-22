@@ -1,48 +1,68 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { CardCategoryType } from "../card.types.ts"
+import type {CardCategoryType} from "../card.types.ts";
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+
+export type TableCard = {
+    id: string
+    imageUrl: string
+    type: CardCategoryType
+}
+
+export type OpenDeckModal = {
+    type: CardCategoryType
+    isOpen: boolean
+}
 
 export type CardState = {
-    openedCards: Record<CardCategoryType, string | null>
+    decks: Record<CardCategoryType, string[]>
+    tableCards: TableCard[]
     deckEmpty: Record<CardCategoryType, boolean>
+    openDecks: OpenDeckModal[]  // какие колоды открыты
 }
 
 const initialState: CardState = {
-    openedCards: {
-        plants: null,
-        animals: null,
-        creatures: null,
-        wisdom: null
-    },
-    deckEmpty: {
-        plants: false,
-        animals: false,
-        creatures: false,
-        wisdom: false
-    }
+    decks: { plants: [], animals: [], creatures: [], wisdom: [] },
+    tableCards: [],
+    deckEmpty: { plants: false, animals: false, creatures: false, wisdom: false },
+    openDecks: []
 }
 
 export const cardSlice = createSlice({
     name: "cards",
     initialState,
     reducers: {
-
-        openCard: (
-            state,
-            action: PayloadAction<{ card: string; type: CardCategoryType }>
-        ) => {
-            const { card, type } = action.payload
-            state.openedCards[type] = card
-            state.deckEmpty[type] = false
+        setDeckCards: (state, action: PayloadAction<{ type: CardCategoryType; cards: string[] }>) => {
+            state.decks[action.payload.type] = action.payload.cards
         },
-
-        setDeckEmpty: (
-            state,
-            action: PayloadAction<CardCategoryType>
-        ) => {
+        addCardToTable: (state, action: PayloadAction<TableCard>) => {
+            state.tableCards.push(action.payload)
+        },
+        removeCardFromTable: (state, action: PayloadAction<string>) => {
+            state.tableCards = state.tableCards.filter(c => c.id !== action.payload)
+        },
+        setDeckEmpty: (state, action: PayloadAction<CardCategoryType>) => {
             state.deckEmpty[action.payload] = true
-        }
+        },
+        openDeck: (state, action: PayloadAction<CardCategoryType>) => {
+            const deck = state.openDecks.find(d => d.type === action.payload)
+            if (!deck) state.openDecks.push({ type: action.payload, isOpen: true })
+            else deck.isOpen = true
+        },
+        closeDeck: (state, action: PayloadAction<CardCategoryType>) => {
+            const deck = state.openDecks.find(d => d.type === action.payload)
+            if (deck) deck.isOpen = false
+        },
+        resetState: (
+            state,
+            action: PayloadAction<{
+                tableCards: TableCard[]
+                decks: Record<CardCategoryType, string[]>
+            }>
+        ) => {
+            state.tableCards = action.payload.tableCards
+            state.decks = action.payload.decks
+        },
     }
 })
 
-export const { openCard, setDeckEmpty } = cardSlice.actions
+export const { setDeckCards, addCardToTable, removeCardFromTable, setDeckEmpty, openDeck, closeDeck, resetState } = cardSlice.actions
 export default cardSlice.reducer

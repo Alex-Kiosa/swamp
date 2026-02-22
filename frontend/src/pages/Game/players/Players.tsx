@@ -4,6 +4,7 @@ import {Player} from "./Player.tsx";
 
 export const Players = () => {
     const {players} = useAppSelector(selectGame)
+    const onlinePlayers = players.filter(p=>p.isOnline === true)
 
-    return <div className={"flex gap-4 mt-3 flex-wrap"}>{players.map(p => <Player name={p.name}/>)}</div>
+    return <div className={"flex gap-4 mt-3 flex-wrap"}>{onlinePlayers.map(p => <Player name={p.name}/>)}</div>
 }

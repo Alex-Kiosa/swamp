@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState, useEffect } from "react"
+import {forwardRef, useImperativeHandle, useRef, useState, useEffect} from "react"
 
 export type ModalHandle = {
     open: () => void
@@ -8,6 +8,7 @@ export type ModalHandle = {
 type ModalProps = {
     title?: string
     classNames?: string
+    width?: string
     children: React.ReactNode
     showCloseButton?: boolean
     closeOnBackdropClick?: boolean // Новая опция
@@ -17,6 +18,7 @@ export const Modal = forwardRef<ModalHandle, ModalProps>(
     ({
          title,
          classNames = "bg-white",
+         width,
          showCloseButton = true, // Значение по умолчанию
          closeOnBackdropClick = true, // Значение по умолчанию
          children
@@ -75,7 +77,7 @@ export const Modal = forwardRef<ModalHandle, ModalProps>(
                 className="modal"
                 onClick={handleDialogClick}
             >
-                <div className={`modal-box ${classNames}`}>
+                <div className={`modal-box max-h-[90vh] ${classNames}`} style={{width}}>
                     {showCloseButton && (
                         <button
                             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -94,7 +96,7 @@ export const Modal = forwardRef<ModalHandle, ModalProps>(
                     так как она автоматически закрывает модалку
                 */}
                 {closeOnBackdropClick && (
-                    <form method="dialog" className="modal-backdrop">
+                    <form method="dialog" className="modal-backdrop bg-black/70">
                         <button type="submit">close</button>
                     </form>
                 )}

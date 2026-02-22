@@ -8,5 +8,3 @@ export const DECK_TYPES = [
 ] as const
 
 export type DeckType = typeof DECK_TYPES[number]
-
-console.log(typeof DECK_TYPES[0])

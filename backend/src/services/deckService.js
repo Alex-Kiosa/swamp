@@ -17,11 +17,12 @@ function shuffle(array) {
 
 export async function generateDeck(cardType) {
     const dirPath = path.join(process.cwd(), "public", "cards", cardType)
+    const url = process.env.URI + ":" + process.env.PORT
 
     const files = await fs.readdir(dirPath)
 
     const images = files.map(file =>
-        `/static/cards/${cardType}/${file}`
+        `${url}/static/cards/${cardType}/${file}`
     )
 
     return shuffle(images)

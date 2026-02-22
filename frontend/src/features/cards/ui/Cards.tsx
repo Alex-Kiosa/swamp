@@ -4,7 +4,7 @@ import { DECK_TYPES } from "../card.types"
 
 export const Cards = () => {
     return (
-        <div className="grid grid-cols-2 gap-6 auto-rows-[140px]">
+        <div className="flex gap-4">
             {DECK_TYPES.map((type) => (
                 <DeckCard
                     key={type}

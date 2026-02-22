@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+const CARD_TYPES = ["plants", "animals", "creatures", "wisdom"]
+
 const playerSchema = new mongoose.Schema(
     {
         playerId: {
@@ -17,12 +19,33 @@ const playerSchema = new mongoose.Schema(
         },
         socketId: {
             type: String,
+            default: null
         },
         isOnline: {
             type: Boolean,
+            default: false
         },
     },
-    {_id: false} // _id не нужен, чтобы не плодить ненужные ObjectId
+    { _id: false }
+)
+
+const tableCardSchema = new mongoose.Schema(
+    {
+        id: {
+            type: String,
+            required: true
+        },
+        imageUrl: {
+            type: String,
+            required: true
+        },
+        type: {
+            type: String,
+            enum: CARD_TYPES,
+            required: true
+        }
+    },
+    { _id: false }
 )
 
 const gameSchema = new mongoose.Schema(
@@ -31,6 +54,7 @@ const gameSchema = new mongoose.Schema(
             type: String,
             unique: true,
             required: true,
+            index: true
         },
         hostId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -51,23 +75,28 @@ const gameSchema = new mongoose.Schema(
             default: 1,
         },
         decks: {
-            plants: [String],
-            animals: [String],
-            wisdom: [String],
-            creatures: [String],
+            plants: { type: [String], default: [] },
+            animals: { type: [String], default: [] },
+            creatures: { type: [String], default: [] },
+            wisdom: { type: [String], default: [] }
         },
+        // Сброс (для механики перемешать сброс)
         discardPiles: {
-            plants: [String],
-            animals: [String],
-            wisdom: [String],
-            creatures: [String],
+            plants: { type: [String], default: [] },
+            animals: { type: [String], default: [] },
+            creatures: { type: [String], default: [] },
+            wisdom: { type: [String], default: [] }
+        },
+        tableCards: {
+            type: [tableCardSchema],
+            default: []
         },
         isActive: {
             type: Boolean,
             default: true,
         },
     },
-    {timestamps: true}
+    { timestamps: true }
 )
 
 const Game = mongoose.model("Game", gameSchema)

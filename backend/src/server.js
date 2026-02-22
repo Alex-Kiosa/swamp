@@ -33,11 +33,11 @@ index(io)
 
 const PORT = process.env.PORT || 5000
 
-
 // Middlewares
 app.use(cors)
 app.use(express.json())
 
+app.use("/static", express.static("public"))
 
 // Routes
 app.use("/api/auth", regRoutes)

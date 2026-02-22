@@ -3,7 +3,7 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../../common/hooks/hooks.ts";
 import {moveChipThunk} from "../../../features/games/actions/games-actions.ts";
-import {socket} from "../../../socket.ts";
+import {socket} from "../../../sockets/socket.ts";
 import { selectGame } from "../../../features/games/model/gameSelectors.ts";
 
 type Props = {

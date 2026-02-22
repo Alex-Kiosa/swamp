@@ -1,13 +1,13 @@
 import { useEffect } from "react"
-import {socket} from "../../../socket.ts";
+import {socket} from "./socket.ts";
 import {
     createChip,
     deleteChipsByGame,
     lockChip,
     moveChip,
     unlockChip
-} from "../../../features/games/model/gameSlice.ts";
-import {useAppDispatch} from "../hooks.ts";
+} from "../features/games/model/gameSlice.ts";
+import {useAppDispatch} from "../common/hooks/hooks.ts";
 
 
 export const useChipSockets = () => {
