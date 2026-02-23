@@ -91,7 +91,7 @@ export const Game = () => {
                             <Players/>
                         </div>
                         <div className={" mt-8"}>
-                            <div className="text-lg font-bold text-center">Текущая карта</div>
+                            <div className="text-lg font-bold text-center">Карты на столе</div>
                             <TableCards isHost={isHost} gameId={gameId}/>
 
                         </div>

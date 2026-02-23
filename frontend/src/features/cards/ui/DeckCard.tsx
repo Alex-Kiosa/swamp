@@ -4,8 +4,8 @@ import { useParams } from "react-router"
 import { socket } from "../../../sockets/socket"
 import type { RootState } from "../../../app/store"
 import type { CardCategoryType } from "../card.types"
-import { Modal, type ModalHandle } from "../../../pages/Game/modal/Modal.tsx"
 import { closeDeck, openDeck, setDeckCards } from "../model/cardSlice.ts"
+import {type ModalHandle, Modal} from "../../../pages/Game/modal/Modal.tsx";
 
 type Props = {
     type: CardCategoryType
@@ -34,6 +34,10 @@ export const DeckCard = ({ type, title, cardBack }: Props) => {
         dispatch(closeDeck(type))
     }
 
+    const closeModalHandler = () => {
+        socket.emit("deck:closeDeck", { gameId, type })
+    }
+
     useEffect(() => {
         const deckOpenHandler = ({ type: deckType, cards: deckCards }: { type: CardCategoryType; cards: string[] }) => {
             if (deckType === type) {
@@ -43,12 +47,11 @@ export const DeckCard = ({ type, title, cardBack }: Props) => {
             }
         }
 
-        const deckCloseHandler = ({ type: deckType }: { type: CardCategoryType }) => {
-            debugger
+        const deckCloseHandler = ({ type: deckType }: {
+            type: CardCategoryType }) => {
             if (deckType === type) {
-                modalRef.current?.close()
-                socket.emit("deck:closeDeck", { gameId, type })
                 dispatch(closeDeck(deckType))
+                modalRef.current?.close()
             }
         }
 
@@ -57,9 +60,9 @@ export const DeckCard = ({ type, title, cardBack }: Props) => {
 
         return () => {
             socket.off("deck:open", deckOpenHandler)
-            // socket.off("deck:close", deckCloseHandler)
+            socket.off("deck:close", deckCloseHandler)
         }
-    }, [dispatch, type])
+    }, [type])
 
     return (
         <>
@@ -72,7 +75,15 @@ export const DeckCard = ({ type, title, cardBack }: Props) => {
                 />
             </div>
 
-            <Modal ref={modalRef} title={title} classNames={"max-w-none"} width={"80-vw"} >
+            // TODO: Сделать управления модалкой через state, а не через ref.
+            // TODO: Вынести модалку с выбором колод в отдельный компонет?
+            <Modal
+                ref={modalRef}
+                title={title}
+                classNames={"max-w-none"}
+                width={"80-vw"}
+                onClickBackdrop={closeModalHandler}
+            >
                 <div className="grid grid-cols-9 gap-4">
                     {cards.map((card) => (
                         <img

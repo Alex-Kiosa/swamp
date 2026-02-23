@@ -20,7 +20,7 @@ type ModalProps = {
     onClickBackdrop?: () => void
 }
 
-export const Modal = forwardRef<ModalHandle, ModalProps>(
+export const ModalOld = forwardRef<ModalHandle, ModalProps>(
     (
         {
             title,
@@ -105,4 +105,4 @@ export const Modal = forwardRef<ModalHandle, ModalProps>(
 )
 
 // задаёт имя компонента для React DevTools и сообщений об ошибках.
-Modal.displayName = "Modal"
+ModalOld.displayName = "Modal"

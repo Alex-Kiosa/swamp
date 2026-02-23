@@ -47,7 +47,6 @@ export function registerCardSockets(io, socket) {
     })
 
     socket.on("card:removeFromTable", async ({gameId, cardId}) => {
-        console.log("card removed from table", gameId, cardId)
         const game = await Game.findOne({gameId})
         if (!game) return
 
@@ -58,7 +57,7 @@ export function registerCardSockets(io, socket) {
     })
 
     socket.on("deck:closeDeck", ({gameId, type}) => {
-        console.log("deck:closeDeck", gameId, type)
+        // console.log("deck:closeDeck", gameId, type)
         io.to(gameId).emit("deck:close", {type})
     })
 }
