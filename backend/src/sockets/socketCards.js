@@ -57,7 +57,6 @@ export function registerCardSockets(io, socket) {
     })
 
     socket.on("deck:closeDeck", ({gameId, type}) => {
-        // console.log("deck:closeDeck", gameId, type)
         io.to(gameId).emit("deck:close", {type})
     })
 }

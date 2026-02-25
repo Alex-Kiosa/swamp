@@ -24,21 +24,31 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
     const [isRolling, setIsRolling] = useState(false)
     const [cubeValue, setCubeValue] = useState(1)
     const [rollId, setRollId] = useState<number | null>(null)
+    const [spins, setSpins] = useState(4)
 
-    useCubeSockets(setIsRolling, setCubeValue, setRollId)
+    useCubeSockets(setIsRolling, setCubeValue, setRollId, setSpins)
 
     useEffect(() => {
-        if(!rollId) return
+        if (!rollId) return
 
         const base = rotations[cubeValue]
-
-        const spins = 3 + Math.floor(Math.random() * 2)
         const extra = 360 * spins
 
-        setRotation({
-            x: BASE_TILT.x + extra + base.x,
-            y: BASE_TILT.y + extra + base.y
+        setRotation(prev => {
+
+            // убираем базовый наклон перед нормализацией
+            const rawX = prev.x - BASE_TILT.x
+            const rawY = prev.y - BASE_TILT.y
+
+            const normalizedX = rawX % 360
+            const normalizedY = rawY % 360
+
+            return {
+                x: prev.x + extra + (base.x - normalizedX),
+                y: prev.y + extra + (base.y - normalizedY)
+            }
         })
+
     }, [rollId])
 
     const rollCube = () => {

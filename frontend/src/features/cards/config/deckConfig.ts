@@ -20,4 +20,12 @@ export const deckConfig: Record<
         title: "Сказочные существа",
         back: "/cards-backs/creatures.jpg",
     },
+    mac: {
+        title: "МАК подсказки",
+        back: "/cards-backs/mac.jpg",
+    },
+    swamp: {
+        title: "Болото",
+        back: "/cards-backs/swamp.jpg",
+    },
 }

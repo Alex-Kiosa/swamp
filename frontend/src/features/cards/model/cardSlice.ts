@@ -20,9 +20,9 @@ export type CardState = {
 }
 
 const initialState: CardState = {
-    decks: { plants: [], animals: [], creatures: [], wisdom: [] },
+    decks: {plants: [], animals: [], wisdom: [], mac: [], creatures: [], swamp: []},
     tableCards: [],
-    deckEmpty: { plants: false, animals: false, creatures: false, wisdom: false },
+    deckEmpty: {plants: false, animals: false, creatures: false, wisdom: false, mac: false, swamp: false},
     openDecks: []
 }
 
@@ -44,7 +44,7 @@ export const cardSlice = createSlice({
         },
         openDeck: (state, action: PayloadAction<CardCategoryType>) => {
             const deck = state.openDecks.find(d => d.type === action.payload)
-            if (!deck) state.openDecks.push({ type: action.payload, isOpen: true })
+            if (!deck) state.openDecks.push({type: action.payload, isOpen: true})
             else deck.isOpen = true
         },
         closeDeck: (state, action: PayloadAction<CardCategoryType>) => {
@@ -64,5 +64,13 @@ export const cardSlice = createSlice({
     }
 })
 
-export const { setDeckCards, addCardToTable, removeCardFromTable, setDeckEmpty, openDeck, closeDeck, resetState } = cardSlice.actions
+export const {
+    setDeckCards,
+    addCardToTable,
+    removeCardFromTable,
+    setDeckEmpty,
+    openDeck,
+    closeDeck,
+    resetState
+} = cardSlice.actions
 export default cardSlice.reducer

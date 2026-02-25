@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+export const CARD_TYPES = ["plants", "animals", "creatures", "wisdom", "mac", "swamp"]
+
 const cardSchema = new mongoose.Schema(
     {
         imageUrl: {
@@ -10,12 +12,12 @@ const cardSchema = new mongoose.Schema(
         cardType: {
             type: String,
             required: true,
-            enum: ["plants", "animals", "creatures", "wisdom"],
+            enum: CARD_TYPES,
             index: true,
         },
     },
     { timestamps: true }
-);
+)
 
 const Card = mongoose.model("Card", cardSchema);
 

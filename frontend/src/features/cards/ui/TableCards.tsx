@@ -32,7 +32,7 @@ export const TableCards = ({isHost, gameId}: Props) => {
 
     return (
         <>
-            <div className="flex flex-wrap gap-4 mt-6">
+            <div className="flex flex-wrap gap-4 mt-6 justify-center">
                 {cards.map((card) => (
                     <div key={card.id} className="relative w-fit group">
 
@@ -47,7 +47,7 @@ export const TableCards = ({isHost, gameId}: Props) => {
                         <img
                             src={card.imageUrl}
                             alt="table card"
-                            className="h-40 block cursor-pointer hover:scale-105 transition"
+                            className="h-40 block cursor-pointer hover:scale-105 transition rounded rounded-md"
                             onClick={() => handleOpenCard(card.id)}
                         />
                     </div>
@@ -59,7 +59,7 @@ export const TableCards = ({isHost, gameId}: Props) => {
                     <img
                         src={selectedCard.imageUrl}
                         alt="selected card"
-                        className="max-h-[80vh] mx-auto"
+                        className="max-h-[80vh] mx-auto rounded-md"
                     />
                 )}
             </Modal>

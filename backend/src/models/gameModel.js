@@ -1,6 +1,5 @@
 import mongoose from "mongoose"
-
-const CARD_TYPES = ["plants", "animals", "creatures", "wisdom"]
+import {CARD_TYPES} from "./cardModel.js";
 
 const playerSchema = new mongoose.Schema(
     {
@@ -78,14 +77,18 @@ const gameSchema = new mongoose.Schema(
             plants: { type: [String], default: [] },
             animals: { type: [String], default: [] },
             creatures: { type: [String], default: [] },
-            wisdom: { type: [String], default: [] }
+            wisdom: { type: [String], default: [] },
+            mac: { type: [String], default: [] },
+            swamp: { type: [String], default: [] },
         },
         // Сброс (для механики перемешать сброс)
         discardPiles: {
             plants: { type: [String], default: [] },
             animals: { type: [String], default: [] },
             creatures: { type: [String], default: [] },
-            wisdom: { type: [String], default: [] }
+            wisdom: { type: [String], default: [] },
+            mac: { type: [String], default: [] },
+            swamp: { type: [String], default: [] },
         },
         tableCards: {
             type: [tableCardSchema],

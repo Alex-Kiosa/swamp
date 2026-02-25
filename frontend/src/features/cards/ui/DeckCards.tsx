@@ -2,7 +2,7 @@ import { deckConfig } from "../config/deckConfig"
 import { DeckCard } from "./DeckCard"
 import { DECK_TYPES } from "../card.types"
 
-export const Cards = () => {
+export const DeckCards = () => {
     return (
         <div className="flex gap-4">
             {DECK_TYPES.map((type) => (

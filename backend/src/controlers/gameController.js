@@ -33,6 +33,8 @@ export async function createGame(req, res) {
         const animalsDeck = await generateDeck("animals")
         const creaturesDeck = await generateDeck("creatures")
         const wisdomDeck = await generateDeck("wisdom")
+        const macDeck = await generateDeck("mac")
+        const swampDeck = await generateDeck("swamp")
 
         const game = new Game({
             hostId: hostId,
@@ -50,7 +52,9 @@ export async function createGame(req, res) {
                 plants: plantsDeck,
                 animals: animalsDeck,
                 creatures: creaturesDeck,
-                wisdom: wisdomDeck
+                wisdom: wisdomDeck,
+                mac: macDeck,
+                swamp: swampDeck,
             },
             discardPiles: {
                 plants: [],
