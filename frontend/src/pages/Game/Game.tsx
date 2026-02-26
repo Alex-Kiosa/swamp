@@ -18,9 +18,6 @@ import {useCardSockets} from "../../sockets/useCardSockets"
 import {usePlayerSockets} from "../../sockets/usePlayerSockets"
 import {TableCards} from "../../features/cards/ui/TableCards"
 import boardImage from "./assets/board.jpg"
-import * as url from "node:url";
-
-const STORAGE_KEY = "game_board_view"
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
@@ -39,6 +36,8 @@ export const Game = () => {
             setShowJoinForm(false)
         }
     }
+
+    // TODO: сделать zoom и drag and drop для поля с игрой
 
     // // ZOOM
     // const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -127,19 +126,19 @@ export const Game = () => {
             ) : (
                 <>
                     {/* LEFT TOOLS PANEL */}
-                    <div className="p-5 flex-1">
-                        <div className="my-5 mb-10 flex justify-center">
+                    <div className="w-[28vw] p-5">
+                        <div className="alert block mb-6 p-6 rounded-lg flex justify-center">
                             {gameId && <Cube gameId={gameId}/>}
                         </div>
 
-                        <div>
+                        <div className="alert block mb-6 p-6 rounded-lg">
                             <div className="text-lg font-bold text-center">
                                 Список игроков
                             </div>
                             <Players/>
                         </div>
 
-                        <div className="mt-8">
+                        <div className="alert block mb-6 p-6 rounded-lg">
                             <div className="text-lg font-bold text-center">
                                 Карты на столе
                             </div>
@@ -148,15 +147,23 @@ export const Game = () => {
                     </div>
 
                     {/* GAME BOARD */}
-                    <div className="w-[75vw]">
+                    <div className="w-[72vw] pt-5 pr-5">
                         <div
-                            className="h-[80vh] bg-no-repeat bg-contain bg-center relative"
+                            className="border-1 rounded-lg overflow-hidden"
                             style={{
-                                backgroundImage: `url(${boardImage})`,
-                                aspectRatio: "24 / 17",
-                            }}
+                                backgroundImage: "repeating-linear-gradient(-45deg,var(--color-base-100),var(--color-base-100)13px,var(--color-base-200)13px,var(--color-base-200)14px)",
+                                backgroundColor: "#e1e6d9"
+                        }}
                         >
-                            <Chips/>
+                            <div
+                                className="h-[77vh] bg-no-repeat bg-contain bg-center relative mx-auto"
+                                style={{
+                                    backgroundImage: `url(${boardImage})`,
+                                    aspectRatio: "24 / 17",
+                                }}
+                            >
+                                <Chips/>
+                            </div>
                         </div>
 
                         {/* DECKS */}

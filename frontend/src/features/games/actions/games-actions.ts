@@ -107,9 +107,6 @@ export const createChipThunk = (chip: {
             {
                 headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
             })
-            // .then(res => {
-            //     dispatch(createChip(res.data))
-            // })
             .catch(error => {
                 dispatch(setAppError(error.response.data.message))
                 console.log("Ошибка при добавлении фишки", error.response.data);
