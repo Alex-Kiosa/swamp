@@ -11,6 +11,7 @@ type Props = {
 }
 
 export const TableCards = ({isHost, gameId}: Props) => {
+    // debugger
     const cards = useAppSelector((state: RootState) => state.cards.tableCards)
 
     const modalRef = useRef<ModalHandle>(null)

@@ -15,7 +15,6 @@ export const useSocketConnection = (
         socket.auth = { token }
 
         const handleConnect = () => {
-            // console.log("CONNECTED:", socket.id)
             socket.emit("game:init", { gameId })
         }
 

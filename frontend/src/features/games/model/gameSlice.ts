@@ -10,6 +10,7 @@ const initialState: GameTypeWithChips = {
     isActive: false,
     isHost: false,
     limitPlayers: 15,
+    cube: 1,
     gameInitialized: false
 }
 

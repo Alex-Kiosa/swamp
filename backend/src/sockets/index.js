@@ -9,12 +9,9 @@ export function index(io) {
         const { gameId, playerId } = socket
         if (!gameId || !playerId) return
 
-        // console.log("NEW CONNECTION")
-
         registerChipSockets(io, socket)
         registerCubeSockets(io, socket)
         registerCardSockets(io, socket)
-        // console.log("CARD SOCKETS REGISTERED")
 
         // 🔥 Игрок онлайн
         await Game.updateOne(
@@ -43,7 +40,6 @@ export function index(io) {
                     }
                 }
             )
-
             io.to(gameId).emit("players:update")
         })
     })

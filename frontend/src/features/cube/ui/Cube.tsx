@@ -57,7 +57,7 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
     }
 
     return (
-        <div className={styles.scene}>
+        <div className={styles.wrap}>
             <div
                 className={`${styles.cube} ${isRolling ? styles.disabled : ""}`}
                 onClick={rollCube}

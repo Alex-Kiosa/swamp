@@ -1,4 +1,4 @@
-.scene {
+.wrap {
     --cube-size: 70px;
     width: var(--cube-size);
     height: var(--cube-size);
