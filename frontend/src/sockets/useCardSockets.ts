@@ -13,7 +13,7 @@ export const useCardSockets = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        socket.on("game:state", ({ tableCards, decks }) => {
+        socket.on("cards:init", ({ tableCards, decks }) => {
             dispatch(resetState({ tableCards, decks }))
         })
 
@@ -38,7 +38,7 @@ export const useCardSockets = () => {
             socket.off("card:addedToTable")
             socket.off("card:removedFromTable")
             socket.off("card:deckEmpty")
-            socket.off("game:state")
+            socket.off("cards:init")
         }
 
     }, [])

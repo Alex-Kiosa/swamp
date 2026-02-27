@@ -2,6 +2,7 @@ import Game from "../models/gameModel.js";
 import {v4 as uuidv4} from "uuid";
 import jwt from "jsonwebtoken";
 import {generateDeck} from "../services/deckService.js";
+import {GAME_PROJECTION} from "../constants/gameConstants.js";
 
 export function generateSocketToken(gameId, playerId, role) {
     const secretKey = process.env.JWT_SECRET
@@ -155,7 +156,7 @@ export async function getActiveGameByHost(req, res) {
         // Find game and return only necessary fields using the Mongo projection
         const game = await Game.findOne(
             {hostId, isActive: true},
-            {hostId: 1, gameId: 1, players: 1, limitPlayers: 1, isActive: 1, _id: 0}
+            GAME_PROJECTION
         )
 
         if (!game) {

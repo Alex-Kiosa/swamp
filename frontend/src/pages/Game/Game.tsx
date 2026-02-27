@@ -58,6 +58,7 @@ export const Game = () => {
         }
     }, [gameInitialized, isActive])
 
+
     useEffect(() => {
         if (showJoinForm && modalRef.current) {
             modalRef.current.open()

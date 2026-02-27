@@ -6,7 +6,7 @@ export function registerCardSockets(io, socket) {
         const game = await Game.findOne({gameId})
         if (!game) return
 
-        socket.emit("game:state", {
+        socket.emit("cards:init", {
             tableCards: game.tableCards,
             decks: game.decks
         })

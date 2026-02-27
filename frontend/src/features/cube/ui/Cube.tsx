@@ -26,7 +26,32 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
     const [rollId, setRollId] = useState<number | null>(null)
     const [spins, setSpins] = useState(4)
 
+    const rollCube = () => {
+        if (isRolling) return
+        socket.emit("cube:roll", { gameId })
+    }
+
     useCubeSockets(setIsRolling, setCubeValue, setRollId, setSpins)
+
+    // получаем state кубикa для нового игрока из базы
+    useEffect(() => {
+        const handlerGameState = ({ cube }: { cube: number }) => {
+            setCubeValue(cube)
+
+            const base = rotations[cube]
+
+            setRotation({
+                x: BASE_TILT.x + base.x,
+                y: BASE_TILT.y + base.y
+            })
+        }
+
+        socket.on("cube:state", handlerGameState)
+
+        return () => {
+            socket.off("cube:state", handlerGameState)
+        }
+    }, [])
 
     useEffect(() => {
         if (!rollId) return
@@ -50,11 +75,6 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
         })
 
     }, [rollId])
-
-    const rollCube = () => {
-        if (isRolling) return
-        socket.emit("cube:roll", { gameId })
-    }
 
     return (
         <div className={styles.wrap}>
