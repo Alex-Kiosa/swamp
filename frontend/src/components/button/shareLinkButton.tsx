@@ -5,29 +5,30 @@ type Props = {
     styles: string
     text?: string
     urlForCopy: string
+    className?: string
 }
 
-export const ShareLinkButton = ({styles, text = "Скопировать ссылку на игру", urlForCopy}: Props) => {
+export const ShareLinkButton = ({className, styles, text = "Скопировать ссылку", urlForCopy}: Props) => {
     const buttonRef = useRef<HTMLButtonElement>(null)
     const {showToast} = useToast()
 
     const onClickHandler = () => {
-            navigator.clipboard.writeText(urlForCopy)
-                .then(() => {
-                    showToast({
-                        type: "success",
-                        message: "Текст скопирован"
-                    })
+        navigator.clipboard.writeText(urlForCopy)
+            .then(() => {
+                showToast({
+                    type: "success",
+                    message: "Сохранено"
                 })
-                .catch(err => {
-                    console.error('Ошибка при копировании:', err)
-                })
+            })
+            .catch(err => {
+                console.error('Ошибка при копировании:', err)
+            })
     }
 
     return (
         <button
             ref={buttonRef}
-            className={styles}
+            className={`${className} ${styles}`}
             onClick={onClickHandler}
             title={"копировать ссылку"}>
             {text}

@@ -1,5 +1,5 @@
 .wrap {
-    --cube-size: 70px;
+    --cube-size: 60px;
     width: var(--cube-size);
     height: var(--cube-size);
     perspective: calc(var(--cube-size) * 16);

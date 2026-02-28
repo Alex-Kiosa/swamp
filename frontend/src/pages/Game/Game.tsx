@@ -18,6 +18,7 @@ import {useCardSockets} from "../../sockets/useCardSockets"
 import {usePlayerSockets} from "../../sockets/usePlayerSockets"
 import {TableCards} from "../../features/cards/ui/TableCards"
 import boardImage from "./assets/board.jpg"
+import {DropdownHost} from "./dropdownHost/DropdownHost.tsx";
 
 export const Game = () => {
     const {gameId} = useParams<{ gameId: string }>()
@@ -127,9 +128,12 @@ export const Game = () => {
             ) : (
                 <>
                     {/* LEFT TOOLS PANEL */}
-                    <div className="w-[28vw] p-5">
-                        <div className="alert block mb-6 p-6 rounded-lg flex justify-center">
-                            {gameId && <Cube gameId={gameId}/>}
+                    <div className="w-[340px] p-5 shrink-0">
+                        <div className="flex">
+                            <div className="alert block mb-6 p-6 rounded-lg flex justify-center flex-1">
+                                {gameId && <Cube gameId={gameId}/>}
+                            </div>
+                            {isHost && <DropdownHost/> }
                         </div>
 
                         <div className="alert block mb-6 p-6 rounded-lg">
@@ -148,7 +152,7 @@ export const Game = () => {
                     </div>
 
                     {/* GAME BOARD */}
-                    <div className="w-[72vw] pt-5 pr-5">
+                    <div className="pt-5 pr-5 flex-1 ">
                         <div
                             className="border-1 rounded-lg overflow-hidden"
                             style={{
@@ -157,7 +161,7 @@ export const Game = () => {
                         }}
                         >
                             <div
-                                className="h-[77vh] bg-no-repeat bg-contain bg-center relative mx-auto"
+                                className="h-[77vh] bg-no-repeat bg-contain"
                                 style={{
                                     backgroundImage: `url(${boardImage})`,
                                     aspectRatio: "24 / 17",
@@ -172,8 +176,6 @@ export const Game = () => {
                             <DeckCards/>
                         </div>
                     </div>
-
-                    {isHost && <Fab/>}
                 </>
             )}
         </div>

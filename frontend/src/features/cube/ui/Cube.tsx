@@ -53,6 +53,7 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
         }
     }, [])
 
+    // синхронизация кубика для игроков при броске
     useEffect(() => {
         if (!rollId) return
 
