@@ -2,7 +2,6 @@ import {useEffect, useRef, useState} from "react"
 import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks"
 import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-actions"
 import {Chips} from "./chips/Chips"
-import {Fab} from "./FAB/Fab"
 import {selectGame} from "../../features/games/model/gameSelectors"
 import {useNavigate, useParams} from "react-router"
 import {Form} from "../../components/form/Form"
@@ -40,13 +39,6 @@ export const Game = () => {
 
     // TODO: сделать zoom и drag and drop для поля с игрой
 
-    // // ZOOM
-    // const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    //     e.preventDefault()
-    //     const delta = e.deltaY * -0.001
-    //     setScale(prev => Math.min(Math.max(0.5, prev + delta), 2))
-    // }
-
     // SOCKETS + NAVIGATION LOGIC
     usePlayerSockets(gameId)
     useChipSockets()
@@ -76,24 +68,6 @@ export const Game = () => {
         }
         setShowJoinForm(true)
     }, [gameId])
-
-    // // LOAD FROM LOCAL STORAGE
-    // useEffect(() => {
-    //     const saved = localStorage.getItem(STORAGE_KEY)
-    //     if (saved) {
-    //         const parsed = JSON.parse(saved)
-    //         setScale(parsed.scale ?? 1)
-    //         setPosition(parsed.position ?? { x: 0, y: 0 })
-    //     }
-    // }, [])
-    //
-    // // SAVE TO LOCAL STORAGE
-    // useEffect(() => {
-    //     localStorage.setItem(
-    //         STORAGE_KEY,
-    //         JSON.stringify({ scale, position })
-    //     )
-    // }, [scale, position])
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
