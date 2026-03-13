@@ -4,7 +4,7 @@ import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-ac
 import {Chips} from "./chips/Chips"
 import {selectGame} from "../../features/games/model/gameSelectors"
 import {useNavigate, useParams} from "react-router"
-import {Form} from "../../components/form/Form"
+import {Form, type FormDataFields} from "../../components/form/Form"
 import {name_validation} from "../../common/utils/inputValidations"
 import {Input} from "../../components/input/Input"
 import {Modal, type ModalHandle} from "./modal/Modal"
@@ -30,7 +30,7 @@ export const Game = () => {
     const token = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
 
-    const joinFormSubmit = (data: any) => {
+    const joinFormSubmit = (data: FormDataFields) => {
         if (gameId) {
             dispatch(joinGameThunk(gameId, data["input-name"]))
             setShowJoinForm(false)
@@ -121,7 +121,7 @@ export const Game = () => {
                             <div className="text-lg font-bold text-center">
                                 Карты на столе
                             </div>
-                            <TableCards isHost={isHost} gameId={gameId}/>
+                            {gameId && <TableCards isHost={isHost} gameId={gameId}/>}
                         </div>
                     </div>
 

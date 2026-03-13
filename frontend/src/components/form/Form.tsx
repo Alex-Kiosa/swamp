@@ -4,10 +4,12 @@ import {Privacy} from "../privacy/Privacy.tsx";
 import {useAppSelector} from "../../common/hooks/hooks.ts";
 import {selectAppStatus} from "../../app/appSelectors.ts";
 
+export type FormDataFields = Record<string, string>
+
 type FormType = {
     title?: string
     submitText?: string
-    onSubmit: (data: any) => void
+    onSubmit: (data: FormDataFields) => void
     children?: React.ReactNode
 }
 

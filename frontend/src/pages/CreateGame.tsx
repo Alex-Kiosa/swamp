@@ -1,5 +1,5 @@
 import {FormProvider, useForm} from "react-hook-form";
-import {useAppDispatch, useAppSelector} from "../common/hooks/hooks.ts";
+import {useAppSelector} from "../common/hooks/hooks.ts";
 import {Input} from "../components/input/Input.tsx";
 import {users_number_validation} from "../common/utils/inputValidations.ts";
 import {selectAppStatus} from "../app/appSelectors.ts";
@@ -13,10 +13,10 @@ export const CreateGame = () => {
     const {gameInitialized, isActive, gameId} = useAppSelector(selectGame)
 
     const methods = useForm()
-    const dispatch = useAppDispatch()
+    // const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    const createGameHandler = methods.handleSubmit(data => {
+    const createGameHandler = methods.handleSubmit(() => {
         // dispatch(createGameThunk(data))
     })
 

@@ -30,7 +30,7 @@ export const DropdownHost = () => {
                 clipRule="evenodd"
             />
         </svg></div>
-        <div tabIndex="-1" className="dropdown-content menu bg-white rounded-box z-1 w-52 p-2 shadow-sm">
+        <div tabIndex={-1} className="dropdown-content menu bg-white rounded-box z-1 w-52 p-2 shadow-sm">
             <button className="btn btn-neutral mb-3" onClick={() => modalRef.current?.open()}>Добавить фишку</button>
             <ShareLinkButton styles={"btn"} className={"mb-3"} urlForCopy={gameUrl}/>
             <button className="btn btn-error " onClick={deleteChipsHandler} disabled={chips.length === 0 || false}>Удалить все фишки</button>
