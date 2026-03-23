@@ -38,14 +38,13 @@ const PORT = process.env.PORT
 app.use(cors)
 app.use(express.json())
 
-// Express settings for card images
-// process.cwd() - текущая рабочая директория запуска Node.js
-app.use("/static", express.static(path.join(process.cwd(), "uploads")))
-
 // Routes
 app.use("/api/auth", regRoutes)
 app.use("/api/games", gameRoutes)
 app.use("/api/", chipRoutes)
+
+// Статика
+app.use("/uploads", express.static(path.join(process.cwd(), "..", "uploads")))
 
 // Start the server only after DB connection
 connectDB()

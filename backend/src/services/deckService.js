@@ -16,13 +16,14 @@ function shuffle(array) {
 }
 
 export async function generateDeck(cardType) {
-    const dirPath = path.join(process.cwd(), "uploads", "cards", cardType)
+    // process.cwd() - текущая рабочая директория запуска Node.js
+    const dirPath = path.join(process.cwd(), "..", "uploads", "cards", cardType)
     const baseUrl = process.env.BASE_URL
 
     const files = await fs.readdir(dirPath)
 
     const images = files.map(file =>
-        `${baseUrl}/static/cards/${cardType}/${file}`
+        `${baseUrl}/uploads/cards/${cardType}/${file}`
     )
 
     return shuffle(images)
