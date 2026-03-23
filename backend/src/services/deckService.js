@@ -22,7 +22,7 @@ export async function generateDeck(cardType) {
     const files = await fs.readdir(dirPath)
 
     const images = files.map(file =>
-        `${url}/static/cards/${cardType}/${file}`
+        `${baseUrl}/static/cards/${cardType}/${file}`
     )
 
     return shuffle(images)
