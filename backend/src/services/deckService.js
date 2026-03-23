@@ -16,8 +16,8 @@ function shuffle(array) {
 }
 
 export async function generateDeck(cardType) {
-    const dirPath = path.join(process.cwd(), "public", "cards", cardType)
-    const url = process.env.URI + ":" + process.env.PORT
+    const dirPath = path.join(process.cwd(), "uploads", "cards", cardType)
+    const baseUrl = process.env.BASE_URL
 
     const files = await fs.readdir(dirPath)
 

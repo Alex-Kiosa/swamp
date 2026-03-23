@@ -9,6 +9,7 @@ import {connectDB} from "./db.js";
 import cors from "./middleware/corsMiddleware.js";
 import {socketAuthMiddleware} from "./sockets/socketAuth.js";
 import {index} from "./sockets/index.js";
+import path from "path";
 
 dotenv.config()
 
@@ -31,13 +32,15 @@ socketAuthMiddleware(io)
 // регистрация всех сокет-хендлеров
 index(io)
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT
 
 // Middlewares
 app.use(cors)
 app.use(express.json())
 
-app.use("/static", express.static("public"))
+// Express settings for card images
+// process.cwd() - текущая рабочая директория запуска Node.js
+app.use("/static", express.static(path.join(process.cwd(), "uploads")))
 
 // Routes
 app.use("/api/auth", regRoutes)

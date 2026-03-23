@@ -6,26 +6,26 @@ export const deckConfig: Record<
 > = {
     plants: {
         title: "Растения",
-        back: "/cards-backs/plants.jpg",
+        back: "/uploads/cards-backs/plants.jpg",
     },
     animals: {
         title: "Животные",
-        back: "/cards-backs/animals.jpg",
+        back: "/uploads/cards-backs/animals.jpg",
     },
     wisdom: {
         title: "Мудрые подсказки",
-        back: "/cards-backs/wisdom.jpg",
+        back: "/uploads/cards-backs/wisdom.jpg",
     },
     creatures: {
         title: "Сказочные существа",
-        back: "/cards-backs/creatures.jpg",
+        back: "/uploads/cards-backs/creatures.jpg",
     },
     mac: {
         title: "МАК подсказки",
-        back: "/cards-backs/mac.jpg",
+        back: "/uploads/cards-backs/mac.jpg",
     },
     swamp: {
         title: "Болото",
-        back: "/cards-backs/swamp.jpg",
+        back: "/uploads/cards-backs/swamp.jpg",
     },
 }

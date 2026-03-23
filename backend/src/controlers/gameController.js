@@ -31,6 +31,7 @@ export async function createGame(req, res) {
 
         // 🔥 Генерируем колоды
         const plantsDeck = await generateDeck("plants")
+        console.log(plantsDeck)
         const animalsDeck = await generateDeck("animals")
         const creaturesDeck = await generateDeck("creatures")
         const wisdomDeck = await generateDeck("wisdom")
