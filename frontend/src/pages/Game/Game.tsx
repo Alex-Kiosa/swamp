@@ -27,6 +27,8 @@ export const Game = () => {
     const dispatch = useAppDispatch()
     const [showJoinForm, setShowJoinForm] = useState(false)
 
+    const boardRef = useRef<HTMLDivElement>(null)
+
     const token = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
 
@@ -37,9 +39,6 @@ export const Game = () => {
         }
     }
 
-    // TODO: сделать zoom и drag and drop для поля с игрой
-
-    // SOCKETS + NAVIGATION LOGIC
     usePlayerSockets(gameId)
     useChipSockets()
     useCardSockets()
@@ -50,7 +49,6 @@ export const Game = () => {
             navigate("/404", {replace: true})
         }
     }, [gameInitialized, isActive])
-
 
     useEffect(() => {
         if (showJoinForm && modalRef.current) {
@@ -69,83 +67,50 @@ export const Game = () => {
         setShowJoinForm(true)
     }, [gameId])
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && ["+", "-", "=", "0"].includes(e.key)) {
-                e.preventDefault()
-            }
-        }
-        const handleWheelGlobal = (e: WheelEvent) => {
-            if (e.ctrlKey) e.preventDefault()
-        }
-        window.addEventListener("keydown", handleKeyDown)
-        window.addEventListener("wheel", handleWheelGlobal, {passive: false})
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown)
-            window.removeEventListener("wheel", handleWheelGlobal)
-        }
-    }, [])
-
     return (
         <div className="w-screen h-screen overflow-hidden relative flex">
             {showJoinForm ? (
-                <Modal
-                    ref={modalRef}
-                    closeOnBackdropClick={false}
-                    showCloseButton={false}
-                >
+                <Modal ref={modalRef} closeOnBackdropClick={false} showCloseButton={false}>
                     <Form onSubmit={joinFormSubmit} submitText="Подтвердить">
                         <Input {...name_validation} />
                     </Form>
                 </Modal>
             ) : (
                 <>
-                    {/* LEFT TOOLS PANEL */}
                     <div className="w-[340px] p-5 shrink-0">
                         <div className="flex">
-                            <div className="alert block mb-6 p-6 rounded-lg flex justify-center flex-1">
+                            <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
                                 {gameId && <Cube gameId={gameId}/>}
                             </div>
                             {isHost && <DropdownHost/> }
                         </div>
 
                         <div className="alert block mb-6 p-6 rounded-lg">
-                            <div className="text-lg font-bold text-center">
-                                Список игроков
-                            </div>
+                            <div className="text-lg font-bold text-center">Наши игроки</div>
                             <Players/>
                         </div>
 
-                        <div className="alert block mb-6 p-6 rounded-lg">
-                            <div className="text-lg font-bold text-center">
-                                Карты на столе
-                            </div>
+                        <div className="alert mb-6 p-6 rounded-lg">
+                            <div className="text-lg font-bold text-center">Карты на столе</div>
                             {gameId && <TableCards isHost={isHost} gameId={gameId}/>}
                         </div>
                     </div>
 
                     {/* GAME BOARD */}
-                    <div className="pt-5 pr-5 flex-1 ">
-                        <div
-                            className="border-1 rounded-lg overflow-hidden"
-                            style={{
-                                backgroundImage: "repeating-linear-gradient(-45deg,var(--color-base-100),var(--color-base-100)13px,var(--color-base-200)13px,var(--color-base-200)14px)",
-                                backgroundColor: "#e1e6d9"
-                        }}
-                        >
+                    <div className="pt-5 pr-5 flex-1">
+                        <div className="border-1 rounded-lg overflow-hidden">
                             <div
-                                className="h-[77vh] bg-no-repeat bg-contain"
+                                ref={boardRef}
+                                className="h-[77vh] bg-no-repeat bg-contain relative"
                                 style={{
                                     backgroundImage: `url(${boardImage})`,
                                     aspectRatio: "24 / 17",
                                 }}
                             >
-                                <Chips/>
+                                <Chips boardRef={boardRef}/>
                             </div>
                         </div>
 
-                        {/* DECKS */}
                         <div className="mt-4">
                             <DeckCards/>
                         </div>

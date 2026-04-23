@@ -4,6 +4,6 @@ const url = import.meta.env.VITE_SOCKET_URL
 
 export const socket = io(url, {
     transports: ["websocket"],
-    // for debug
+    // подключим socket позже, после ввода имени игрока
     autoConnect: false,
 })

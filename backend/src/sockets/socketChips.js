@@ -8,7 +8,6 @@ export function registerChipSockets(io, socket) {
     }
 
     socket.on("chip:drag:start", ({ chipId, gameId }) => {
-        // console.log(chipId, gameId) // !!! не выводится
         lockedChips[gameId] ??= {}
         lockedChips[gameId][chipId] = socket.id
 

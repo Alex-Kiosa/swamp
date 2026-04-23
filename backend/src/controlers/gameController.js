@@ -3,6 +3,7 @@ import {v4 as uuidv4} from "uuid";
 import jwt from "jsonwebtoken";
 import {generateDeck} from "../services/deckService.js";
 import {GAME_PROJECTION} from "../constants/gameConstants.js";
+import User from "../models/userModel.js";
 
 export function generateSocketToken(gameId, playerId, role) {
     const secretKey = process.env.JWT_SECRET
@@ -29,14 +30,15 @@ export async function createGame(req, res) {
             return res.status(403).json({message: "Each user can have only one active game"})
         }
 
-        // 🔥 Генерируем колоды
+        // Генерируем колоды
         const plantsDeck = await generateDeck("plants")
-        console.log(plantsDeck)
         const animalsDeck = await generateDeck("animals")
         const creaturesDeck = await generateDeck("creatures")
         const wisdomDeck = await generateDeck("wisdom")
         const macDeck = await generateDeck("mac")
         const swampDeck = await generateDeck("swamp")
+
+        const user = await User.findOne({_id: req.user.id})
 
         const game = new Game({
             hostId: hostId,
@@ -44,7 +46,7 @@ export async function createGame(req, res) {
             players: [
                 {
                     playerId: hostId,
-                    name: "HOST",
+                    name: user.name,
                     role: "HOST",
                     socketId: null,
                     isOnline: false
