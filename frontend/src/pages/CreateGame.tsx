@@ -9,11 +9,10 @@ import {selectGame} from "../features/games/model/gameSelectors.ts";
 import {useNavigate} from "react-router";
 
 export const CreateGame = () => {
-    const status = useAppSelector(selectAppStatus)
-    const {gameInitialized, isActive, gameId} = useAppSelector(selectGame)
+    const appStatus = useAppSelector(selectAppStatus)
+    const {status, isActive, gameId} = useAppSelector(selectGame)
 
     const methods = useForm()
-    // const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
     const createGameHandler = methods.handleSubmit(() => {
@@ -21,10 +20,10 @@ export const CreateGame = () => {
     })
 
     useEffect(() => {
-        if (gameInitialized && isActive) {
+        if (status === "succeeded" && isActive) {
             navigate(`/game/${gameId}`, {replace: true})
         }
-    }, [gameInitialized, isActive])
+    }, [status, isActive])
 
     return (
         <FormProvider {...methods}>
@@ -45,7 +44,7 @@ export const CreateGame = () => {
                     className="btn btn-primary w-full text-base"
                     disabled={status === "loading"}
                 >
-                    {status === "loading" ? <Loading/> : "Создать"}
+                    {appStatus === "loading" ? <Loading/> : "Создать"}
                 </button>
             </form>
         </FormProvider>
