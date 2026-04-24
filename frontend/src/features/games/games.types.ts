@@ -1,4 +1,5 @@
 import type {ChipType} from "./chips.types.ts";
+import type {gameStatusType} from "./model/gameSlice.ts";
 
 export type PlayerType = {
     name: string,
@@ -18,4 +19,4 @@ export type GameType = {
     cube: number
 }
 
-export type GameTypeWithChips = GameType & { chips: ChipType[], gameInitialized: boolean }
+export type GameTypeWithChips = GameType & { chips: ChipType[], status: gameStatusType }

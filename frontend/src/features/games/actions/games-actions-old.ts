@@ -1,12 +1,5 @@
 import api from "../../../api/axios.ts";
-import {
-    createGame,
-    deleteChipsByGame,
-    deleteGame,
-    getChips, getGameFailed, getGameNotFound,
-    getGamePending,
-    getGameSuccess
-} from "../model/gameSlice.ts";
+import {createGame, deleteChipsByGame, deleteGame, getChips, getGame} from "../model/gameSlice.ts";
 import type {AppDispatch} from "../../../app/store.ts";
 import {setAppError} from "../../../app/app-reducer.ts";
 
@@ -27,82 +20,61 @@ export const createGameThunk = () => {
 }
 
 export const getGameThunk = (gameId: string) => {
-    return async (dispatch: AppDispatch) => {
-        const authToken =
-            localStorage.getItem("token") ||
-            localStorage.getItem("guestToken")
+    const authToken =
+        localStorage.getItem("token") ||
+        localStorage.getItem("guestToken")
 
-        try {
-            // ⏳ старт загрузки
-            dispatch(getGamePending())
-
-            const gameRes = await api.get(`/games/${gameId}`, {
-                headers: { Authorization: `Bearer ${authToken}` }
+    return (dispatch: AppDispatch) => {
+        api.get(`/games/${gameId}`,
+            {
+                headers: {Authorization: `Bearer ${authToken}`}
             })
+            .then(gameRes => {
+                dispatch(getGame(gameRes.data))
 
-            dispatch(getGameSuccess(gameRes.data))
-
-            const chipsRes = await api.get(
-                `/games/${gameRes.data.gameId}/chips`,
-                {
-                    headers: { Authorization: `Bearer ${authToken}` }
-                }
-            )
-
-            dispatch(getChips(chipsRes.data))
-
-        } catch (error: any) {
-            const status = error.response?.status
-
-            if (status === 404) {
-                dispatch(getGameNotFound())
-                return
-            }
-
-            dispatch(getGameFailed())
-            dispatch(setAppError(error.response?.data?.message || "Failed to load game"))
-
-            console.log("Ошибка при инициализации игры", error)
-        }
+                // ВАЖНО: возвращаем promise
+                return api.get(
+                    `/games/${gameRes.data.gameId}/chips`,
+                    {
+                        headers: {Authorization: `Bearer ${authToken}`}
+                    }
+                )
+            })
+            .then(chipsRes => {
+                dispatch(getChips(chipsRes.data))
+            })
+            .catch(error => {
+                dispatch(setAppError(error.response?.data?.message))
+                console.log("Ошибка при инициализации игры", error)
+            })
     }
 }
 
 // TODO: протестировать получение игры с несколькими юзерами
 export const getGameByUserThunk = () => {
-    return async (dispatch: AppDispatch) => {
-        const token = localStorage.getItem("token")
+    return (dispatch: AppDispatch) => {
+        api.get(`/games/active`, {
+            headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+        })
+            .then(gameRes => {
+                dispatch(getGame(gameRes.data))
 
-        try {
-            dispatch(getGamePending())
-
-            const gameRes = await api.get(`/games/active`, {
-                headers: { Authorization: `Bearer ${token}` }
+                // ВАЖНО: возвращаем promise
+                return api.get(
+                    `/games/${gameRes.data.gameId}/chips`,
+                    {
+                        headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
+                    }
+                )
             })
-
-            dispatch(getGameSuccess(gameRes.data))
-
-            const chipsRes = await api.get(
-                `/games/${gameRes.data.gameId}/chips`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
-            )
-
-            dispatch(getChips(chipsRes.data))
-
-        } catch (error: any) {
-            const status = error.response?.status
-
-            if (status === 404) {
-                dispatch(getGameNotFound())
-                return
-            }
-
-            dispatch(getGameFailed())
-            dispatch(setAppError(error.response?.data?.message || "Failed to load active game"))
-
-            console.log("Ошибка при инициализации игры", error)
-        }
+            // TODO: убрать, когда реализую обновления UI у всех игроков через сокеты
+            .then(chipsRes => {
+                dispatch(getChips(chipsRes.data))
+            })
+            .catch(error => {
+                dispatch(setAppError(error.response?.data?.message))
+                console.log("Ошибка при инициализации игры", error)
+            })
     }
 }
 

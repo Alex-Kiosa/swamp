@@ -2,6 +2,8 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import type { ChipType } from "../chips.types.ts"
 import type { GameType, GameTypeWithChips } from "../games.types.ts"
 
+export type gameStatusType = "idle" | "loading" | "succeeded" | "not_found" | "failed"
+
 const initialState: GameTypeWithChips = {
     gameId: null,
     hostId: null,
@@ -11,7 +13,7 @@ const initialState: GameTypeWithChips = {
     isHost: false,
     limitPlayers: 15,
     cube: 1,
-    gameInitialized: false
+    status: "idle"
 }
 
 export const gameSlice = createSlice({
@@ -20,13 +22,30 @@ export const gameSlice = createSlice({
     reducers: {
         createGame: (state, action: PayloadAction<{ game: GameType }>) => {
             Object.assign(state, action.payload)
-            state.gameInitialized = true
+            state.status = "succeeded"
             state.isHost = true
         },
 
-        getGame: (state, action: PayloadAction<GameType>) => {
+        // getGame: (state, action: PayloadAction<GameType>) => {
+        //     Object.assign(state, action.payload)
+        //     state.gameInitialized = true
+        // },
+
+        getGamePending: (state) => {
+            state.status = "loading"
+        },
+
+        getGameSuccess: (state, action: PayloadAction<GameType>) => {
             Object.assign(state, action.payload)
-            state.gameInitialized = true
+            state.status = "succeeded"
+        },
+
+        getGameNotFound: (state) => {
+            state.status = "not_found"
+        },
+
+        getGameFailed: (state) => {
+            state.status = "failed"
         },
 
         deleteGame: () => initialState,
@@ -67,7 +86,11 @@ export const gameSlice = createSlice({
 })
 
 export const {
-    getGame,
+    // getGame,
+    getGamePending,
+    getGameSuccess,
+    getGameFailed,
+    getGameNotFound,
     createGame,
     deleteGame,
     getChips,

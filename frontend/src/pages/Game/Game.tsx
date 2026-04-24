@@ -3,7 +3,7 @@ import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks"
 import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-actions"
 import {Chips} from "./chips/Chips"
 import {selectGame} from "../../features/games/model/gameSelectors"
-import {useNavigate, useParams} from "react-router"
+import {useParams} from "react-router"
 import {Form, type FormDataFields} from "../../components/form/Form"
 import {name_validation} from "../../common/utils/inputValidations"
 import {Input} from "../../components/input/Input"
@@ -18,15 +18,15 @@ import {usePlayerSockets} from "../../sockets/usePlayerSockets"
 import {TableCards} from "../../features/cards/ui/TableCards"
 import boardImage from "./assets/board.jpg"
 import {DropdownHost} from "./dropdownHost/DropdownHost.tsx";
+import {NotFound} from "../NotFound.tsx";
+import {Loading} from "../../components/loading/Loading.tsx";
 
 export const Game = () => {
+    const {status, isHost} = useAppSelector(selectGame)
     const {gameId} = useParams<{ gameId: string }>()
-    const navigate = useNavigate()
-    const {isActive, gameInitialized, isHost} = useAppSelector(selectGame)
     const modalRef = useRef<ModalHandle>(null)
     const dispatch = useAppDispatch()
     const [showJoinForm, setShowJoinForm] = useState(false)
-
     const boardRef = useRef<HTMLDivElement>(null)
 
     const token = localStorage.getItem("token")
@@ -45,12 +45,6 @@ export const Game = () => {
     useSocketConnection(gameId, socketToken)
 
     useEffect(() => {
-        if (gameInitialized && !isActive) {
-            navigate("/404", {replace: true})
-        }
-    }, [gameInitialized, isActive])
-
-    useEffect(() => {
         if (showJoinForm && modalRef.current) {
             modalRef.current.open()
         } else {
@@ -66,6 +60,14 @@ export const Game = () => {
         }
         setShowJoinForm(true)
     }, [gameId])
+
+    if (status === "idle" || status === "loading") {
+        return <Loading />
+    }
+
+    if (status === "not_found") {
+        return <NotFound title={"Игра не найдена"} description={"Такой игры нет, или она закончилась"} />
+    }
 
     return (
         <div className="w-screen h-screen overflow-hidden relative flex">
