@@ -23,7 +23,7 @@ export const Chip = ({chip, boardRef}: Props) => {
     const draggingRef = useRef(false)
     const offsetRef = useRef({x: 0, y: 0})
 
-    const HALF_SIZE = 20 // половина 40px
+    const HALF_SIZE = 20
 
     // синхронизация с сервером
     useEffect(() => {
@@ -86,11 +86,11 @@ export const Chip = ({chip, boardRef}: Props) => {
             onMouseDown={onMouseDownHandler}
             style={{
                 position: "absolute",
-                left: tempPos.x,   // 🔥 пиксели
-                top: tempPos.y,    // 🔥 пиксели
+                left: tempPos.x,
+                top: tempPos.y,
                 transform: "translate(-50%, -50%)",
-                width: "40px",
-                height: "40px",
+                width: "4%",
+                height: "4%",
                 backgroundColor: color,
                 borderRadius: shape === "Circle" ? "50%" : "4px",
                 clipPath:

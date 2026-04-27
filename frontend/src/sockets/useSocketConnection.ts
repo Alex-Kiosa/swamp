@@ -8,11 +8,8 @@ export const useSocketConnection = (
     useEffect(() => {
         if (!gameId || !socketToken) return
 
-        const token = localStorage.getItem("socketToken")
-        if (!token) return
-
         // передаём auth до connect
-        socket.auth = { token }
+        socket.auth = { token: socketToken }
 
         const handleConnect = () => {
             socket.emit("game:init", { gameId })

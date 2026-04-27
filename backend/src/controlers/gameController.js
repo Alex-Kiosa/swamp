@@ -5,13 +5,12 @@ import {generateDeck} from "../services/deckService.js";
 import {GAME_PROJECTION} from "../constants/gameConstants.js";
 import User from "../models/userModel.js";
 
-export function generateSocketToken(gameId, playerId, role) {
+export function generateSocketToken(gameId, playerId) {
     const secretKey = process.env.JWT_SECRET
     const socketToken = jwt.sign(
         {
             gameId,
-            playerId,
-            role
+            playerId
         },
         secretKey,
         {expiresIn: "72h"}
@@ -70,7 +69,7 @@ export async function createGame(req, res) {
 
         await game.save()
 
-        const socketToken = generateSocketToken(gameId, hostId, "HOST")
+        const socketToken = generateSocketToken(gameId, hostId)
 
         res.status(201).json({
             game,
@@ -79,6 +78,29 @@ export async function createGame(req, res) {
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Failed to create game"})
+    }
+}
+
+export async function generateSocketTokenHost(req, res) {
+    try {
+        const { gameId } = req.params
+        const userId = req.user.id
+
+        const game = await Game.findOne({ gameId, isActive: true })
+
+        if (!game) {
+            return res.status(404).json({ message: "Game not found" })
+        }
+
+        if (String(game.hostId) !== userId) {
+            return res.status(403).json({ message: "Access denied" })
+        }
+
+        const socketToken = generateSocketToken(gameId, userId)
+
+        return res.json({ socketToken })
+    } catch (error) {
+        return res.status(500).json({ message: "Error generateSocketTokenHost" })
     }
 }
 
@@ -107,7 +129,7 @@ export async function joinGameAsPlayer(req, res) {
 
         await game.save()
 
-        const socketToken = generateSocketToken(gameId, playerId, "PLAYER")
+        const socketToken = generateSocketToken(gameId, playerId)
 
         res.status(201).json({
             socketToken,
@@ -122,6 +144,7 @@ export async function joinGameAsPlayer(req, res) {
 }
 
 export async function getGamePublic(req, res) {
+    // console.log("getting game public")
     try {
         const gameId = req.params.gameId
 
@@ -141,7 +164,7 @@ export async function getGamePublic(req, res) {
             isHost = req.user.id === String(game.hostId)
         }
 
-        //Преобразуем Mongoose документ в обычный документ
+        //Преобразуем Mongoose документ в обычный JS объект
         const gameObj = game.toObject()
         gameObj.isHost = isHost
 

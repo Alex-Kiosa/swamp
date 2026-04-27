@@ -2,7 +2,7 @@ import express from "express";
 import {roleMiddleware} from "../middleware/roleMiddleware.js";
 import {
     createGame,
-    deleteGame,
+    deleteGame, generateSocketTokenHost,
     getActiveGameByHost,
     getGamePublic,
     joinGameAsPlayer
@@ -17,11 +17,11 @@ const router = express.Router();
 router.post("/", roleMiddleware(["ADMIN", "USER", "DEMO_USER"]), createGame)
 router.get("/active", authMiddleware, getActiveGameByHost)
 router.delete("/:gameId", authMiddleware, deleteGame)
+router.get("/:gameId/socket-token", authMiddleware, generateSocketTokenHost)
 
 // PUBLIC
 router.post("/:gameId/join", joinGameAsPlayer)
 // TODO: переделать flow для генерации сокет токена в правильной архитектуре. Сейчас есть баг. Если создать игру в одном браузере, а потом зайти в аккаунт ведущего в другом, то сокет токена не будет
-// router.post("/:gameId/socket-token", generateSocketTokenGame)
 router.get("/:gameId", optionalAuthMiddleware, getGamePublic)
 
 export default router;

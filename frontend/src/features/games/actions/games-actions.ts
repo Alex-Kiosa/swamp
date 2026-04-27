@@ -17,7 +17,7 @@ export const createGameThunk = () => {
         })
             .then(res => {
                 dispatch((createGame(res.data.game)))
-                localStorage.setItem("socketToken", res.data.socketToken)
+                // localStorage.setItem("socketToken", res.data.socketToken)
             })
             .catch(error => {
                 dispatch(setAppError(error.response.data.message))
@@ -28,19 +28,34 @@ export const createGameThunk = () => {
 
 export const getGameThunk = (gameId: string) => {
     return async (dispatch: AppDispatch) => {
-        const authToken =
-            localStorage.getItem("token") ||
-            localStorage.getItem("guestToken")
+        const authToken = localStorage.getItem("token")
+        const socketToken = localStorage.getItem("socketToken")
 
         try {
             // ⏳ старт загрузки
             dispatch(getGamePending())
 
             const gameRes = await api.get(`/games/${gameId}`, {
-                headers: { Authorization: `Bearer ${authToken}` }
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
             })
 
             dispatch(getGameSuccess(gameRes.data))
+
+            // Получаем socketToken для ведущего
+            if (gameRes.data.isHost && !socketToken) {
+                const socketRes = await api.get(
+                    `/games/${gameId}/socket-token`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        }
+                    }
+                )
+
+                localStorage.setItem("socketToken", socketRes.data.socketToken)
+            }
 
             const chipsRes = await api.get(
                 `/games/${gameRes.data.gameId}/chips`,
@@ -99,7 +114,7 @@ export const getGameByUserThunk = () => {
             }
 
             dispatch(getGameFailed())
-            dispatch(setAppError(error.response?.data?.message || "Failed to load active game"))
+            dispatch(setAppError(error.response?.data?.message || "Ошибка при инициализации игры"))
 
             console.log("Ошибка при инициализации игры", error)
         }

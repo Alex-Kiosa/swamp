@@ -3,12 +3,30 @@ import {registerChipSockets} from "./socketChips.js"
 import {registerCubeSockets} from "./socketCube.js"
 import {registerCardSockets} from "./socketCards.js"
 import {GAME_PROJECTION} from "../constants/gameConstants.js";
+import jwt from "jsonwebtoken";
 
 export function index(io) {
     // когда соединение установлено, библиотека генерирует событие connection
     io.on("connection", async (socket) => {
         const {gameId, playerId} = socket
-        if (!gameId || !playerId) return
+        const token = socket.handshake.auth?.token
+
+        // console.log("SOCKET CONNECT: ", {
+        //     gameId,
+        //     playerId,
+        //     socketId: socket.id
+        // })
+
+        // console.log("HANDSHAKE:", socket.handshake)
+
+        // const payload = jwt.verify(token, process.env.JWT_SECRET)
+        // console.log("Payload: ", payload)
+
+        // защита от левых подключений
+        if (!gameId || !playerId) {
+            socket.disconnect(true)
+            return
+        }
 
         registerChipSockets(io, socket)
         registerCubeSockets(io, socket)

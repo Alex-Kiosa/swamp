@@ -26,11 +26,6 @@ export const gameSlice = createSlice({
             state.isHost = true
         },
 
-        // getGame: (state, action: PayloadAction<GameType>) => {
-        //     Object.assign(state, action.payload)
-        //     state.gameInitialized = true
-        // },
-
         getGamePending: (state) => {
             state.status = "loading"
         },
@@ -86,7 +81,6 @@ export const gameSlice = createSlice({
 })
 
 export const {
-    // getGame,
     getGamePending,
     getGameSuccess,
     getGameFailed,

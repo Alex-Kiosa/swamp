@@ -29,8 +29,9 @@ export const Game = () => {
     const [showJoinForm, setShowJoinForm] = useState(false)
     const boardRef = useRef<HTMLDivElement>(null)
 
-    const token = localStorage.getItem("token")
+    // const autToken = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
+    const authToken = localStorage.getItem("token")
 
     const joinFormSubmit = (data: FormDataFields) => {
         if (gameId) {
@@ -54,14 +55,14 @@ export const Game = () => {
 
     useEffect(() => {
         if (!gameId) return
-        if (token || socketToken) {
+        if (socketToken || authToken) {
             dispatch(getGameThunk(gameId))
             return
         }
         setShowJoinForm(true)
     }, [gameId])
 
-    if (status === "idle" || status === "loading") {
+    if (status === "loading") {
         return <Loading />
     }
 
@@ -92,7 +93,7 @@ export const Game = () => {
                             <Players/>
                         </div>
 
-                        <div className="alert mb-6 p-6 rounded-lg">
+                        <div className="alert block mb-6 p-6 rounded-lg">
                             <div className="text-lg font-bold text-center">Карты на столе</div>
                             {gameId && <TableCards isHost={isHost} gameId={gameId}/>}
                         </div>
