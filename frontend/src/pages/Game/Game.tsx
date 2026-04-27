@@ -29,7 +29,6 @@ export const Game = () => {
     const [showJoinForm, setShowJoinForm] = useState(false)
     const boardRef = useRef<HTMLDivElement>(null)
 
-    // const autToken = localStorage.getItem("token")
     const socketToken = localStorage.getItem("socketToken")
     const authToken = localStorage.getItem("token")
 
