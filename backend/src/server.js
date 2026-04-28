@@ -1,5 +1,5 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import dotenv from "dotenv"
 import http from 'http';
 import {Server} from 'socket.io';
 import regRoutes from "./routes/authRoutes.js";
@@ -10,6 +10,7 @@ import cors from "./middleware/corsMiddleware.js";
 import {socketAuthMiddleware} from "./sockets/socketAuth.js";
 import {index} from "./sockets/index.js";
 import path from "path";
+import {createTransporter, sendRegEmail} from "./services/mailService.js"
 
 dotenv.config()
 
@@ -42,17 +43,39 @@ app.use(express.json())
 app.use("/api/auth", regRoutes)
 app.use("/api/games", gameRoutes)
 app.use("/api/", chipRoutes)
+app.get("/api/test-email", async (req, res) => {
+    try {
+        await sendRegEmail("akiosa88@gmail.com", "Alex", "test")
+
+        console.log("test email was sent successfully!")
+        res.json({ message: "Email sent" })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "error sending test email"})
+    }
+})
+// TODO: add report in data base, add record email's logging in report https://chatgpt.com/share/69f0e2b9-b9a0-832a-8ca1-41f4628caec3
 
 // Статика
 app.use("/uploads", express.static(path.join(process.cwd(), "..", "uploads")))
 
 // Start the server only after DB connection
-connectDB()
-    .then(() => {
+async function start() {
+    try {
+        await connectDB()
+
+        // Check SMTP
+        const transporter = createTransporter()
+        await transporter.verify()
+        console.log("📧 SMTP ready")
+
         server.listen(PORT, () => {
             console.log("🚀 Server started on PORT:", PORT)
         })
-    })
-    .catch((error) => {
+
+    } catch (error) {
         console.error("❌ Failed to start server:", error)
-    })
+    }
+}
+
+start()

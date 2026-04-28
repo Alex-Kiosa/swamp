@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
+import {sendRegEmail} from "../services/mailService.js";
 
 export function generateAccessToken(id, email, roles) {
     const secretKey = process.env.JWT_SECRET
@@ -30,6 +31,11 @@ export async function createUser(req, res) {
         const hashPassword = await bcrypt.hash(password, 7);
         const user = new User({name, email, password: hashPassword, roles: ["USER"]})
         await user.save()
+
+        // Send email
+        sendRegEmail(email, name, password)
+            .then(() => console.log("✅ Email registration sent"))
+            .catch(error => console.error("❌ Email registration failed:", error))
 
         res.status(201).json({
             message: "User was created",
