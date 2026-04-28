@@ -79,7 +79,7 @@ export const Game = () => {
                 </Modal>
             ) : (
                 <>
-                    <div className="w-[340px] p-5 shrink-0">
+                    <div className="w-[340px] p-5 shrink-0 flex flex-col h-full">
                         <div className="flex">
                             <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
                                 {gameId && <Cube gameId={gameId}/>}
@@ -88,11 +88,11 @@ export const Game = () => {
                         </div>
 
                         <div className="alert block mb-6 p-6 rounded-lg">
-                            <div className="text-lg font-bold text-center">Наши игроки</div>
+                            {/*<div className="text-lg font-bold text-center">Наши игроки</div>*/}
                             <Players/>
                         </div>
 
-                        <div className="alert block mb-6 p-6 rounded-lg">
+                        <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
                             <div className="text-lg font-bold text-center">Карты на столе</div>
                             {gameId && <TableCards isHost={isHost} gameId={gameId}/>}
                         </div>
@@ -103,7 +103,7 @@ export const Game = () => {
                         <div className="border-1 rounded-lg overflow-hidden">
                             <div
                                 ref={boardRef}
-                                className="h-[77vh] bg-no-repeat bg-contain relative"
+                                className="h-[75vh] bg-no-repeat bg-contain relative"
                                 style={{
                                     backgroundImage: `url(${boardImage})`,
                                     aspectRatio: "24 / 17",

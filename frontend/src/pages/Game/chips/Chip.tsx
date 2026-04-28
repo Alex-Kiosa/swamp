@@ -16,7 +16,6 @@ export const Chip = ({ chip, boardRef }: Props) => {
 
     const { position, color, shape, isLocked } = chip
 
-    // 🔥 position = { x: 0..1, y: 0..1 }
     const [tempPos, setTempPos] = useState(position)
 
     const posRef = useRef(position)
@@ -96,20 +95,24 @@ export const Chip = ({ chip, boardRef }: Props) => {
             style={{
                 position: "absolute",
 
-                // 🔥 НИКАКИХ px
+                // размеры фишки в процентах
                 left: `${tempPos.x * 100}%`,
                 top: `${tempPos.y * 100}%`,
 
                 transform: "translate(-50%, -50%)",
-                width: "4%",
-                height: "4%",
+                width: "3.5%",
+                aspectRatio: "1 / 1",
 
-                backgroundColor: color,
+                background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), transparent 40%),${color}`,
                 borderRadius: shape === "Circle" ? "50%" : "4px",
                 clipPath:
                     shape === "Triangle"
                         ? "polygon(50% 0%, 0% 100%, 100% 100%)"
                         : "none",
+                boxShadow:
+                    `inset 0 2px 4px rgba(255,255,255,0.4),
+                    inset 0 -3px 6px rgba(0,0,0,0.4),
+                    0 4px 10px rgba(0,0,0,0.3)`,
 
                 cursor: isLocked ? "not-allowed" : "grab",
                 opacity: isLocked ? 0.5 : 1,

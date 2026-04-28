@@ -11,9 +11,14 @@ export async function createChip(req, res) {
 
         if (!game) return res.status(404).json({message: "Game not found"})
 
+        const scatterNearCenter = 0.03
+
         const chip = new Chip({
             game: game._id,
-            position: {x: 0, y: 0},
+            position: {
+                x: 0.5 + (Math.random() - 0.5) * scatterNearCenter,
+                y: 0.5 + (Math.random() - 0.5) * scatterNearCenter
+            },
             color,
             shape,
         })

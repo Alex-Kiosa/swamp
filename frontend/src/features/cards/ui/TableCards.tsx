@@ -49,6 +49,7 @@ export const TableCards = ({isHost, gameId}: Props) => {
                             src={card.imageUrl}
                             alt="table card"
                             className="h-40 block cursor-pointer hover:scale-105 transition rounded rounded-md"
+                            title="Увеличить"
                             onClick={() => handleOpenCard(card.id)}
                         />
                     </div>
