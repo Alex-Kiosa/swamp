@@ -2,14 +2,14 @@ import express from "express";
 import {roleMiddleware} from "../middleware/roleMiddleware.js";
 import {
     createGame,
-    deleteGame, generateSocketTokenHost,
+    deleteGame,
+    generateSocketTokenHost,
     getActiveGameByHost,
     getGamePublic,
     joinGameAsPlayer
 } from "../controlers/gameController.js";
 import {authMiddleware} from "../middleware/authMiddleware.js";
 import {optionalAuthMiddleware} from "../middleware/optionalAuthMiddleware.js";
-import {socketAuthMiddleware} from "../sockets/socketAuth.js";
 
 const router = express.Router();
 

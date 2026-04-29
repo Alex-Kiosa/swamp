@@ -20,6 +20,7 @@ import boardImage from "./assets/board.jpg"
 import {DropdownHost} from "./dropdownHost/DropdownHost.tsx";
 import {NotFound} from "../NotFound.tsx";
 import {Loading} from "../../components/loading/Loading.tsx";
+import {VideoRoom} from "./videoRoom/VideoRoom.tsx";
 
 export const Game = () => {
     const {status, isHost} = useAppSelector(selectGame)
@@ -38,6 +39,8 @@ export const Game = () => {
             setShowJoinForm(false)
         }
     }
+
+    const [start, setStart] = useState(false)
 
     usePlayerSockets(gameId)
     useChipSockets()
@@ -91,6 +94,20 @@ export const Game = () => {
                             {/*<div className="text-lg font-bold text-center">Наши игроки</div>*/}
                             <Players/>
                         </div>
+
+                        {!start && (
+                            <button className={"btn-primary"} onClick={() => setStart(true)}>
+                                Start video
+                            </button>
+                        )}
+
+                        {start && gameId && (
+                            <VideoRoom
+                                key={gameId}
+                                gameId={gameId}
+                                playerName={"Player"}
+                            />
+                        )}
 
                         <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
                             <div className="text-lg font-bold text-center">Карты на столе</div>

@@ -1,5 +1,5 @@
+import "dotenv/config"
 import express from 'express';
-import dotenv from "dotenv"
 import http from 'http';
 import {Server} from 'socket.io';
 import regRoutes from "./routes/authRoutes.js";
@@ -12,7 +12,6 @@ import {index} from "./sockets/index.js";
 import path from "path";
 import {createTransporter, sendRegEmail} from "./services/mailService.js"
 
-dotenv.config()
 
 // Create backend
 const app = express()

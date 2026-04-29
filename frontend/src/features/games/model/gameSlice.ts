@@ -1,6 +1,6 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { ChipType } from "../chips.types.ts"
-import type { GameType, GameTypeWithChips } from "../games.types.ts"
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit"
+import type {ChipType} from "../chips.types.ts"
+import type {GameType, GameTypeWithChips} from "../games.types.ts"
 
 export type gameStatusType = "idle" | "loading" | "succeeded" | "not_found" | "failed"
 
@@ -13,7 +13,7 @@ const initialState: GameTypeWithChips = {
     isHost: false,
     limitPlayers: 15,
     cube: 1,
-    status: "idle"
+    status: "idle",
 }
 
 export const gameSlice = createSlice({
