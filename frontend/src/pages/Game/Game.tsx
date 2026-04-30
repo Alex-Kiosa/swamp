@@ -95,19 +95,19 @@ export const Game = () => {
                             <Players/>
                         </div>
 
-                        {!start && (
-                            <button className={"btn-primary"} onClick={() => setStart(true)}>
-                                Start video
-                            </button>
-                        )}
+                        {/*{!start && (*/}
+                        {/*    <button className={"btn-primary"} onClick={() => setStart(true)}>*/}
+                        {/*        Start video*/}
+                        {/*    </button>*/}
+                        {/*)}*/}
 
-                        {start && gameId && (
-                            <VideoRoom
-                                key={gameId}
-                                gameId={gameId}
-                                playerName={"Player"}
-                            />
-                        )}
+                        {/*{start && gameId && (*/}
+                        {/*    <VideoRoom*/}
+                        {/*        key={gameId}*/}
+                        {/*        gameId={gameId}*/}
+                        {/*        // playerName={"Player"}*/}
+                        {/*    />*/}
+                        {/*)}*/}
 
                         <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
                             <div className="text-lg font-bold text-center">Карты на столе</div>
