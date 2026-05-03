@@ -1,21 +1,22 @@
 import "dotenv/config"
-import express from 'express';
-import http from 'http';
+import express from 'express'
+import http from 'http'
 import {Server} from 'socket.io';
-import regRoutes from "./routes/authRoutes.js";
-import gameRoutes from "./routes/gameRoutes.js";
-import chipRoutes from "./routes/chipRoutes.js";
-import {connectDB} from "./db.js";
-import cors from "./middleware/corsMiddleware.js";
-import {socketAuthMiddleware} from "./sockets/socketAuth.js";
-import {index} from "./sockets/index.js";
-import path from "path";
-import {createTransporter, sendRegEmail} from "./services/mailService.js"
+import regRoutes from "./routes/authRoutes.js"
+import gameRoutes from "./routes/gameRoutes.js"
+import chipRoutes from "./routes/chipRoutes.js"
+import {connectDB} from "./db.js"
+import cors from "./middleware/corsMiddleware.js"
+import {socketAuthMiddleware} from "./sockets/socketAuth.js"
+import {index} from "./sockets/index.js"
+import path from "path"
+import {createTransporter, sendMail} from "./services/mailService.js"
+import { startEmailWorker } from "./workers/emailWorker.js"
 
 
 // Create backend
 const app = express()
-const server = http.createServer(app);
+const server = http.createServer(app)
 
 // Socket
 export const io = new Server(server, {
@@ -28,7 +29,6 @@ export const io = new Server(server, {
 })
 
 socketAuthMiddleware(io)
-
 // регистрация всех сокет-хендлеров
 index(io)
 
@@ -44,7 +44,7 @@ app.use("/api/games", gameRoutes)
 app.use("/api/", chipRoutes)
 app.get("/api/test-email", async (req, res) => {
     try {
-        await sendRegEmail("akiosa88@gmail.com", "Alex", "test")
+        await sendMail("akiosa88@gmail.com", "Alex", "test")
 
         console.log("test email was sent successfully!")
         res.json({ message: "Email sent" })
@@ -67,6 +67,9 @@ async function start() {
         const transporter = createTransporter()
         await transporter.verify()
         console.log("📧 SMTP ready")
+
+        // Start workers
+        startEmailWorker()
 
         server.listen(PORT, () => {
             console.log("🚀 Server started on PORT:", PORT)

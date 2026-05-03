@@ -2,7 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
-import {sendRegEmail} from "../services/mailService.js";
+import {queueRegEmail} from "../services/emailQueueService.js";
 
 export function generateAccessToken(id, email, roles) {
     const secretKey = process.env.JWT_SECRET
@@ -32,10 +32,8 @@ export async function createUser(req, res) {
         const user = new User({name, email, password: hashPassword, roles: ["USER"]})
         await user.save()
 
-        // Send email
-        sendRegEmail(email, name, password)
-            .then(() => console.log("✅ Email registration sent"))
-            .catch(error => console.error("❌ Email registration failed:", error))
+        // Queue email (НЕ ждём, не блокируем) кладем задачу в очередь
+        queueRegEmail(email, name, password).catch(console.error("❌ Queue failed:", error))
 
         res.status(201).json({
             message: "User was created",
@@ -58,11 +56,14 @@ export async function login(req, res) {
 
         const user = await User.findOne({ email })
         if (!user) {
+            console.log(email)
+            console.log(user)
             return res.status(400).json({message: `User not found`})
         }
 
         const isPassValid = await bcrypt.compare(password, user.password)
         if (!isPassValid) {
+            console.log("pass erorr")
             return res.status(400).json({message: "Invalid email password"})
         }
 

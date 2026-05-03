@@ -12,18 +12,13 @@ export function createTransporter() {
     })
 }
 
-export async function sendRegEmail(to, name, password) {
+export async function sendMail({ to, subject, html }) {
     const transporter = createTransporter()
 
     return transporter.sendMail({
         from: `"Центр Психологии и Тренинга Марии Минаковой" <${process.env.SMTP_USER}>`,
         to,
-        subject: "Регистрация на платформе онлайн игр",
-        html: `
-            <h1>Здравствуйте, ${name}!</h1>
-            <p>Вы успешно зарегистрировались на сайте https://igra-psy.ru/</p>
-            <p>Ваш пароль: ${password}</p>
-            <p>Если Вы не регистрировались, просто проигнорируйте данное письмо</p>
-        `,
+        subject,
+        html,
     })
 }
