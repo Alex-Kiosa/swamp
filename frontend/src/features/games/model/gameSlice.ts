@@ -1,6 +1,6 @@
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit"
 import type {ChipType} from "../chips.types.ts"
-import type {GameType, GameTypeWithChips} from "../games.types.ts"
+import type {GameType, GameTypeWithChips, PlayerType} from "../games.types.ts"
 
 export type gameStatusType = "idle" | "loading" | "succeeded" | "not_found" | "failed"
 
@@ -45,6 +45,17 @@ export const gameSlice = createSlice({
 
         deleteGame: () => initialState,
 
+        setPlayers: (state, action: PayloadAction<GameType["players"]>) => {
+            state.players = action.payload
+        },
+
+        updatePlayer: (state, action: PayloadAction<PlayerType>) => {
+            const player = state.players.find(p => p.playerId === action.payload.playerId)
+            if (player) {
+                Object.assign(player, action.payload)
+            }
+        },
+
         createChip: (state, action: PayloadAction<ChipType>) => {
             state.chips.push(action.payload)
         },
@@ -87,6 +98,8 @@ export const {
     getGameNotFound,
     createGame,
     deleteGame,
+    setPlayers,
+    updatePlayer,
     getChips,
     createChip,
     moveChip,

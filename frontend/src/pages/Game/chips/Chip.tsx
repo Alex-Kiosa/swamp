@@ -1,16 +1,17 @@
-import type { ChipType } from "../../../features/games/chips.types.ts";
-import React, { type RefObject, useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../common/hooks/hooks.ts";
-import { moveChipThunk } from "../../../features/games/actions/games-actions.ts";
-import { socket } from "../../../sockets/socket.ts";
-import { selectGame } from "../../../features/games/model/gameSelectors.ts";
+import type { ChipType } from "../../../features/games/chips.types.ts"
+import React, { type RefObject, useEffect, useRef, useState } from "react"
+import { useAppDispatch, useAppSelector } from "../../../common/hooks/hooks.ts"
+import { moveChipThunk } from "../../../features/games/actions/games-actions.ts"
+import { selectGame } from "../../../features/games/model/gameSelectors.ts"
+import type { Socket } from "socket.io-client"
 
 type Props = {
     chip: ChipType
     boardRef: RefObject<HTMLDivElement | null>
+    socket: Socket | null
 }
 
-export const Chip = ({ chip, boardRef }: Props) => {
+export const Chip = ({ chip, boardRef, socket }: Props) => {
     const { gameId } = useAppSelector(selectGame)
     const dispatch = useAppDispatch()
 
@@ -32,6 +33,7 @@ export const Chip = ({ chip, boardRef }: Props) => {
 
     const onMouseDownHandler = (e: React.MouseEvent) => {
         if (isLocked || !boardRef.current) return
+        if (!socket) return
 
         draggingRef.current = true
 
@@ -85,6 +87,8 @@ export const Chip = ({ chip, boardRef }: Props) => {
         window.removeEventListener("mouseup", onMouseUpHandler)
 
         dispatch(moveChipThunk(chip._id, posRef.current))
+
+        if (!socket) return
 
         socket.emit("chip:drag:end", { chipId: chip._id, gameId })
     }

@@ -2,16 +2,16 @@ import {useMemo, useRef, useState, useCallback} from "react"
 import {useAppSelector} from "../../../common/hooks/hooks"
 import type {RootState} from "../../../app/store"
 import {Modal, type ModalHandle} from "../../../pages/Game/modal/Modal"
-import {socket} from "../../../sockets/socket"
 import {MdOutlineRemoveCircle} from "react-icons/md";
+import type {Socket} from "socket.io-client";
 
 type Props = {
     isHost: boolean
     gameId: string
+    socket: Socket | null
 }
 
-export const TableCards = ({isHost, gameId}: Props) => {
-    // debugger
+export const TableCards = ({isHost, gameId, socket}: Props) => {
     const cards = useAppSelector((state: RootState) => state.cards.tableCards)
 
     const modalRef = useRef<ModalHandle>(null)
@@ -28,8 +28,10 @@ export const TableCards = ({isHost, gameId}: Props) => {
     }, [])
 
     const handleRemoveCard = useCallback((cardId: string) => {
+        if (!socket) return
+
         socket.emit("card:removeFromTable", {gameId, cardId})
-    }, [gameId])
+    }, [gameId, socket])
 
     return (
         <>

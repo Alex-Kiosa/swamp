@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { socket } from "./socket.ts"
+import type { Socket } from "socket.io-client"
 
 type RolledPayload = {
     value: number
@@ -8,12 +8,14 @@ type RolledPayload = {
 }
 
 export const useCubeSockets = (
+    socket: Socket | null,
     setIsRolling: (v: boolean) => void,
     setCubeValue: (v: number) => void,
     setRollId: (v: number) => void,
     setSpins: (v: number) => void
 ) => {
     useEffect(() => {
+        if (!socket) return
 
         const onRolling = () => {
             setIsRolling(true)
@@ -33,6 +35,5 @@ export const useCubeSockets = (
             socket.off("cube:rolling", onRolling)
             socket.off("cube:rolled", onRolled)
         }
-
-    }, [setIsRolling, setCubeValue, setRollId, setSpins])
+    }, [socket, setIsRolling, setCubeValue, setRollId, setSpins])
 }

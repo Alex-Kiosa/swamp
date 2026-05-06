@@ -2,8 +2,10 @@ import {v4 as uuid} from "uuid"
 import Game from "../models/gameModel.js"
 
 export function registerCardSockets(io, socket) {
-    socket.on("game:init", async ({gameId}) => {
-        const game = await Game.findOne({gameId})
+    socket.on("game:init", async () => {
+        const gameId = socket.data.gameId
+
+        const game = await Game.findOne({ gameId })
         if (!game) return
 
         socket.emit("cards:init", {

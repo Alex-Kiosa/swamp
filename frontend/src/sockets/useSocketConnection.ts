@@ -1,32 +1,39 @@
-import { useEffect } from "react"
-import { socket } from "./socket"
+import { useEffect, useState } from "react"
+import { createSocket } from "./socket"
+import type { Socket } from "socket.io-client"
 
 export const useSocketConnection = (
     gameId?: string,
     socketToken?: string | null
 ) => {
+    const [socket, setSocket] = useState<Socket | null>(null)
+
     useEffect(() => {
         if (!gameId || !socketToken) return
 
-        // передаём auth до connect
-        socket.auth = { token: socketToken }
+        const newSocket = createSocket(socketToken)
+        setSocket(newSocket)
 
         const handleConnect = () => {
-            socket.emit("game:init", { gameId })
+            console.log("🟢 CONNECTED", newSocket.id)
+            newSocket.emit("game:init")
         }
 
-        // если уже подключён — просто инициализируем
-        if (socket.connected) {
-            handleConnect()
-        } else {
-            // событие "connect" генерируется автоматически на клиенте, когда соединение установлено при вызове connect(), одновременно с этим socket.connected становится true
-            // обязательно подписываемся на "connect" до вызова connect()
-            socket.on("connect", handleConnect)
-            socket.connect()
-        }
+        newSocket.on("connect", handleConnect)
+
+        newSocket.on("disconnect", () => {
+            console.log("🔴 DISCONNECTED")
+        })
+
+        newSocket.on("connect_error", (err) => {
+            console.log("❌ CONNECT ERROR", err.message)
+        })
 
         return () => {
-            socket.off("connect", handleConnect)
+            newSocket.off("connect", handleConnect)
+            newSocket.disconnect()
         }
     }, [gameId, socketToken])
+
+    return socket
 }

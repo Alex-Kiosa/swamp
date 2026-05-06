@@ -1,19 +1,20 @@
 import {useEffect, useRef} from "react"
 import {useAppDispatch, useAppSelector} from "../../../common/hooks/hooks"
 import {useParams} from "react-router"
-import {socket} from "../../../sockets/socket"
 import type {RootState} from "../../../app/store"
 import type {CardCategoryType} from "../card.types"
 import {closeDeck, openDeck, setDeckCards} from "../model/cardSlice.ts"
 import {type ModalHandle, Modal} from "../../../pages/Game/modal/Modal.tsx";
+import type {Socket} from "socket.io-client";
 
 type Props = {
     type: CardCategoryType
     title: string
     cardBack: string
+    socket: Socket | null
 }
 
-export const DeckCard = ({type, title, cardBack}: Props) => {
+export const DeckCard = ({type, title, cardBack, socket}: Props) => {
     const {gameId} = useParams<{ gameId: string }>()
     const dispatch = useAppDispatch()
     const modalRef = useRef<ModalHandle>(null)
@@ -21,13 +22,14 @@ export const DeckCard = ({type, title, cardBack}: Props) => {
     const decks = useAppSelector((state: RootState) => state.cards.decks[type])
 
     const openDeckHandler = () => {
-        if (!gameId) return
+        if (!gameId || !socket) return
+
         modalRef.current?.open()
         socket.emit("deck:getCards", {gameId, type})
     }
 
     const handleCardClick = (imageUrl: string) => {
-        if (!gameId) return
+        if (!gameId || !socket) return
 
         socket.emit("card:addToTable", {gameId, type, imageUrl})
         modalRef.current?.close()
@@ -35,10 +37,14 @@ export const DeckCard = ({type, title, cardBack}: Props) => {
     }
 
     const closeModalHandler = () => {
+        if (!socket || !gameId) return
+
         socket.emit("deck:closeDeck", {gameId, type})
     }
 
     useEffect(() => {
+        if (!socket) return
+
         const deckOpenHandler = ({type: deckType, cards: deckCards}: { type: CardCategoryType; cards: string[] }) => {
             if (deckType === type) {
                 dispatch(setDeckCards({type: deckType, cards: deckCards}))
@@ -47,9 +53,7 @@ export const DeckCard = ({type, title, cardBack}: Props) => {
             }
         }
 
-        const deckCloseHandler = ({type: deckType}: {
-            type: CardCategoryType
-        }) => {
+        const deckCloseHandler = ({type: deckType}: { type: CardCategoryType }) => {
             if (deckType === type) {
                 dispatch(closeDeck(deckType))
                 modalRef.current?.close()
@@ -63,7 +67,7 @@ export const DeckCard = ({type, title, cardBack}: Props) => {
             socket.off("deck:open", deckOpenHandler)
             socket.off("deck:close", deckCloseHandler)
         }
-    }, [type])
+    }, [type, socket])
 
     return (
         <>

@@ -42,10 +42,11 @@ export const Game = () => {
 
     const [start, setStart] = useState(false)
 
-    usePlayerSockets(gameId)
-    useChipSockets()
-    useCardSockets()
-    useSocketConnection(gameId, socketToken)
+    const socket = useSocketConnection(gameId, socketToken)
+
+    usePlayerSockets(socket)
+    useChipSockets(socket)
+    useCardSockets(socket)
 
     useEffect(() => {
         if (showJoinForm && modalRef.current) {
@@ -85,7 +86,7 @@ export const Game = () => {
                     <div className="w-[340px] p-5 shrink-0 flex flex-col h-full">
                         <div className="flex">
                             <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
-                                {gameId && <Cube gameId={gameId}/>}
+                                {gameId && <Cube gameId={gameId} socket={socket}/>}
                             </div>
                             {isHost && <DropdownHost/> }
                         </div>
@@ -111,7 +112,7 @@ export const Game = () => {
 
                         <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
                             <div className="text-lg font-bold text-center">Карты на столе</div>
-                            {gameId && <TableCards isHost={isHost} gameId={gameId}/>}
+                            {gameId && <TableCards isHost={isHost} gameId={gameId} socket={socket}/>}
                         </div>
                     </div>
 
@@ -126,12 +127,12 @@ export const Game = () => {
                                     aspectRatio: "24 / 17",
                                 }}
                             >
-                                <Chips boardRef={boardRef}/>
+                                <Chips boardRef={boardRef} socket={socket}/>
                             </div>
                         </div>
 
                         <div className="mt-4">
-                            <DeckCards/>
+                            <DeckCards socket={socket}/>
                         </div>
                     </div>
                 </>

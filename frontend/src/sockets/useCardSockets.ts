@@ -1,45 +1,52 @@
 import { useEffect } from "react"
-import { socket } from "./socket"
 import { useAppDispatch } from "../common/hooks/hooks"
 import {
-    setDeckCards,
     addCardToTable,
-    setDeckEmpty,
     removeCardFromTable,
-    resetState
+    resetState,
+    setDeckCards,
+    setDeckEmpty
 } from "../features/cards/model/cardSlice"
+import type { Socket } from "socket.io-client"
 
-export const useCardSockets = () => {
+export const useCardSockets = (socket: Socket | null) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        socket.on("cards:init", ({ tableCards, decks }) => {
+        if (!socket) return
+
+        const onInit = ({ tableCards, decks }: any) => {
             dispatch(resetState({ tableCards, decks }))
-        })
-
-        socket.on("deck:cards", ({ type, cards }) => {
-            dispatch(setDeckCards({ type, cards }))
-        })
-
-        socket.on("card:addedToTable", (card) => {
-            dispatch(addCardToTable(card))
-        })
-
-        socket.on("card:removedFromTable", ({cardId}) => {
-            dispatch(removeCardFromTable(cardId))
-        })
-
-        socket.on("card:deckEmpty", ({ type }) => {
-            dispatch(setDeckEmpty(type))
-        })
-
-        return () => {
-            socket.off("deck:cards")
-            socket.off("card:addedToTable")
-            socket.off("card:removedFromTable")
-            socket.off("card:deckEmpty")
-            socket.off("cards:init")
         }
 
-    }, [])
+        const onDeckCards = ({ type, cards }: any) => {
+            dispatch(setDeckCards({ type, cards }))
+        }
+
+        const onAdded = (card: any) => {
+            dispatch(addCardToTable(card))
+        }
+
+        const onRemoved = ({ cardId }: any) => {
+            dispatch(removeCardFromTable(cardId))
+        }
+
+        const onEmpty = ({ type }: any) => {
+            dispatch(setDeckEmpty(type))
+        }
+
+        socket.on("cards:init", onInit)
+        socket.on("deck:cards", onDeckCards)
+        socket.on("card:addedToTable", onAdded)
+        socket.on("card:removedFromTable", onRemoved)
+        socket.on("card:deckEmpty", onEmpty)
+
+        return () => {
+            socket.off("cards:init", onInit)
+            socket.off("deck:cards", onDeckCards)
+            socket.off("card:addedToTable", onAdded)
+            socket.off("card:removedFromTable", onRemoved)
+            socket.off("card:deckEmpty", onEmpty)
+        }
+    }, [socket])
 }

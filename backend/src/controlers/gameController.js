@@ -1,23 +1,9 @@
 import Game from "../models/gameModel.js";
 import {v4 as uuidv4} from "uuid";
-import jwt from "jsonwebtoken";
 import {generateDeck} from "../services/deckService.js";
 import {GAME_PROJECTION} from "../constants/gameConstants.js";
 import User from "../models/userModel.js";
-
-export function generateSocketToken(gameId, playerId) {
-    const secretKey = process.env.JWT_SECRET
-    const socketToken = jwt.sign(
-        {
-            gameId,
-            playerId
-        },
-        secretKey,
-        {expiresIn: "72h"}
-    )
-
-    return socketToken
-}
+import {generateSocketToken} from "../services/generateSocketToken.js";
 
 export async function createGame(req, res) {
     try {
@@ -78,29 +64,6 @@ export async function createGame(req, res) {
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Failed to create game"})
-    }
-}
-
-export async function generateSocketTokenHost(req, res) {
-    try {
-        const { gameId } = req.params
-        const userId = req.user.id
-
-        const game = await Game.findOne({ gameId, isActive: true })
-
-        if (!game) {
-            return res.status(404).json({ message: "Game not found" })
-        }
-
-        if (String(game.hostId) !== userId) {
-            return res.status(403).json({ message: "Access denied" })
-        }
-
-        const socketToken = generateSocketToken(gameId, userId)
-
-        return res.json({ socketToken })
-    } catch (error) {
-        return res.status(500).json({ message: "Error generateSocketTokenHost" })
     }
 }
 

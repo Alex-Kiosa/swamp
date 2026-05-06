@@ -1,9 +1,11 @@
-import { io } from "socket.io-client"
+import {io, Socket} from "socket.io-client"
 
 const url = import.meta.env.VITE_SOCKET_URL
 
-export const socket = io(url, {
-    transports: ["websocket"],
-    // подключим socket позже, после ввода имени игрока
-    autoConnect: false,
-})
+// паттерн "фабричная функция"
+export const createSocket = (token: string): Socket => {
+    return io(url, {
+        transports: ["websocket"],
+        auth: { token },
+    })
+}

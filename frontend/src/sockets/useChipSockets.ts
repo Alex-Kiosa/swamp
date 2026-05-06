@@ -1,22 +1,21 @@
 import { useEffect } from "react"
-import {socket} from "./socket.ts";
 import {
     createChip,
     deleteChipsByGame,
     lockChip,
     moveChip,
     unlockChip
-} from "../features/games/model/gameSlice.ts";
-import {useAppDispatch} from "../common/hooks/hooks.ts";
+} from "../features/games/model/gameSlice"
+import { useAppDispatch } from "../common/hooks/hooks"
+import type { Socket } from "socket.io-client"
 
-
-export const useChipSockets = () => {
+export const useChipSockets = (socket: Socket | null) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        const onMoved = (chip: any) => {
-            dispatch(moveChip(chip))
-        }
+        if (!socket) return
+
+        const onMoved = (chip: any) => dispatch(moveChip(chip))
         const onCreated = (chip: any) => dispatch(createChip(chip))
         const onDeleted = () => dispatch(deleteChipsByGame())
         const onLocked = ({ chipId }: any) => dispatch(lockChip(chipId))
@@ -39,5 +38,5 @@ export const useChipSockets = () => {
             socket.off("chip:unlocked", onUnlocked)
             socket.off("chips:unlocked", onBulkUnlock)
         }
-    }, [])
+    }, [socket])
 }

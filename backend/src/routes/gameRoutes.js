@@ -3,13 +3,13 @@ import {roleMiddleware} from "../middleware/roleMiddleware.js";
 import {
     createGame,
     deleteGame,
-    generateSocketTokenHost,
     getActiveGameByHost,
     getGamePublic,
     joinGameAsPlayer
 } from "../controlers/gameController.js";
 import {authMiddleware} from "../middleware/authMiddleware.js";
 import {optionalAuthMiddleware} from "../middleware/optionalAuthMiddleware.js";
+import {generateSocketTokenHost} from "../services/generateSocketToken.js";
 
 const router = express.Router();
 

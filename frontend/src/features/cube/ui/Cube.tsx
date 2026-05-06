@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
 import styles from "./Cube.module.css"
-import { socket } from "../../../sockets/socket.ts"
 import { useCubeSockets } from "../../../sockets/useCubeSockets.ts"
+import type { Socket } from "socket.io-client"
 
 type CubeProps = {
     gameId: string
+    socket: Socket | null
 }
 
 const rotations: Record<number, { x: number; y: number }> = {
@@ -19,7 +20,7 @@ const rotations: Record<number, { x: number; y: number }> = {
 // небольшой базовый наклон чтобы куб был 3D даже в статике
 const BASE_TILT = { x: -15, y: 20 }
 
-export const Cube: React.FC<CubeProps> = ({ gameId}) => {
+export const Cube: React.FC<CubeProps> = ({ gameId, socket }) => {
     const [rotation, setRotation] = useState(BASE_TILT)
     const [isRolling, setIsRolling] = useState(false)
     const [cubeValue, setCubeValue] = useState(1)
@@ -28,13 +29,24 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
 
     const rollCube = () => {
         if (isRolling) return
+        if (!socket) return // сокет ещё не создан
+
         socket.emit("cube:roll", { gameId })
     }
 
-    useCubeSockets(setIsRolling, setCubeValue, setRollId, setSpins)
+    // подписка на socket события (rolling / rolled)
+    useCubeSockets(
+        socket,
+        setIsRolling,
+        setCubeValue,
+        setRollId,
+        setSpins
+    )
 
     // получаем state кубикa для нового игрока из базы
     useEffect(() => {
+        if (!socket) return
+
         const handlerGameState = ({ cube }: { cube: number }) => {
             setCubeValue(cube)
 
@@ -51,7 +63,7 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
         return () => {
             socket.off("cube:state", handlerGameState)
         }
-    }, [])
+    }, [socket])
 
     // синхронизация кубика для игроков при броске
     useEffect(() => {
@@ -75,7 +87,7 @@ export const Cube: React.FC<CubeProps> = ({ gameId}) => {
             }
         })
 
-    }, [rollId])
+    }, [rollId, cubeValue, spins])
 
     return (
         <div className={styles.wrap}>

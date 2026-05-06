@@ -1,16 +1,16 @@
-import {useAppDispatch} from "../common/hooks/hooks.ts";
-import {useEffect} from "react";
-import {socket} from "./socket.ts";
-import {getGameThunk} from "../features/games/actions/games-actions.ts";
+import {useEffect} from "react"
+import {useAppDispatch} from "../common/hooks/hooks"
+import {setPlayers} from "../features/games/model/gameSlice"
+import type {Socket} from "socket.io-client"
 
-export const usePlayerSockets = (gameId?: string) => {
+export const usePlayerSockets = (socket: Socket | null) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        if (!gameId) return
+        if (!socket) return
 
-        const handler = () => {
-            dispatch(getGameThunk(gameId))
+        const handler = (players: any[]) => {
+            dispatch(setPlayers(players))
         }
 
         socket.on("players:update", handler)
@@ -18,5 +18,5 @@ export const usePlayerSockets = (gameId?: string) => {
         return () => {
             socket.off("players:update", handler)
         }
-    }, [gameId])
+    }, [socket])
 }

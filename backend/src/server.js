@@ -7,14 +7,14 @@ import gameRoutes from "./routes/gameRoutes.js"
 import chipRoutes from "./routes/chipRoutes.js"
 import {connectDB} from "./db.js"
 import cors from "./middleware/corsMiddleware.js"
-import {socketAuthMiddleware} from "./sockets/socketAuth.js"
-import {index} from "./sockets/index.js"
+import {registerSocketAuthMiddleware} from "./sockets/registerSocketAuthMiddleware.js"
+import {socketIndex} from "./sockets/socketIndex.js"
 import path from "path"
 import {createTransporter, sendMail} from "./services/mailService.js"
 import { startEmailWorker } from "./workers/emailWorker.js"
 
 
-// Create backend
+// Create server
 const app = express()
 const server = http.createServer(app)
 
@@ -28,10 +28,17 @@ export const io = new Server(server, {
     transports: ["websocket", "polling"],
 })
 
-socketAuthMiddleware(io)
-// регистрация всех сокет-хендлеров
-index(io)
+// 1. AUTH MIDDLEWARE (gating layer)
+// проверяет токен ДО connection
+// middleware НЕ вызывается прямо сейчас
+// регистрируем его внутри io
+// middleware вызывается позже, когда клиент подключается: io.on("connection", (socket) => { ... })
+registerSocketAuthMiddleware(io)
+// 2. SOCKET LOGIC LAYER
+// * все connection + handlers
+socketIndex(io)
 
+// HTTP (port, middlewares, routes etc)
 const PORT = process.env.PORT
 
 // Middlewares
@@ -45,11 +52,8 @@ app.use("/api/", chipRoutes)
 app.get("/api/test-email", async (req, res) => {
     try {
         await sendMail("akiosa88@gmail.com", "Alex", "test")
-
-        console.log("test email was sent successfully!")
         res.json({ message: "Email sent" })
     } catch (error) {
-        console.log(error)
         res.status(500).json({message: "error sending test email"})
     }
 })
