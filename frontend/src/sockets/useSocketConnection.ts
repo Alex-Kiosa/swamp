@@ -16,6 +16,7 @@ export const useSocketConnection = (
 
         const handleConnect = () => {
             console.log("🟢 CONNECTED", newSocket.id)
+            console.log("EMITTING GAME INIT")
             newSocket.emit("game:init")
         }
 

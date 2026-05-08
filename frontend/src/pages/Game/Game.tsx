@@ -20,7 +20,6 @@ import boardImage from "./assets/board.jpg"
 import {DropdownHost} from "./dropdownHost/DropdownHost.tsx";
 import {NotFound} from "../NotFound.tsx";
 import {Loading} from "../../components/loading/Loading.tsx";
-import {VideoRoom} from "./videoRoom/VideoRoom.tsx";
 
 export const Game = () => {
     const {status, isHost} = useAppSelector(selectGame)

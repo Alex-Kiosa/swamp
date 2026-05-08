@@ -9,3 +9,5 @@ export const createSocket = (token: string): Socket => {
         auth: { token },
     })
 }
+
+// TODO: Баг с socketTocken. При создании новой игры сокет используется старый из localstorage

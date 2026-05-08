@@ -10,8 +10,9 @@ import cors from "./middleware/corsMiddleware.js"
 import {registerSocketAuthMiddleware} from "./sockets/registerSocketAuthMiddleware.js"
 import {socketIndex} from "./sockets/socketIndex.js"
 import path from "path"
+import { fileURLToPath } from "url"
 import {createTransporter, sendMail} from "./services/mailService.js"
-import { startEmailWorker } from "./workers/emailWorker.js"
+import {startEmailWorker} from "./workers/emailWorker.js"
 
 
 // Create server
@@ -52,7 +53,7 @@ app.use("/api/", chipRoutes)
 app.get("/api/test-email", async (req, res) => {
     try {
         await sendMail("akiosa88@gmail.com", "Alex", "test")
-        res.json({ message: "Email sent" })
+        res.json({message: "Email sent"})
     } catch (error) {
         res.status(500).json({message: "error sending test email"})
     }
@@ -60,7 +61,9 @@ app.get("/api/test-email", async (req, res) => {
 // TODO: add report in data base, add record email's logging in report https://chatgpt.com/share/69f0e2b9-b9a0-832a-8ca1-41f4628caec3
 
 // Статика
-app.use("/uploads", express.static(path.join(process.cwd(), "..", "uploads")))
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+app.use("/uploads", express.static(path.join(__dirname, "../../uploads")))
 
 // Start the server only after DB connection
 async function start() {

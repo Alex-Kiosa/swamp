@@ -4,6 +4,7 @@ import type {RootState} from "../../../app/store"
 import {Modal, type ModalHandle} from "../../../pages/Game/modal/Modal"
 import {MdOutlineRemoveCircle} from "react-icons/md";
 import type {Socket} from "socket.io-client";
+import {getImageUrl} from "../../../common/utils/getImageUrl.ts";
 
 type Props = {
     isHost: boolean
@@ -48,7 +49,7 @@ export const TableCards = ({isHost, gameId, socket}: Props) => {
                         )}
 
                         <img
-                            src={card.imageUrl}
+                            src={getImageUrl(card.imageUrl)}
                             alt="table card"
                             className="h-40 block cursor-pointer hover:scale-105 transition rounded rounded-md"
                             title="Увеличить"
@@ -61,7 +62,7 @@ export const TableCards = ({isHost, gameId, socket}: Props) => {
             <Modal ref={modalRef}>
                 {selectedCard && (
                     <img
-                        src={selectedCard.imageUrl}
+                        src={getImageUrl(selectedCard.imageUrl)}
                         alt="selected card"
                         className="max-h-[80vh] mx-auto rounded-md"
                     />
