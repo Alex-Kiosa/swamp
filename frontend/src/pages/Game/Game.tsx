@@ -82,7 +82,7 @@ export const Game = () => {
                 </Modal>
             ) : (
                 <>
-                    <div className="w-[340px] p-5 shrink-0 flex flex-col h-full">
+                    <div className="min-w-[260px] max-w-[340px] p-5 flex flex-col h-full">
                         <div className="flex">
                             <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
                                 {gameId && <Cube gameId={gameId} socket={socket}/>}
@@ -116,7 +116,7 @@ export const Game = () => {
                     </div>
 
                     {/* GAME BOARD */}
-                    <div className="pt-5 pr-5 flex-1">
+                    <div className="pt-5 pr-5 flex-1 shrink-0">
                         <div className="border-1 rounded-lg overflow-hidden">
                             <div
                                 ref={boardRef}
