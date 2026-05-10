@@ -2,19 +2,13 @@ import {v4 as uuid} from "uuid"
 import Game from "../models/gameModel.js"
 
 export function registerCardSockets(io, socket) {
-    // console.log("REGISTER CARD SOCKETS", socket.id)
-
-    // socket.onAny((event, ...args) => {
-    //     console.log("SERVER RECEIVED EVENT:", event, args)
-    // })
-
     socket.on("game:init", async () => {
-        console.log("GAME INIT RECEIVED")
+        console.log("GAME INIT RECEIVED ", socket.id)
+
         const gameId = socket.data.gameId
 
         const game = await Game.findOne({ gameId })
         if (!game) return
-        // console.log("TABLE CARDS FROM DB:", game.tableCards)
 
         socket.emit("cards:init", {
             tableCards: game.tableCards,

@@ -7,6 +7,12 @@ export function socketIndex(io) {
     // внутри io уже есть данные от middleware - socket.gameId и т.д.
     io.on("connection", async (socket) => {
         try {
+            // регистрируем обработчики до асинхронных запросов в базу,
+            // чтобы избежать race condition (гонки состояний)
+            registerChipSockets(io, socket)
+            registerCubeSockets(io, socket)
+            registerCardSockets(io, socket)
+
             const {gameId, playerId} = socket.data
 
             // проверяем, что игра и игрок существуют
@@ -17,7 +23,7 @@ export function socketIndex(io) {
             })
             if (!game) {
                 console.log("Game not found")
-                socket.emit("error", { message: "Game not found" })
+                socket.emit("error", {message: "Game not found"})
                 return socket.disconnect(true)
             }
 
@@ -33,7 +39,7 @@ export function socketIndex(io) {
                         "players.$.isOnline": true
                     }
                 },
-                { new: true }
+                {new: true}
             )
             // защита от редких edge cases
             if (!updatedGame) {
@@ -47,12 +53,7 @@ export function socketIndex(io) {
             // socket.emit(...) отправляет событие только текущему сокету
             // 🔥 сразу отправляем актуальных игроков ВСЕМ
             io.to(gameId).emit("players:update", updatedGame.players)
-            io.to(gameId).emit("cube:state", { cube: updatedGame.cube })
-
-            // регистрируем обработчики
-            registerChipSockets(io, socket)
-            registerCubeSockets(io, socket)
-            registerCardSockets(io, socket)
+            io.to(gameId).emit("cube:state", {cube: updatedGame.cube})
 
             // 🔥 disconnect с защитой от race condition
             socket.on("disconnect", async () => {
@@ -70,7 +71,7 @@ export function socketIndex(io) {
                     }
                 )
 
-                const updatedGame = await Game.findOne({ gameId })
+                const updatedGame = await Game.findOne({gameId})
                 io.to(gameId).emit("players:update", updatedGame.players)
             })
 

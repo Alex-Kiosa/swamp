@@ -11,23 +11,21 @@ export const useSocketConnection = (
     useEffect(() => {
         if (!gameId || !socketToken) return
 
+        let currentSocketId: string | undefined
+
         const newSocket = createSocket(socketToken)
         setSocket(newSocket)
 
         const handleConnect = () => {
-            console.log("🟢 CONNECTED", newSocket.id)
-            console.log("EMITTING GAME INIT")
+            currentSocketId = newSocket.id
+            console.log("🟢 CONNECTED SOCKET", currentSocketId)
             newSocket.emit("game:init")
         }
 
         newSocket.on("connect", handleConnect)
 
         newSocket.on("disconnect", () => {
-            console.log("🔴 DISCONNECTED")
-        })
-
-        newSocket.on("connect_error", (err) => {
-            console.log("❌ CONNECT ERROR", err.message)
+            console.log("🔴 DISCONNECTED SOCKET ", currentSocketId)
         })
 
         return () => {
