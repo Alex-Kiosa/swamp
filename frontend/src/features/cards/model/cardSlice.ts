@@ -16,7 +16,7 @@ export type CardState = {
     decks: Record<CardCategoryType, string[]>
     tableCards: TableCard[]
     deckEmpty: Record<CardCategoryType, boolean>
-    openDecks: OpenDeckModal[]  // какие колоды открыты
+    openDecks: OpenDeckModal[]
 }
 
 const initialState: CardState = {

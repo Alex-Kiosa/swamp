@@ -43,7 +43,8 @@ export function registerCardSockets(io, socket) {
         }
 
         if (!game.tableCards) game.tableCards = []
-        game.tableCards.push(tableCard)
+        game.tableCards.unshift(tableCard)
+        console.log("add to table")
 
         await game.save()
 

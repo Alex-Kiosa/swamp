@@ -6,6 +6,7 @@ import type {CardCategoryType} from "../card.types"
 import {closeDeck, openDeck, setDeckCards} from "../model/cardSlice.ts"
 import {type ModalHandle, Modal} from "../../../pages/Game/modal/Modal.tsx";
 import type {Socket} from "socket.io-client";
+import {selectGame} from "../../games/model/gameSelectors.ts";
 
 type Props = {
     type: CardCategoryType
@@ -19,10 +20,12 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
     const dispatch = useAppDispatch()
     const modalRef = useRef<ModalHandle>(null)
 
+    const {isHost} = useAppSelector(selectGame)
+
     const decks = useAppSelector((state: RootState) => state.cards.decks[type])
 
     const openDeckHandler = () => {
-        if (!gameId || !socket) return
+        if (!gameId || !socket || !isHost) return
 
         modalRef.current?.open()
         socket.emit("deck:getCards", {gameId, type})
@@ -32,12 +35,15 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
         if (!gameId || !socket) return
 
         socket.emit("card:addToTable", {gameId, type, imageUrl})
+
+        // локально закрываем сразу,
+        // чтобы UI не ждал socket event
         modalRef.current?.close()
         dispatch(closeDeck(type))
     }
 
     const closeModalHandler = () => {
-        if (!socket || !gameId) return
+        if (!socket || !gameId || !isHost) return
 
         socket.emit("deck:closeDeck", {gameId, type})
     }
@@ -45,19 +51,34 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
     useEffect(() => {
         if (!socket) return
 
-        const deckOpenHandler = ({type: deckType, cards: deckCards}: { type: CardCategoryType; cards: string[] }) => {
-            if (deckType === type) {
-                dispatch(setDeckCards({type: deckType, cards: deckCards}))
-                dispatch(openDeck(deckType))
-                modalRef.current?.open()
-            }
+        const deckOpenHandler = ({
+                                     type: deckType,
+                                     cards: deckCards
+                                 }: {
+            type: CardCategoryType
+            cards: string[]
+        }) => {
+            if (deckType !== type) return
+
+            dispatch(setDeckCards({
+                type: deckType,
+                cards: deckCards
+            }))
+
+            dispatch(openDeck(deckType))
+
+            modalRef.current?.open()
         }
 
-        const deckCloseHandler = ({type: deckType}: { type: CardCategoryType }) => {
-            if (deckType === type) {
-                dispatch(closeDeck(deckType))
-                modalRef.current?.close()
-            }
+        const deckCloseHandler = ({
+                                      type: deckType
+                                  }: {
+            type: CardCategoryType
+        }) => {
+            if (deckType !== type) return
+
+            dispatch(closeDeck(deckType))
+            modalRef.current?.close()
         }
 
         socket.on("deck:open", deckOpenHandler)
@@ -67,7 +88,7 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
             socket.off("deck:open", deckOpenHandler)
             socket.off("deck:close", deckCloseHandler)
         }
-    }, [type, socket])
+    }, [type, socket, dispatch])
 
     return (
         <>
@@ -75,14 +96,18 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
                 <img
                     src={cardBack}
                     alt={title}
-                    className="cursor-pointer rounded-md w-lg p-1 bg-white shadow-xl transition hover:-translate-y-1/4 hover:shadow-2xl"
-                    onClick={openDeckHandler}
+                    className={`rounded-md w-lg p-1 bg-white shadow-xl transition ${
+                        isHost
+                            ? "cursor-pointer hover:-translate-y-1/4 hover:shadow-2xl"
+                            : "opacity-70 cursor-default"
+                    }`}
+                    onClick={isHost ? openDeckHandler : undefined}
                 />
             </div>
 
             {
-                // TODO: Сделать управления модалкой через state, а не через ref.
-                // TODO: Вынести модалку с выбором колод в отдельный компонет?
+                // TODO: Сделать управление модалкой через state, а не через ref.
+                // TODO: Вынести модалку с выбором колод в отдельный компонент.
             }
 
             <Modal
@@ -90,7 +115,7 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
                 title={title}
                 classNames={"max-w-none"}
                 width={"80-vw"}
-                onClickBackdrop={closeModalHandler}
+                onClickBackdrop={isHost ? closeModalHandler : undefined}
             >
                 <div className="grid grid-cols-9 gap-4">
                     {decks.map((card) => (
