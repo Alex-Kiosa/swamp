@@ -96,10 +96,11 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
                 <img
                     src={cardBack}
                     alt={title}
+                    title={isHost ? undefined : "Карту из колоды может вытянуть только ведущий"}
                     className={`rounded-md w-lg p-1 bg-white shadow-xl transition ${
                         isHost
                             ? "cursor-pointer hover:-translate-y-1/4 hover:shadow-2xl"
-                            : "opacity-70 cursor-default"
+                            : "cursor-not-allowed opacity-70 cursor-default"
                     }`}
                     onClick={isHost ? openDeckHandler : undefined}
                 />
@@ -115,7 +116,7 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
                 title={title}
                 classNames={"max-w-none"}
                 width={"80-vw"}
-                onClickBackdrop={isHost ? closeModalHandler : undefined}
+                onClickBackdrop={closeModalHandler}
             >
                 <div className="grid grid-cols-9 gap-4">
                     {decks.map((card) => (
