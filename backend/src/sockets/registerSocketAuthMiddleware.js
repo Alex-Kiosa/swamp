@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken"
+import {verifySocketToken} from "../services/socketTokenService.js";
 
 export function registerSocketAuthMiddleware(io) {
     // регистрируем middleware внутри io
@@ -16,13 +16,14 @@ function socketAuthMiddleware(socket, next) {
     }
 
     try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET)
+        const payload = verifySocketToken(token)
 
         socket.data.playerId = payload.playerId
         socket.data.gameId = payload.gameId
 
         next()
     } catch (err) {
-        next(new Error("Socket unauthorized: invalid token"))
+        console.log("JWT VERIFY ERROR:", err)
+        next(err)
     }
 }

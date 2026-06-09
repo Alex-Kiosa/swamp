@@ -48,7 +48,6 @@ export function socketIndex(io) {
             }
 
             socket.join(gameId)
-            // console.log("ROOM JOINED:", socket.rooms)
             // io.to(gameId).emit(...) отправляет событие всем сокетам в комнате
             // socket.emit(...) отправляет событие только текущему сокету
             // 🔥 сразу отправляем актуальных игроков ВСЕМ

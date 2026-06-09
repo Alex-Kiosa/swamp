@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 export function optionalAuthMiddleware(req, res, next) {
     if (req.method === "OPTIONS") {
-        next()
+        return next()
     }
 
     // by default we consider the user unauthorized

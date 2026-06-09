@@ -193,7 +193,6 @@ export const joinGameThunk = (gameId: string, playerName: string) => {
         })
             .then(res => {
                 dispatch(getGameThunk(gameId))
-                localStorage.setItem("socketToken", res.data.socketToken)
             })
             .catch(error => {
                 dispatch(setAppError(error.response.data.message))

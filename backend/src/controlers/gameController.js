@@ -3,7 +3,7 @@ import {v4 as uuidv4} from "uuid";
 import {generateDeck} from "../services/deckService.js";
 import {GAME_PROJECTION} from "../constants/gameConstants.js";
 import User from "../models/userModel.js";
-import {generateSocketToken} from "../services/generateSocketToken.js";
+import {generateSocketToken} from "../services/socketTokenService.js";
 
 export async function createGame(req, res) {
     try {
@@ -55,15 +55,59 @@ export async function createGame(req, res) {
 
         await game.save()
 
-        const socketToken = generateSocketToken(gameId, hostId)
-
-        res.status(201).json({
-            game,
-            socketToken
-        })
+        res.status(201).json({game})
     } catch (error) {
         console.log(error)
         res.status(500).json({message: "Failed to create game"})
+    }
+}
+
+export async function getSocketToken(req, res) {
+    try {
+        const { gameId } = req.params
+
+        const game = await Game.findOne({ gameId, isActive: true })
+        if (!game) {
+            return res.status(404).json({ message: "Game not found" })
+        }
+
+        let playerId
+
+        // 🟢 HOST
+        if (req.user) {
+            if (String(game.hostId) !== req.user.id) {
+                return res.status(403).json({ message: "Access denied. User not found" })
+            }
+
+            playerId = req.user.id
+        }
+
+        // 🔵 PLAYER
+        else {
+            playerId = req.headers["player-id"]
+            console.log(playerId)
+
+            const player = game.players.find(p => p.playerId === playerId)
+
+            if (!player) {
+                console.log("req.user", req.user)
+                console.log("playerId", req.headers["player-id"])
+                console.log("players", game.players.map(p => p.playerId))
+
+                return res.status(403).json({ message: "Player not in game" })
+            }
+        }
+
+        const socketToken = generateSocketToken(gameId, playerId)
+
+        return res.json({ socketToken })
+
+    } catch (error) {
+        console.error("GetSocketToken error:", error)
+
+        return res.status(500).json({
+            message: "Failed to generate socket token"
+        })
     }
 }
 
@@ -107,7 +151,6 @@ export async function joinGameAsPlayer(req, res) {
 }
 
 export async function getGamePublic(req, res) {
-    // console.log("getting game public")
     try {
         const gameId = req.params.gameId
 

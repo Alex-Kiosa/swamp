@@ -29,8 +29,8 @@ export const Game = () => {
     const [showJoinForm, setShowJoinForm] = useState(false)
     const boardRef = useRef<HTMLDivElement>(null)
 
-    const socketToken = localStorage.getItem("socketToken")
     const authToken = localStorage.getItem("token")
+    const playerId= localStorage.getItem("playerId")
 
     const joinFormSubmit = (data: FormDataFields) => {
         if (gameId) {
@@ -41,7 +41,7 @@ export const Game = () => {
 
     const [start, setStart] = useState(false)
 
-    const socket = useSocketConnection(gameId, socketToken)
+    const socket = useSocketConnection(gameId)
 
     usePlayerSockets(socket)
     useChipSockets(socket)
@@ -57,7 +57,7 @@ export const Game = () => {
 
     useEffect(() => {
         if (!gameId) return
-        if (socketToken || authToken) {
+        if (authToken || playerId) {
             dispatch(getGameThunk(gameId))
             return
         }
