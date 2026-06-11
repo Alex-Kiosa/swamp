@@ -2,8 +2,7 @@ import {useEffect, useState} from "react"
 import type {Socket} from "socket.io-client"
 import {createSocket} from "./socket.ts";
 import {getSocketToken} from "../features/games/api/gameApi.ts";
-import type { AxiosError } from "axios";
-import type {ApiErrorResponse} from "../api/api.types.ts";
+import {getApiErrorMessage} from "../api/getApiErrorMessage.ts";
 
 export const useSocketConnection = (gameId?: string) => {
     const [socket, setSocket] = useState<Socket | null>(null)
@@ -52,12 +51,7 @@ export const useSocketConnection = (gameId?: string) => {
                     )
                 })
             } catch (error) {
-                const axiosError = error as AxiosError<ApiErrorResponse>
-
-                console.error(
-                    axiosError.response?.data?.message ??
-                    axiosError.message
-                )
+                getApiErrorMessage(error)
             }
         }
 

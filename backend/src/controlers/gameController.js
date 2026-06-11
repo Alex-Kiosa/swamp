@@ -136,10 +136,7 @@ export async function joinGameAsPlayer(req, res) {
 
         await game.save()
 
-        const socketToken = generateSocketToken(gameId, playerId)
-
         res.status(201).json({
-            socketToken,
             gameId,
             playerId
         })

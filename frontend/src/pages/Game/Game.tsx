@@ -41,7 +41,9 @@ export const Game = () => {
 
     const [start, setStart] = useState(false)
 
-    const socket = useSocketConnection(gameId)
+    const canConnect = Boolean(authToken || playerId)
+
+    const socket = useSocketConnection(canConnect ? gameId: undefined)
 
     usePlayerSockets(socket)
     useChipSockets(socket)
