@@ -149,6 +149,8 @@ export async function joinGameAsPlayer(req, res) {
 
 export async function getGamePublic(req, res) {
     try {
+        const authHeader = req.headers.authorization
+
         const gameId = req.params.gameId
 
         // Find game and return only necessary fields using the Mongo projection

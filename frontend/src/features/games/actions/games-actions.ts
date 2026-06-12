@@ -30,15 +30,14 @@ export const getGameThunk = (gameId: string) => {
     return async (dispatch: AppDispatch) => {
         const authToken = localStorage.getItem("token")
         const socketToken = localStorage.getItem("socketToken")
+        const authHeaders = authToken ? {Authorization: `Bearer ${authToken}`} : {}
 
         try {
             // ⏳ старт загрузки
             dispatch(getGamePending())
 
             const gameRes = await api.get(`/games/${gameId}`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
+                headers: authHeaders
             })
 
             dispatch(getGameSuccess(gameRes.data))
@@ -48,9 +47,7 @@ export const getGameThunk = (gameId: string) => {
                 const socketRes = await api.get(
                     `/games/${gameId}/socket-token`,
                     {
-                        headers: {
-                            Authorization: `Bearer ${authToken}`,
-                        }
+                        headers: authHeaders
                     }
                 )
 
@@ -60,7 +57,7 @@ export const getGameThunk = (gameId: string) => {
             const chipsRes = await api.get(
                 `/games/${gameRes.data.gameId}/chips`,
                 {
-                    headers: { Authorization: `Bearer ${authToken}` }
+                    headers: authHeaders
                 }
             )
 
@@ -91,7 +88,7 @@ export const getGameByUserThunk = () => {
             dispatch(getGamePending())
 
             const gameRes = await api.get(`/games/active`, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: {Authorization: `Bearer ${token}`}
             })
 
             dispatch(getGameSuccess(gameRes.data))
@@ -99,7 +96,7 @@ export const getGameByUserThunk = () => {
             const chipsRes = await api.get(
                 `/games/${gameRes.data.gameId}/chips`,
                 {
-                    headers: { Authorization: `Bearer ${token}` }
+                    headers: {Authorization: `Bearer ${token}`}
                 }
             )
 
