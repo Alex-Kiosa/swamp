@@ -1,8 +1,9 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt"
+import crypto from "crypto"
 import jwt from "jsonwebtoken"
 import {validationResult} from "express-validator";
-import {queueRegEmail} from "../services/emailQueueService.js";
+import {queueRecoveryEmail, queueRegEmail} from "../services/emailQueueService.js";
 
 export function generateAccessToken(id, email, roles) {
     const secretKey = process.env.JWT_SECRET
@@ -33,7 +34,8 @@ export async function createUser(req, res) {
         await user.save()
 
         // Queue email (НЕ ждём, не блокируем) кладем задачу в очередь
-        queueRegEmail(email, name, password).catch(console.error("❌ Queue failed:", error))
+        queueRegEmail(email, name, password)
+            .catch(error => console.error("❌ Queue failed:", error))
 
         res.status(201).json({
             message: "User was created",
@@ -45,8 +47,14 @@ export async function createUser(req, res) {
         })
 
     } catch (error) {
-        res.status(500).json({message: 'Server error during user registration'})
-        console.log('Server error', error)
+        // res.status(500).json({message: 'Server error during user registration'})
+        // console.log('Server error')
+
+        console.error("Server error during user registration:", error)
+
+        res.status(500).json({
+            message: 'Server error during user registration'
+        })
     }
 }
 
@@ -54,7 +62,7 @@ export async function login(req, res) {
     try {
         const {email, password} = req.body
 
-        const user = await User.findOne({ email })
+        const user = await User.findOne({email})
         if (!user) {
             console.log(email)
             console.log(user)
@@ -104,7 +112,88 @@ export async function auth(req, res) {
         })
     } catch (error) {
         console.error('Error in auth:', error)
-        res.status(500).json({message: "Server error", error: error.message})
+        res.status(500).json({message: "Server error"})
+    }
+}
+
+export async function forgotPassword(req, res) {
+    try {
+        // TODO:  prevent multiple recovery emails within TTL
+        const RESET_PASSWORD_TTL_MS = 30 * 60 * 1000 // 30 минут
+        const MESSAGE = "If the email exists, recovery instructions have been sent"
+        const {email} = req.body
+        const user = await User.findOne({email})
+        if (!user) {
+            console.log("Password recovery: user not found", {email})
+
+            return res.status(200).json({message: MESSAGE})
+        }
+
+        const token = crypto.randomBytes(32).toString("hex")
+        // хэшируем токен для безопасности
+        const hashToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex")
+
+        user.resetPasswordToken = hashToken
+        user.resetPasswordExpires = new Date(Date.now() + RESET_PASSWORD_TTL_MS)
+        await user.save()
+
+        const recoveryLink =
+            `${process.env.FRONT_URL}/reset-password?token=${token}`
+        console.log(process.env.FRONT_URL)
+
+        // без await письмо может не попасть в очередь при ошибке.
+        await queueRecoveryEmail(email, user.name, recoveryLink)
+
+        return res.status(200).json({message: MESSAGE})
+    } catch (error) {
+        console.error('Error in forgotPassword:', error)
+        res.status(500).json({message: "Server error"})
+    }
+}
+
+export async function resetPassword(req, res) {
+    try {
+        const { token, password } = req.body
+
+        const hashedToken = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex")
+
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() },
+        })
+
+        if (!user) {
+            return res.status(400).json({
+                message: "Invalid or expired recovery link"
+            })
+        }
+
+        const hashPassword = await bcrypt.hash(password, 7)
+
+        user.password = hashPassword
+
+        // делаем ссылку одноразовой
+        user.resetPasswordToken = null
+        user.resetPasswordExpires = null
+
+        await user.save()
+
+        return res.status(200).json({
+            message: "Password successfully changed"
+        })
+
+    } catch (error) {
+        console.error("Error in resetPassword:", error)
+
+        res.status(500).json({
+            message: "Server error"
+        })
     }
 }
 
@@ -113,7 +202,7 @@ export async function getUsers(req, res) {
         const users = await User.find()
         return res.status(200).json(users)
     } catch (error) {
+        console.log('Server error in getUsers:', error)
         res.status(500).json({message: 'server error'})
-        console.log('Server error ', error)
     }
 }

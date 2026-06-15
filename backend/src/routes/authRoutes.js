@@ -1,5 +1,5 @@
 import express from "express";
-import {auth, createUser, getUsers, login} from "../controlers/authController.js";
+import {auth, createUser, forgotPassword, getUsers, login, resetPassword} from "../controlers/authController.js";
 import {check} from "express-validator";
 import {roleMiddleware} from "../middleware/roleMiddleware.js";
 import {authMiddleware} from "../middleware/authMiddleware.js";
@@ -10,12 +10,32 @@ router.post('/registration',
     [
         check('name', 'Name can not be empty').notEmpty(),
         check('email', 'Email can not be empty').isEmail(),
-        check('password', 'Password length must be between 6 and 15 characters')
-            .isLength({min: 6, max: 15}),
+        check(
+            "password",
+            "Password length must be between 6 and 15 characters"
+        ).isLength({ min: 6, max: 15 }),
     ],
     createUser
 )
 router.post('/login', login)
+router.post(
+    "/forgot-password",
+    [
+        check("email", "Email can not be empty").isEmail(),
+    ],
+    forgotPassword
+)
+router.post(
+    "/reset-password",
+    [
+        check("token", "Token is required").notEmpty(),
+        check(
+            "password",
+            "Password length must be between 6 and 15 characters"
+        ).isLength({ min: 6, max: 15 }),
+    ],
+    resetPassword
+)
 router.get('/auth', authMiddleware, auth)
 router.get('/users', roleMiddleware(["ADMIN", "USER", "DEMO_USER"]), getUsers)
 

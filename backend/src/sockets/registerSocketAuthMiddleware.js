@@ -22,8 +22,8 @@ function socketAuthMiddleware(socket, next) {
         socket.data.gameId = payload.gameId
 
         next()
-    } catch (err) {
-        console.log("JWT VERIFY ERROR:", err)
-        next(err)
+    } catch (error) {
+        console.log("JWT VERIFY ERROR:", error)
+        next(error)
     }
 }

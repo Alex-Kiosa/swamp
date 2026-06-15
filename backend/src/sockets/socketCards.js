@@ -3,8 +3,7 @@ import Game from "../models/gameModel.js"
 
 export function registerCardSockets(io, socket) {
     socket.on("game:init", async () => {
-        console.log("GAME INIT RECEIVED ", socket.id)
-
+        // console.log("[socketCards] GAME INIT RECEIVED. SocketId - " + socket.id)
         const gameId = socket.data.gameId
 
         const game = await Game.findOne({ gameId })

@@ -17,7 +17,7 @@ export function generateSocketToken(gameId, playerId) {
             playerId
         },
         secretKey,
-        {expiresIn: "10s"}
+        {expiresIn: "24h"}
     )
 
     return socketToken

@@ -60,7 +60,7 @@ app.get("/api/test-email", async (req, res) => {
 })
 // TODO: add report in data base, add record email's logging in report https://chatgpt.com/share/69f0e2b9-b9a0-832a-8ca1-41f4628caec3
 
-// Статика
+// Статика для img и др.
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 app.use("/uploads", express.static(path.join(__dirname, "../../uploads")))

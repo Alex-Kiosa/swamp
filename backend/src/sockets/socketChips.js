@@ -2,7 +2,6 @@ const lockedChips = {}
 // { [gameId]: { [chipId]: socketId } }
 
 export function registerChipSockets(io, socket) {
-    // console.log('registerChipSockets') // выводится
     if (socket.gameId) {
         socket.join(socket.gameId)
     }

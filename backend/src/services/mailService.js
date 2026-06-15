@@ -16,7 +16,7 @@ export async function sendMail({ to, subject, html }) {
     const transporter = createTransporter()
 
     return transporter.sendMail({
-        from: `"Центр Психологии и Тренинга Марии Минаковой" <${process.env.SMTP_USER}>`,
+        from: `"Игра Путь через болото" <${process.env.SMTP_USER}>`,
         to,
         subject,
         html,
