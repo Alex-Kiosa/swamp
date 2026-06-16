@@ -3,6 +3,8 @@ const slugToTileDictionary : Record<string, string> = {
     "login": "Войти",
     "account": "Аккаунт",
     "create-game": "Создать игру",
+    "forgot-password": "Восстановление пароля",
+    "reset-password": "Создать новый пароль",
 }
 
 export const convertSlugTotTile = (slug:string): string => {

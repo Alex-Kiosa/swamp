@@ -12,7 +12,8 @@ import {Alert} from "../components/alert/Alert.tsx";
 
 export const Login = () => {
     const location = useLocation()
-    const fromRegistation = location.state?.fromRegistration
+    const fromRegistration = location.state?.fromRegistration
+    const passwordResetSuccess = location.state?.passwordResetSuccess
 
     const status = useAppSelector(selectAppStatus)
     const isAuth = useAppSelector(selectAuth)
@@ -29,10 +30,20 @@ export const Login = () => {
     }
 
     return <>
-        {fromRegistation && (<Alert
+        {fromRegistration && (<Alert
                 type={"success"}
                 message={"Вы успешно зарегистрировались на сайте. Теперь можете войти, используя свой Email и пароль, который вы указали при регистрации."}/>
         )}
+
+        {passwordResetSuccess && (
+            <Alert
+                type={"success"}
+                message={
+                    "Пароль успешно изменён. Теперь вы можете войти с новым паролем."
+                }
+            />
+        )}
+
         <FormProvider {...methods}>
             <form onSubmit={onSubmit} noValidate className="w-sm p-10 space-y-6 rounded-2xl bg-white shadow-sm">
                 <div className="mb-5 text-center">
@@ -43,6 +54,15 @@ export const Login = () => {
 
                 <Input {...email_validation} placeholder="Введите email"/>
                 <Input {...pass_validation}/>
+
+                <div className="text-right">
+                    <Link
+                        to="/forgot-password"
+                        className="link link-primary"
+                    >
+                        Забыли пароль?
+                    </Link>
+                </div>
 
                 <button
                     type="submit"

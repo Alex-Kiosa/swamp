@@ -10,13 +10,15 @@ type FormType = {
     title?: string
     submitText?: string
     onSubmit: (data: FormDataFields) => void
+    classNames?: string
     children?: React.ReactNode
 }
 
-export const Form = ({
+export const BaseForm = ({
                          title,
                          onSubmit,
                          submitText = "Сохранить",
+                         classNames,
                          children,
                      }: FormType) => {
 
@@ -27,10 +29,10 @@ export const Form = ({
         <FormProvider {...methods}>
             <form
                 onSubmit={methods.handleSubmit(onSubmit)}
-                className="mx-auto w-xs rounded-2xl"
+                className={`mx-auto w-sm rounded-2xl ${classNames}`}
             >
                 {title && (
-                    <div className="text-center">
+                    <div className="text-center mb-5">
                         <h2 className="text-2xl font-bold">{title}</h2>
                     </div>
                 )}

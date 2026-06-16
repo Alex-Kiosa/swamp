@@ -18,6 +18,8 @@ import {useToast} from "../contexts/ToastContext.tsx";
 import {selectAppError} from "./appSelectors.ts";
 import {setAppError} from "./app-reducer.ts";
 import {GameLayout} from "../pages/Game/GameLayout.tsx";
+import {ForgotPassword} from "../pages/ForgotPassword.tsx";
+import {ResetPassword} from "../pages/ResetPassword.tsx";
 
 function App() {
     const isInitialized = useAppSelector(selectIsInitialized)
@@ -56,6 +58,8 @@ function App() {
                     <Route path="/privacy-notice" element={<PrivacyNotice/>}/>
                     <Route path="/login" element={<Login/>}/>
                     <Route path="/signup" element={<Signup/>}/>
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route element={<PrivateRoute isAuth={isAuth}/>}>
                         <Route path="/account" element={<Account/>}/>
                     </Route>

@@ -170,6 +170,7 @@ export async function resetPassword(req, res) {
 
         if (!user) {
             return res.status(400).json({
+                code: "INVALID_RESET_TOKEN",
                 message: "Invalid or expired recovery link"
             })
         }
@@ -191,7 +192,8 @@ export async function resetPassword(req, res) {
     } catch (error) {
         console.error("Error in resetPassword:", error)
 
-        res.status(500).json({
+        return res.status(500).json({
+            code: "SERVER_ERROR",
             message: "Server error"
         })
     }

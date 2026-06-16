@@ -4,7 +4,7 @@ import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-ac
 import {Chips} from "./chips/Chips"
 import {selectGame} from "../../features/games/model/gameSelectors"
 import {useParams} from "react-router"
-import {Form, type FormDataFields} from "../../components/form/Form"
+import {BaseForm, type FormDataFields} from "../../components/form/BaseForm.tsx"
 import {name_validation} from "../../common/utils/inputValidations"
 import {Input} from "../../components/input/Input"
 import {Modal, type ModalHandle} from "./modal/Modal"
@@ -78,9 +78,9 @@ export const Game = () => {
         <div className="w-screen h-screen overflow-hidden relative flex">
             {showJoinForm ? (
                 <Modal ref={modalRef} closeOnBackdropClick={false} showCloseButton={false}>
-                    <Form onSubmit={joinFormSubmit} submitText="Подтвердить">
+                    <BaseForm onSubmit={joinFormSubmit} submitText="Подтвердить">
                         <Input {...name_validation} />
-                    </Form>
+                    </BaseForm>
                 </Modal>
             ) : (
                 <>
