@@ -13,6 +13,8 @@ import path from "path"
 import { fileURLToPath } from "url"
 import {createTransporter, sendMail} from "./services/mailService.js"
 import {startEmailWorker} from "./workers/emailWorker.js"
+import livekitRoutes from "./routes/videoRoutes.js";
+import videoRoutes from "./routes/videoRoutes.js";
 
 
 // Create server
@@ -50,7 +52,9 @@ app.use(express.json())
 app.use("/api/auth", regRoutes)
 app.use("/api/games", gameRoutes)
 app.use("/api/", chipRoutes)
-app.get("/api/test-email", async (req, res) => {
+app.use("/api/video", videoRoutes)
+app.get("/api/test-email", async (req
+    , res) => {
     try {
         await sendMail("akiosa88@gmail.com", "Alex", "test")
         res.json({message: "Email sent"})

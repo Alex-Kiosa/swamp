@@ -35,7 +35,7 @@ export const ForgotPassword = () => {
             title="Восстановление пароля"
             submitText="Получить ссылку"
             onSubmit={onSubmit}
-            classNames={"p-10 space-y-6 bg-white shadow-sm"}
+            classNames={"w-sm p-10 space-y-6 bg-white shadow-sm"}
         >
             <Input
                 {...email_validation}

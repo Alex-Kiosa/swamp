@@ -48,7 +48,7 @@ export const ResetPassword = () => {
             title="Создать новый пароль"
             submitText="Сохранить пароль"
             onSubmit={onSubmit}
-            classNames={"p-10 space-y-6 bg-white shadow-sm"}
+            classNames={"p-10 space-y-6 bg-white shadow-sm w-sm"}
         >
             <Input {...pass_validation} />
         </BaseForm>

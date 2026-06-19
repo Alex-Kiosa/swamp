@@ -15,26 +15,15 @@ export const useSocketConnection = (gameId?: string) => {
 
         const connectSocket = async () => {
             try {
-                console.log("1. start")
-
                 const socketToken = await getSocketToken(gameId)
 
-                console.log("2. token received", socketToken)
-
                 newSocket = createSocket(socketToken)
-
-                console.log("3. socket created")
 
                 setSocket(newSocket)
 
                 const handleConnect = () => {
                     currentSocketId = newSocket?.id
-
-                    console.log(
-                        "🟢 CONNECTED SOCKET",
-                        currentSocketId
-                    )
-
+                    // console.log("🟢 CONNECTED SOCKET", currentSocketId)
                     newSocket?.emit("game:init")
                 }
 
@@ -44,12 +33,7 @@ export const useSocketConnection = (gameId?: string) => {
                     console.log("🔴 CONNECT ERROR", err)
                 })
 
-                newSocket.on("disconnect", () => {
-                    console.log(
-                        "🔴 DISCONNECTED SOCKET",
-                        currentSocketId
-                    )
-                })
+                // newSocket.on("disconnect", () => console.log("🔴 DISCONNECTED SOCKET",currentSocketId))
             } catch (error) {
                 getApiErrorMessage(error)
             }

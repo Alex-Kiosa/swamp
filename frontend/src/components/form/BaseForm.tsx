@@ -29,7 +29,7 @@ export const BaseForm = ({
         <FormProvider {...methods}>
             <form
                 onSubmit={methods.handleSubmit(onSubmit)}
-                className={`mx-auto w-sm rounded-2xl ${classNames}`}
+                className={`mx-auto rounded-2xl ${classNames}`}
             >
                 {title && (
                     <div className="text-center mb-5">

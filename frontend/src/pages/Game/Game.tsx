@@ -17,12 +17,14 @@ import {useCardSockets} from "../../sockets/useCardSockets"
 import {usePlayerSockets} from "../../sockets/usePlayerSockets"
 import {TableCards} from "../../features/cards/ui/TableCards"
 import boardImage from "./assets/board.jpg"
-import {DropdownHost} from "./dropdownHost/DropdownHost.tsx";
-import {NotFound} from "../NotFound.tsx";
-import {Loading} from "../../components/loading/Loading.tsx";
+import {DropdownHost} from "./dropdownHost/DropdownHost.tsx"
+import {NotFound} from "../NotFound.tsx"
+import {Loading} from "../../components/loading/Loading.tsx"
+import {VideoRoom} from "../../features/games/video/ui/VideoRoom.tsx";
 
 export const Game = () => {
     const {status, isHost} = useAppSelector(selectGame)
+
     const {gameId} = useParams<{ gameId: string }>()
     const modalRef = useRef<ModalHandle>(null)
     const dispatch = useAppDispatch()
@@ -30,7 +32,7 @@ export const Game = () => {
     const boardRef = useRef<HTMLDivElement>(null)
 
     const authToken = localStorage.getItem("token")
-    const playerId= localStorage.getItem("playerId")
+    const playerId = localStorage.getItem("playerId")
 
     const joinFormSubmit = (data: FormDataFields) => {
         if (gameId) {
@@ -39,11 +41,9 @@ export const Game = () => {
         }
     }
 
-    const [start, setStart] = useState(false)
-
     const canConnect = Boolean(authToken || playerId)
 
-    const socket = useSocketConnection(canConnect ? gameId: undefined)
+    const socket = useSocketConnection(canConnect ? gameId : undefined)
 
     usePlayerSockets(socket)
     useChipSockets(socket)
@@ -66,19 +66,20 @@ export const Game = () => {
         setShowJoinForm(true)
     }, [gameId])
 
-    if (status === "loading") {
-        return <Loading />
-    }
-
     if (status === "not_found") {
-        return <NotFound title={"Игра не найдена"} description={"Такой игры нет, или она закончилась"} />
+        return <NotFound title={"Игра не найдена"} description={"Такой игры нет, или она закончилась"}/>
     }
 
-    return (
+    return <>
+        {status === "loading" && <Loading/>}
         <div className="w-screen h-screen overflow-hidden relative flex">
             {showJoinForm ? (
                 <Modal ref={modalRef} closeOnBackdropClick={false} showCloseButton={false}>
-                    <BaseForm onSubmit={joinFormSubmit} submitText="Подтвердить">
+                    <BaseForm
+                        onSubmit={joinFormSubmit}
+                        submitText="Подтвердить"
+                        classNames={"w-xs"}
+                    >
                         <Input {...name_validation} />
                     </BaseForm>
                 </Modal>
@@ -89,7 +90,7 @@ export const Game = () => {
                             <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
                                 {gameId && <Cube gameId={gameId} socket={socket}/>}
                             </div>
-                            {isHost && <DropdownHost/> }
+                            {isHost && <DropdownHost/>}
                         </div>
 
                         <div className="alert block mb-6 p-6 rounded-lg">
@@ -97,19 +98,11 @@ export const Game = () => {
                             <Players/>
                         </div>
 
-                        {/*{!start && (*/}
-                        {/*    <button className={"btn-primary"} onClick={() => setStart(true)}>*/}
-                        {/*        Start video*/}
-                        {/*    </button>*/}
-                        {/*)}*/}
-
-                        {/*{start && gameId && (*/}
-                        {/*    <VideoRoom*/}
-                        {/*        key={gameId}*/}
-                        {/*        gameId={gameId}*/}
-                        {/*        // playerName={"Player"}*/}
-                        {/*    />*/}
-                        {/*)}*/}
+                        {gameId && (<VideoRoom
+                                gameId={gameId}
+                                participantName={"Тест"}
+                            />
+                        )}
 
                         <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
                             <div className="text-lg font-bold text-center">Карты на столе</div>
@@ -139,5 +132,5 @@ export const Game = () => {
                 </>
             )}
         </div>
-    )
+    </>
 }
