@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react"
 import {useAppDispatch, useAppSelector} from "../../common/hooks/hooks"
 import {getGameThunk, joinGameThunk} from "../../features/games/actions/games-actions"
 import {Chips} from "./chips/Chips"
-import {selectGame} from "../../features/games/model/gameSelectors"
+import {selectCurrentUser, selectGame} from "../../features/games/model/gameSelectors"
 import {useParams} from "react-router"
 import {BaseForm, type FormDataFields} from "../../components/form/BaseForm.tsx"
 import {name_validation} from "../../common/utils/inputValidations"
@@ -23,7 +23,8 @@ import {Loading} from "../../components/loading/Loading.tsx"
 import {VideoRoom} from "../../features/games/video/ui/VideoRoom.tsx";
 
 export const Game = () => {
-    const {status, isHost} = useAppSelector(selectGame)
+    const {status, isHost, players} = useAppSelector(selectGame)
+    const currentUser = useAppSelector(selectCurrentUser)
 
     const {gameId} = useParams<{ gameId: string }>()
     const modalRef = useRef<ModalHandle>(null)
@@ -33,6 +34,12 @@ export const Game = () => {
 
     const authToken = localStorage.getItem("token")
     const playerId = localStorage.getItem("playerId")
+    const playerName =
+        players.find(player => player.playerId === playerId)?.name
+        ??
+        players.find(player => player.playerId === currentUser?.id)?.name
+        ??
+        ""
 
     const joinFormSubmit = (data: FormDataFields) => {
         if (gameId) {
@@ -98,9 +105,10 @@ export const Game = () => {
                             <Players/>
                         </div>
 
-                        {gameId && (<VideoRoom
+                        {status === "succeeded" && gameId && playerName && (
+                            <VideoRoom
                                 gameId={gameId}
-                                participantName={"Тест"}
+                                participantName={playerName}
                             />
                         )}
 
