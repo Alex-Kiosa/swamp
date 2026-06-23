@@ -7,6 +7,12 @@ import {
 } from "livekit-client"
 import { getVideoToken } from "../api/videoApi.ts"
 import { RemoteVideo } from "./RemoteVideo.tsx"
+import {
+    PiMicrophoneFill,
+    PiMicrophoneSlashFill,
+    PiVideoCameraFill,
+    PiVideoCameraSlashFill,
+} from "react-icons/pi"
 
 type Props = {
     gameId: string
@@ -28,6 +34,12 @@ export const VideoRoom = ({
 
     const [remoteParticipants, setRemoteParticipants] =
         useState<ParticipantType[]>([])
+
+    const [isMicEnabled, setIsMicEnabled] =
+        useState(false)
+
+    const [isCameraEnabled, setIsCameraEnabled] =
+        useState(false)
 
     const addRemoteParticipant = (
         participant: RemoteParticipant
@@ -63,6 +75,34 @@ export const VideoRoom = ({
         )
     }
 
+    const toggleMicrophone = async () => {
+        const room = roomRef.current
+
+        if (!room) return
+
+        const nextState = !isMicEnabled
+
+        await room.localParticipant.setMicrophoneEnabled(
+            nextState
+        )
+
+        setIsMicEnabled(nextState)
+    }
+
+    const toggleCamera = async () => {
+        const room = roomRef.current
+
+        if (!room) return
+
+        const nextState = !isCameraEnabled
+
+        await room.localParticipant.setCameraEnabled(
+            nextState
+        )
+
+        setIsCameraEnabled(nextState)
+    }
+
     useEffect(() => {
         const connect = async () => {
             try {
@@ -79,12 +119,14 @@ export const VideoRoom = ({
                     token
                 )
 
-                // участники, которые уже были в комнате
                 room.remoteParticipants.forEach(
                     addRemoteParticipant
                 )
 
                 await room.localParticipant.enableCameraAndMicrophone()
+
+                setIsCameraEnabled(true)
+                setIsMicEnabled(true)
 
                 for (const publication of room.localParticipant.videoTrackPublications.values()) {
                     const track = publication.videoTrack
@@ -114,24 +156,36 @@ export const VideoRoom = ({
                 room.on(
                     RoomEvent.TrackSubscribed,
                     (track, _, participant) => {
-                        if (track.kind !== "video") return
 
-                        setRemoteParticipants(prev => {
-                            const exists = prev.some(
-                                p => p.id === participant.sid
-                            )
+                        console.log(
+                            "track subscribed",
+                            track.kind,
+                            participant.identity
+                        )
 
-                            if (exists) return prev
+                        if (track.kind === "audio") {
+                            track.attach()
+                            return
+                        }
 
-                            return [
-                                ...prev,
-                                {
-                                    id: participant.sid,
-                                    name: participant.identity,
-                                    track,
-                                },
-                            ]
-                        })
+                        if (track.kind === "video") {
+                            setRemoteParticipants(prev => {
+                                const exists = prev.some(
+                                    p => p.id === participant.sid
+                                )
+
+                                if (exists) return prev
+
+                                return [
+                                    ...prev,
+                                    {
+                                        id: participant.sid,
+                                        name: participant.identity,
+                                        track,
+                                    },
+                                ]
+                            })
+                        }
                     }
                 )
 
@@ -166,17 +220,51 @@ export const VideoRoom = ({
 
     return (
         <>
-            <div className="relative w-full">
+            <div className="relative w-full aspect-video mb-6">
                 <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="w-full rounded-lg"
+                    className="absolute inset-0 h-full w-full object-cover rounded-lg bg-black"
                 />
 
-                <div className="absolute bottom-3 left-3 bg-black/60 text-white px-3 py-1.5 rounded-lg text-sm font-medium backdrop-blur-sm">
+                {!isCameraEnabled && (
+                    <div className="absolute inset-0 bg-black rounded-lg z-2" />
+                )}
+
+                <div className="absolute bottom-3 left-3 bg-black/60 text-white px-3 py-1.5 rounded-lg text-sm font-medium z-3">
                     {participantName}
+                </div>
+
+                <div className="absolute bottom-2 right-2 flex flex-col gap-2">
+                    <button
+                        onClick={toggleCamera}
+                        className="btn btn-circle btn-sm z-3"
+                        title={
+                            isCameraEnabled
+                                ? "Выключить камеру"
+                                : "Включить камеру"
+                        }
+                    >
+                        {isCameraEnabled
+                            ? <PiVideoCameraFill />
+                            : <PiVideoCameraSlashFill />}
+                    </button>
+
+                    <button
+                        onClick={toggleMicrophone}
+                        className="btn btn-circle btn-sm z-3"
+                        title={
+                            isMicEnabled
+                                ? "Выключить микрофон"
+                                : "Включить микрофон"
+                        }
+                    >
+                        {isMicEnabled
+                            ? <PiMicrophoneFill />
+                            : <PiMicrophoneSlashFill />}
+                    </button>
                 </div>
             </div>
 

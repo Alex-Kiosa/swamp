@@ -100,10 +100,10 @@ export const Game = () => {
                             {isHost && <DropdownHost/>}
                         </div>
 
-                        <div className="alert block mb-6 p-6 rounded-lg">
-                            {/*<div className="text-lg font-bold text-center">Наши игроки</div>*/}
-                            <Players/>
-                        </div>
+                        {/*<div className="alert block mb-6 p-6 rounded-lg">*/}
+                        {/*    <div className="text-lg font-bold text-center">Наши игроки</div>*/}
+                        {/*    <Players/>*/}
+                        {/*</div>*/}
 
                         {status === "succeeded" && gameId && playerName && (
                             <VideoRoom
