@@ -4,7 +4,7 @@ import path from "path"
 
 // TODO: Изучить алгоритм Fisher–Yates
 // Fisher–Yates сортировка
-function shuffle(array) {
+export function shuffleDeck(array) {
     const shuffled = [...array]
 
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -25,5 +25,5 @@ export async function generateDeck(cardType) {
         `/uploads/cards/${cardType}/${file}`
     )
 
-    return shuffle(images)
+    return shuffleDeck(images)
 }
