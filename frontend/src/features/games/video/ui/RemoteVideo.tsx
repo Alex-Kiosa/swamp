@@ -33,7 +33,7 @@ export const RemoteVideo = ({
     }, [track])
 
     return (
-        <div className="relative w-full aspect-video mb-6 overflow-scroll">
+        <div className="relative w-full aspect-video mb-1">
             <video
                 ref={videoRef}
                 autoPlay

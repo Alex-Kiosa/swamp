@@ -91,29 +91,15 @@ export const Game = () => {
                 </Modal>
             ) : (
                 <>
-                    <div className="basis-[280px] min-w-[260px] max-w-[340px] shrink-0 p-5 flex flex-col h-full">
-                        <div className="flex">
-                            <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
-                                {gameId && <Cube gameId={gameId} socket={socket}/>}
-                            </div>
-                            {isHost && <DropdownHost/>}
-                        </div>
-
-                        {/*<div className="alert block mb-6 p-6 rounded-lg">*/}
-                        {/*    <div className="text-lg font-bold text-center">Наши игроки</div>*/}
-                        {/*    <Players/>*/}
-                        {/*</div>*/}
-
-                        {status === "succeeded" && gameId && playerName && (
-                            <VideoRoom
-                                gameId={gameId}
-                                participantName={playerName}
-                            />
-                        )}
-
-                        <div className="alert block mb-6 p-6 rounded-lg overflow-y-scroll">
-                            <div className="text-lg font-bold text-center">Карты на столе</div>
-                            {gameId && <TableCards isHost={isHost} gameId={gameId} socket={socket}/>}
+                    <div
+                        className="basis-[280px] min-w-[260px] max-w-[340px] shrink-0 p-5 flex flex-col h-full min-h-0">
+                        <div className="flex-1 min-h-0">
+                            {status === "succeeded" && gameId && playerName && (
+                                <VideoRoom
+                                    gameId={gameId}
+                                    participantName={playerName}
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -128,7 +114,25 @@ export const Game = () => {
                                     aspectRatio: "24 / 17",
                                 }}
                             >
+                                {/*Кубик*/}
+                                <div className="flex p-6">
+                                    {gameId && <Cube gameId={gameId} socket={socket}/>}
+                                    <div className="ml-5">
+                                        {isHost && <DropdownHost/>}
+                                    </div>
+                                </div>
+
+                                {/*Фишки*/}
                                 <Chips boardRef={boardRef} socket={socket}/>
+
+                                {/*Карты на столе*/}
+                                {gameId && (
+                                    <TableCards
+                                        isHost={isHost}
+                                        gameId={gameId}
+                                        socket={socket}
+                                    />
+                                )}
                             </div>
                         </div>
 

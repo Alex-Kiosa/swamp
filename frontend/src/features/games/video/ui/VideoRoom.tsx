@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import {useEffect, useRef, useState} from "react"
 import {
     RemoteParticipant,
     RemoteTrack,
     Room,
     RoomEvent, Track,
 } from "livekit-client"
-import { getVideoToken } from "../api/videoApi.ts"
-import { RemoteVideo } from "./RemoteVideo.tsx"
+import {getVideoToken} from "../api/videoApi.ts"
+import {RemoteVideo} from "./RemoteVideo.tsx"
 import {
     PiMicrophoneFill,
     PiMicrophoneSlashFill,
@@ -26,6 +26,18 @@ type ParticipantType = {
     isMicEnabled: boolean
     isCameraEnabled: boolean
 }
+
+// ==========================================
+// VIDEO CHAT BACKLOG (after MVP)
+// ==========================================
+
+// TODO: Save camera/microphone state after page refresh.
+
+// TODO: Video grid layout for 6+ participants.
+
+// TODO: Pin host video at the top of the participant list.
+
+// TODO: Show indicator when there are hidden videos below the scroll area.
 
 export const VideoRoom = ({
                               gameId,
@@ -107,8 +119,6 @@ export const VideoRoom = ({
         setIsMicEnabled(nextState)
     }
 
-    // TODO: After turning off the camera or microphone and refreshing the page the state not saved, is reset to default. Need to fix
-
     const toggleCamera = async () => {
         const room = roomRef.current
 
@@ -122,6 +132,32 @@ export const VideoRoom = ({
 
         setIsCameraEnabled(nextState)
     }
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    const [hasOverflow, setHasOverflow] =
+        useState(false)
+
+    useEffect(() => {
+        const el = scrollRef.current
+
+        if (!el) return
+
+        const checkOverflow = () => {
+            setHasOverflow(
+                el.scrollHeight > el.clientHeight
+            )
+        }
+
+        checkOverflow()
+
+        const resizeObserver =
+            new ResizeObserver(checkOverflow)
+
+        resizeObserver.observe(el)
+
+        return () => resizeObserver.disconnect()
+    }, [remoteParticipants])
 
     useEffect(() => {
         const connect = async () => {
@@ -285,64 +321,78 @@ export const VideoRoom = ({
     }, [gameId, participantName])
 
     return (
-        <>
-            <div className="relative w-full aspect-video mb-6">
-                <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="absolute inset-0 h-full w-full object-cover rounded-lg bg-black"
-                />
+        <div className="flex flex-col h-full min-h-0">
+            <div className="pr-2 flex-shrink-0">
+                <div className="relative w-full aspect-video mb-1">
+                    <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="absolute inset-0 h-full w-full object-cover rounded-lg bg-black"
+                    />
 
-                {!isCameraEnabled && (
-                    <div className="absolute inset-0 bg-black rounded-lg z-2" />
-                )}
+                    {!isCameraEnabled && (
+                        <div className="absolute inset-0 bg-black rounded-lg z-2"/>
+                    )}
 
-                {!isCameraEnabled && <div className="absolute bottom-0 left-0 bg-black/60 text-white px-2 py-1 rounded-tr-lg rounded-bl-lg text-sm font-medium z-3">
-                    {participantName}
-                </div>}
+                    {!isCameraEnabled && <div
+                        className="absolute bottom-0 left-0 bg-black/60 text-white px-2 py-1 rounded-tr-lg rounded-bl-lg text-sm font-medium z-3">
+                        {participantName}
+                    </div>}
 
-                <div className="absolute bottom-2 right-2 flex flex-col gap-2">
-                    <button
-                        onClick={toggleCamera}
-                        className="btn btn-circle btn-sm  z-3"
-                        title={
-                            isCameraEnabled
-                                ? "Выключить камеру"
-                                : "Включить камеру"
-                        }
-                    >
-                        {isCameraEnabled
-                            ? <PiVideoCameraFill size={16} />
-                            : <PiVideoCameraSlashFill size={16} />}
-                    </button>
+                    <div className="absolute bottom-2 right-2 flex flex-col gap-2">
+                        <button
+                            onClick={toggleCamera}
+                            className="btn btn-circle btn-sm  z-3"
+                            title={
+                                isCameraEnabled
+                                    ? "Выключить камеру"
+                                    : "Включить камеру"
+                            }
+                        >
+                            {isCameraEnabled
+                                ? <PiVideoCameraFill size={16}/>
+                                : <PiVideoCameraSlashFill size={16}/>}
+                        </button>
 
-                    <button
-                        onClick={toggleMicrophone}
-                        className="btn btn-circle btn-sm z-3"
-                        title={
-                            isMicEnabled
-                                ? "Выключить микрофон"
-                                : "Включить микрофон"
-                        }
-                    >
-                        {isMicEnabled
-                            ? <PiMicrophoneFill size={16} />
-                            : <PiMicrophoneSlashFill size={16} />}
-                    </button>
+                        <button
+                            onClick={toggleMicrophone}
+                            className="btn btn-circle btn-sm z-3"
+                            title={
+                                isMicEnabled
+                                    ? "Выключить микрофон"
+                                    : "Включить микрофон"
+                            }
+                        >
+                            {isMicEnabled
+                                ? <PiMicrophoneFill size={16}/>
+                                : <PiMicrophoneSlashFill size={16}/>}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {remoteParticipants.map(p => (
-                <RemoteVideo
-                    key={p.id}
-                    participantName={p.name}
-                    track={p.track}
-                    isCameraEnabled={p.isCameraEnabled}
-                    isMicEnabled={p.isMicEnabled}
-                />
-            ))}
-        </>
+            <div className="relative flex-1 min-h-0">
+                <div
+                    ref={scrollRef}
+                    className="h-full overflow-y-auto pr-2"
+                >
+                    {remoteParticipants.map(p => (
+                        <RemoteVideo
+                            key={p.id}
+                            participantName={p.name}
+                            track={p.track}
+                            isCameraEnabled={p.isCameraEnabled}
+                            isMicEnabled={p.isMicEnabled}
+                        />
+                    ))}
+                </div>
+
+                {hasOverflow && (
+                    <div className="absolute bottom-0 left-0 right-2 h-10 pointer-events-none bg-gradient-to-t from-base-100 to-transparent" />
+                )}
+            </div>
+        </div>
     )
 }
