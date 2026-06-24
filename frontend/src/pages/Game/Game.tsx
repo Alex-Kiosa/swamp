@@ -11,7 +11,6 @@ import {Modal, type ModalHandle} from "./modal/Modal"
 import {useSocketConnection} from "../../sockets/useSocketConnection"
 import {useChipSockets} from "../../sockets/useChipSockets"
 import {Cube} from "../../features/cube/ui/Cube.tsx"
-import {Players} from "./players/Players"
 import {DeckCards} from "../../features/cards/ui/DeckCards.tsx"
 import {useCardSockets} from "../../sockets/useCardSockets"
 import {usePlayerSockets} from "../../sockets/usePlayerSockets"
@@ -92,7 +91,7 @@ export const Game = () => {
                 </Modal>
             ) : (
                 <>
-                    <div className="min-w-[260px] max-w-[340px] p-5 flex flex-col h-full">
+                    <div className="basis-[280px] min-w-[260px] max-w-[340px] shrink-0 p-5 flex flex-col h-full">
                         <div className="flex">
                             <div className="alert mb-6 p-6 rounded-lg flex justify-center flex-1">
                                 {gameId && <Cube gameId={gameId} socket={socket}/>}

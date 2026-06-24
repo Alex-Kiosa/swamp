@@ -3,7 +3,7 @@ import {
     RemoteParticipant,
     RemoteTrack,
     Room,
-    RoomEvent,
+    RoomEvent, Track,
 } from "livekit-client"
 import { getVideoToken } from "../api/videoApi.ts"
 import { RemoteVideo } from "./RemoteVideo.tsx"
@@ -23,6 +23,8 @@ type ParticipantType = {
     id: string
     name: string
     track: RemoteTrack
+    isMicEnabled: boolean
+    isCameraEnabled: boolean
 }
 
 export const VideoRoom = ({
@@ -55,6 +57,16 @@ export const VideoRoom = ({
                     return
                 }
 
+                const videoPublication =
+                    participant.getTrackPublication(
+                        Track.Source.Camera
+                    )
+
+                const audioPublication =
+                    participant.getTrackPublication(
+                        Track.Source.Microphone
+                    )
+
                 setRemoteParticipants(prev => {
                     const exists = prev.some(
                         p => p.id === participant.sid
@@ -68,6 +80,12 @@ export const VideoRoom = ({
                             id: participant.sid,
                             name: participant.identity,
                             track,
+
+                            isCameraEnabled:
+                                !videoPublication?.isMuted,
+
+                            isMicEnabled:
+                                !audioPublication?.isMuted,
                         },
                     ]
                 })
@@ -88,6 +106,8 @@ export const VideoRoom = ({
 
         setIsMicEnabled(nextState)
     }
+
+    // TODO: After turning off the camera or microphone and refreshing the page the state not saved, is reset to default. Need to fix
 
     const toggleCamera = async () => {
         const room = roomRef.current
@@ -119,9 +139,7 @@ export const VideoRoom = ({
                     token
                 )
 
-                room.remoteParticipants.forEach(
-                    addRemoteParticipant
-                )
+                room.remoteParticipants.forEach(addRemoteParticipant)
 
                 await room.localParticipant.enableCameraAndMicrophone()
 
@@ -157,12 +175,6 @@ export const VideoRoom = ({
                     RoomEvent.TrackSubscribed,
                     (track, _, participant) => {
 
-                        console.log(
-                            "track subscribed",
-                            track.kind,
-                            participant.identity
-                        )
-
                         if (track.kind === "audio") {
                             track.attach()
                             return
@@ -182,10 +194,64 @@ export const VideoRoom = ({
                                         id: participant.sid,
                                         name: participant.identity,
                                         track,
+                                        isCameraEnabled: true,
+                                        isMicEnabled: true,
                                     },
                                 ]
                             })
                         }
+                    }
+                )
+
+                room.on(
+                    RoomEvent.TrackMuted,
+                    (publication, participant) => {
+                        setRemoteParticipants(prev =>
+                            prev.map(p => {
+                                if (p.id !== participant.sid) {
+                                    return p
+                                }
+
+                                return {
+                                    ...p,
+                                    isCameraEnabled:
+                                        publication.kind === "video"
+                                            ? false
+                                            : p.isCameraEnabled,
+
+                                    isMicEnabled:
+                                        publication.kind === "audio"
+                                            ? false
+                                            : p.isMicEnabled,
+                                }
+                            })
+                        )
+                    }
+                )
+
+                room.on(
+                    RoomEvent.TrackUnmuted,
+                    (publication, participant) => {
+                        setRemoteParticipants(prev =>
+                            prev.map(p => {
+                                if (p.id !== participant.sid) {
+                                    return p
+                                }
+
+                                return {
+                                    ...p,
+                                    isCameraEnabled:
+                                        publication.kind === "video"
+                                            ? true
+                                            : p.isCameraEnabled,
+
+                                    isMicEnabled:
+                                        publication.kind === "audio"
+                                            ? true
+                                            : p.isMicEnabled,
+                                }
+                            })
+                        )
                     }
                 )
 
@@ -233,14 +299,14 @@ export const VideoRoom = ({
                     <div className="absolute inset-0 bg-black rounded-lg z-2" />
                 )}
 
-                <div className="absolute bottom-3 left-3 bg-black/60 text-white px-3 py-1.5 rounded-lg text-sm font-medium z-3">
+                {!isCameraEnabled && <div className="absolute bottom-0 left-0 bg-black/60 text-white px-2 py-1 rounded-tr-lg rounded-bl-lg text-sm font-medium z-3">
                     {participantName}
-                </div>
+                </div>}
 
                 <div className="absolute bottom-2 right-2 flex flex-col gap-2">
                     <button
                         onClick={toggleCamera}
-                        className="btn btn-circle btn-sm z-3"
+                        className="btn btn-circle btn-sm  z-3"
                         title={
                             isCameraEnabled
                                 ? "Выключить камеру"
@@ -248,8 +314,8 @@ export const VideoRoom = ({
                         }
                     >
                         {isCameraEnabled
-                            ? <PiVideoCameraFill />
-                            : <PiVideoCameraSlashFill />}
+                            ? <PiVideoCameraFill size={16} />
+                            : <PiVideoCameraSlashFill size={16} />}
                     </button>
 
                     <button
@@ -262,8 +328,8 @@ export const VideoRoom = ({
                         }
                     >
                         {isMicEnabled
-                            ? <PiMicrophoneFill />
-                            : <PiMicrophoneSlashFill />}
+                            ? <PiMicrophoneFill size={16} />
+                            : <PiMicrophoneSlashFill size={16} />}
                     </button>
                 </div>
             </div>
@@ -273,6 +339,8 @@ export const VideoRoom = ({
                     key={p.id}
                     participantName={p.name}
                     track={p.track}
+                    isCameraEnabled={p.isCameraEnabled}
+                    isMicEnabled={p.isMicEnabled}
                 />
             ))}
         </>
