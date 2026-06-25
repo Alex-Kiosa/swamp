@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa6"
 
 export type AlertType = {
-    type: "info" | "success" | "error" | "warning"
+    type: "info" | "success" | "error" | "warning" | "deck-empty"
     message: string
     onClose?: () => void
 }
@@ -16,6 +16,7 @@ const alertClass = {
     error: "alert-error",
     warning: "alert-warning",
     info: "alert-info",
+    "deck-empty": "alert-deck-empty",
 }
 
 const iconMap = {
@@ -23,6 +24,7 @@ const iconMap = {
     error: <FaCircleXmark className="flex-shrink-0 text-xl" />,
     warning: <FaCircleExclamation className="flex-shrink-0 text-xl" />,
     info: <FaCircleInfo className="flex-shrink-0 text-xl" />,
+    "deck-empty": <FaCircleInfo className="flex-shrink-0 text-xl" />,
 }
 
 export const Alert = ({ type, message, onClose }: AlertType) => {

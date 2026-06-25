@@ -12,6 +12,8 @@ type Props = {
     socket: Socket | null
 }
 
+// TODO: задизейблил иконку удаления до прихода card:removedFromTable
+
 export const TableCards = ({isHost, gameId, socket}: Props) => {
     const cards = useAppSelector(
         (state: RootState) => state.cards.tableCards
@@ -117,16 +119,18 @@ export const TableCards = ({isHost, gameId, socket}: Props) => {
                 </div>
             </div>
 
-            <Modal ref={tableModalRef}>
-                <div className="max-h-[80vh] overflow-y-auto">
+            <Modal
+                ref={tableModalRef}
+                classNames={"max-w-8/10 overflow-y-auto"}
+                width={"80-vw"}
+            >
                     <div className="text-2xl font-bold mb-6 text-center">
                         Карты на столе
                     </div>
 
-                    <div className="grid grid-cols-4 gap-4 items-start">
+                    <div className="grid grid-cols-5 gap-4 items-start">
                         {cards.map(renderModalCard)}
                     </div>
-                </div>
             </Modal>
 
             <Modal ref={cardModalRef}>

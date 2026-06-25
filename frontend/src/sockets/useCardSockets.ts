@@ -46,8 +46,8 @@ export const useCardSockets = (socket: Socket | null) => {
             dispatch(setDeckEmpty(type))
 
             showToast({
-                type: "warning",
-                message: `Колода "${deckNames[type] ?? type}" пуста`
+                type: "deck-empty",
+                message: `Колода "${deckNames[type] ?? type}" пуста. Удалите карты колоды со стола, чтобы сдать заново`
             })
         }
 

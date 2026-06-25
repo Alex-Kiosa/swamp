@@ -3,7 +3,7 @@ import {Alert} from "../components/alert/Alert.tsx";
 
 type ToastData = {
     id: number
-    type: "info" | "success" | "warning"
+    type: "info" | "success" | "warning" | "error" | "deck-empty"
     message: string
 }
 
@@ -29,7 +29,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
         <ToastContext.Provider value={{ showToast }}>
             {children}
 
-            <div className="toast toast-middle toast-center">
+            <div className="toast toast-middle toast-center z-1000">
                 {toasts.map(t => (
                     <Alert
                         key={t.id}

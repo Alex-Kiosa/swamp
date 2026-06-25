@@ -27,7 +27,6 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
     const openDeckHandler = () => {
         if (!gameId || !socket || !isHost) return
 
-        modalRef.current?.open()
         socket.emit("deck:getCards", {gameId, type})
     }
 
