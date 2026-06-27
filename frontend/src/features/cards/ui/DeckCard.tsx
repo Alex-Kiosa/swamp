@@ -69,11 +69,7 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
             modalRef.current?.open()
         }
 
-        const deckCloseHandler = ({
-                                      type: deckType
-                                  }: {
-            type: CardCategoryType
-        }) => {
+        const deckCloseHandler = ({type: deckType}: { type: CardCategoryType }) => {
             if (deckType !== type) return
 
             dispatch(closeDeck(deckType))

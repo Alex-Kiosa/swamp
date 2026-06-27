@@ -1,6 +1,9 @@
 import {type RemoteTrack} from "livekit-client";
 import {useEffect, useRef} from "react";
 import {PiMicrophoneFill, PiMicrophoneSlashFill, PiVideoCameraFill, PiVideoCameraSlashFill} from "react-icons/pi";
+import {useAppSelector} from "../../../../common/hooks/hooks.ts";
+import {selectGame} from "../../model/gameSelectors.ts";
+import {IoStar} from "react-icons/io5";
 
 type Props = {
     track: RemoteTrack
@@ -15,6 +18,7 @@ export const RemoteVideo = ({
                                 isCameraEnabled,
                                 isMicEnabled,
                             }: Props) => {
+    const {isHost} = useAppSelector(selectGame)
     const videoRef = useRef<HTMLVideoElement>(null)
 
     useEffect(() => {
@@ -44,6 +48,10 @@ export const RemoteVideo = ({
             {!isCameraEnabled && (
                 <div className="absolute inset-0 bg-black rounded-lg z-2"/>
             )}
+
+            <div className="absolute top-2 left-2 z-3">
+                {!isHost && <IoStar fill="#fde3a2" title="Ведущий"/>}
+            </div>
 
             <div className="absolute bottom-0 left-0 bg-black/60 text-white px-2 py-1 rounded-tr-lg rounded-bl-lg text-sm font-medium z-3">
                 {participantName}

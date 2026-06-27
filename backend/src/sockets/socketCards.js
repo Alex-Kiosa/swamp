@@ -2,6 +2,11 @@ import {v4 as uuid} from "uuid"
 import Game from "../models/gameModel.js"
 import {shuffleDeck} from "../services/deckService.js"
 
+// TODO: Есть спорный момент в механике регенерации колод.
+// Сейчас колода восстанавливается, если она пуста и в сбросе есть хотя бы одна карта.
+// Нужно позже определить желаемое игровое правило.
+// Один из рассматриваемых вариантов: разрешать регенерацию только тогда, когда на столе не осталось карт соответствующего типа.
+
 export function registerCardSockets(io, socket) {
     socket.on("game:init", async () => {
         try {
@@ -24,6 +29,7 @@ export function registerCardSockets(io, socket) {
             const game = await Game.findOne({gameId})
             if (!game) return
 
+            // сдать колоду заново, если пустая
             if (!game.decks[type].length) {
                 const discardPile = game.discardPiles[type]
 
