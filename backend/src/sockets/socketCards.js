@@ -29,23 +29,9 @@ export function registerCardSockets(io, socket) {
             const game = await Game.findOne({gameId})
             if (!game) return
 
-            // сдать колоду заново, если пустая
             if (!game.decks[type].length) {
-                const discardPile = game.discardPiles[type]
-
-                if (discardPile.length) {
-                    // Защита от дублей в случае непредвиденного бага с помощью Set
-                    const uniqueCards = [...new Set(discardPile)]
-                    game.decks[type] = shuffleDeck(uniqueCards)
-                    game.discardPiles[type] = []
-
-                    await game.save()
-
-                    io.to(gameId).emit("deck:reshuffled", {type})
-                } else {
-                    io.to(gameId).emit("card:deckEmpty", {type})
-                    return
-                }
+                io.to(gameId).emit("card:deckEmpty", { type })
+                return
             }
 
             io.to(gameId).emit("deck:open", {
@@ -85,6 +71,12 @@ export function registerCardSockets(io, socket) {
             await game.save()
 
             io.to(gameId).emit("card:addedToTable", tableCard)
+
+            // обновить состояние колоды у всех клиентов
+            io.to(gameId).emit("deck:updated", {
+                type,
+                cards: game.decks[type]
+            })
         } catch (error) {
             console.error("card:addToTable", error)
         }
@@ -110,7 +102,7 @@ export function registerCardSockets(io, socket) {
             if (error.name === "VersionError") {
                 console.warn(
                     "[card:removeFromTable] Card was already modified by another request",
-                    { gameId, cardId }
+                    {gameId, cardId}
                 )
 
                 return
@@ -122,5 +114,50 @@ export function registerCardSockets(io, socket) {
 
     socket.on("deck:closeDeck", ({gameId, type}) => {
         io.to(gameId).emit("deck:close", {type})
+    })
+
+    // пересдать колоду
+    socket.on("deck:reshuffle", async ({ gameId, type }) => {
+        try {
+            const game = await Game.findOne({ gameId })
+            if (!game) return
+
+            // удалить карты этой колоды со стола
+            const removedCardIds = []
+
+            game.tableCards = game.tableCards.filter(card => {
+                if (card.type === type) {
+                    removedCardIds.push(card.id)
+                    game.discardPiles[type].push(card.imageUrl)
+                    return false
+                }
+
+                return true
+            })
+
+            // Защита от дублей с помощью Set в случае непредвиденного бага
+            const uniqueCards = [...new Set(game.discardPiles[type])]
+
+            game.decks[type] = shuffleDeck(uniqueCards)
+            game.discardPiles[type] = []
+
+            await game.save()
+
+            // удалить карты со стола у всех клиентов
+            removedCardIds.forEach(cardId => {
+                io.to(gameId).emit("card:removedFromTable", { cardId })
+            })
+
+            io.to(gameId).emit("deck:updated", {
+                type,
+                cards: game.decks[type]
+            })
+
+            io.to(gameId).emit("deck:reshuffled", {
+                type
+            })
+        } catch (error) {
+            console.error("deck:reshuffle", error)
+        }
     })
 }

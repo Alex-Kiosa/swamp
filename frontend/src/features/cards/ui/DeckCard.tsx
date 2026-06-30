@@ -19,10 +19,11 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
     const {gameId} = useParams<{ gameId: string }>()
     const dispatch = useAppDispatch()
     const modalRef = useRef<ModalHandle>(null)
-
     const {isHost} = useAppSelector(selectGame)
-
-    const decks = useAppSelector((state: RootState) => state.cards.decks[type])
+    const { initialized, decks } = useAppSelector((state: RootState) => ({
+        initialized: state.cards.initialized,
+        decks: state.cards.decks[type]
+    }))
 
     const openDeckHandler = () => {
         if (!gameId || !socket || !isHost) return
@@ -39,6 +40,12 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
         // чтобы UI не ждал socket event
         modalRef.current?.close()
         dispatch(closeDeck(type))
+    }
+
+    const reshuffleDeckHandler = () => {
+        if (!gameId || !socket || !isHost) return
+
+        socket.emit("deck:reshuffle", {gameId, type})
     }
 
     const closeModalHandler = () => {
@@ -84,6 +91,29 @@ export const DeckCard = ({type, title, cardBack, socket}: Props) => {
             socket.off("deck:close", deckCloseHandler)
         }
     }, [type, socket, dispatch])
+
+    if (!initialized) {
+        return (
+            <div className="w-lg p-1">
+                <div className="rounded-md aspect-[2/3]" />
+            </div>
+        )
+    }
+
+    if (!decks.length) {
+        return (
+            <div className="w-lg p-1">
+                <button
+                    className="btn btn-neutral w-full aspect-[2/3]"
+                    onClick={reshuffleDeckHandler}
+                    disabled={!isHost}
+                    title="Пермешать и сдать колоду заново"
+                >
+                    Сдать заново
+                </button>
+            </div>
+        )
+    }
 
     return (
         <>

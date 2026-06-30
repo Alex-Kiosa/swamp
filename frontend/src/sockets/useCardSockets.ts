@@ -34,6 +34,10 @@ export const useCardSockets = (socket: Socket | null) => {
             dispatch(setDeckCards({ type, cards }))
         }
 
+        const onDeckUpdated = ({ type, cards }: any) => {
+            dispatch(setDeckCards({ type, cards }))
+        }
+
         const onAdded = (card: any) => {
             dispatch(addCardToTable(card))
         }
@@ -64,7 +68,9 @@ export const useCardSockets = (socket: Socket | null) => {
         socket.on("card:removedFromTable", onRemoved)
         socket.on("card:deckEmpty", onEmpty)
         socket.on("deck:reshuffled", onReshuffled)
+        socket.on("deck:updated", onDeckUpdated)
 
+        // удаляем при размонтировании
         return () => {
             socket.off("cards:init", onInit)
             socket.off("deck:open", onDeckCards)
@@ -72,6 +78,7 @@ export const useCardSockets = (socket: Socket | null) => {
             socket.off("card:removedFromTable", onRemoved)
             socket.off("card:deckEmpty", onEmpty)
             socket.off("deck:reshuffled", onReshuffled)
+            socket.off("deck:updated", onDeckUpdated)
         }
     }, [socket])
 }

@@ -17,13 +17,15 @@ export type CardState = {
     tableCards: TableCard[]
     deckEmpty: Record<CardCategoryType, boolean>
     openDecks: OpenDeckModal[]
+    initialized: boolean
 }
 
 const initialState: CardState = {
     decks: {plants: [], animals: [], wisdom: [], mac: [], creatures: [], swamp: []},
     tableCards: [],
     deckEmpty: {plants: false, animals: false, creatures: false, wisdom: false, mac: false, swamp: false},
-    openDecks: []
+    openDecks: [],
+    initialized: false
 }
 
 export const cardSlice = createSlice({
@@ -60,6 +62,7 @@ export const cardSlice = createSlice({
         ) => {
             state.tableCards = action.payload.tableCards
             state.decks = action.payload.decks
+            state.initialized = true
         },
     }
 })

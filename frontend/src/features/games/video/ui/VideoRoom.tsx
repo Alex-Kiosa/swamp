@@ -1,18 +1,8 @@
 import {useEffect, useRef, useState} from "react"
-import {
-    RemoteParticipant,
-    RemoteTrack,
-    Room,
-    RoomEvent, Track,
-} from "livekit-client"
+import {RemoteParticipant, RemoteTrack, Room, RoomEvent, Track,} from "livekit-client"
 import {getVideoToken} from "../api/videoApi.ts"
 import {RemoteVideo} from "./RemoteVideo.tsx"
-import {
-    PiMicrophoneFill,
-    PiMicrophoneSlashFill,
-    PiVideoCameraFill,
-    PiVideoCameraSlashFill,
-} from "react-icons/pi"
+import {PiMicrophoneFill, PiMicrophoneSlashFill, PiVideoCameraFill, PiVideoCameraSlashFill,} from "react-icons/pi"
 
 type Props = {
     gameId: string
@@ -177,10 +167,21 @@ export const VideoRoom = ({
 
                 room.remoteParticipants.forEach(addRemoteParticipant)
 
-                await room.localParticipant.enableCameraAndMicrophone()
+                try {
+                    await room.localParticipant.enableCameraAndMicrophone()
 
-                setIsCameraEnabled(true)
-                setIsMicEnabled(true)
+                    setIsCameraEnabled(true)
+                    setIsMicEnabled(true)
+                } catch (error) {
+                    console.error("LIVEKIT CONNECT ERROR", error)
+
+                    // TODO: заменить на показ сообщения в Toast
+                    alert(
+                        "Не удалось получить доступ к камере или микрофону. Попробуйте закрыть приложения, использующие камеру, или перезапустить браузер."
+                    )
+
+                    return
+                }
 
                 for (const publication of room.localParticipant.videoTrackPublications.values()) {
                     const track = publication.videoTrack

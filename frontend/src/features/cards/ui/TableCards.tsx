@@ -110,6 +110,7 @@ export const TableCards = ({isHost, gameId, socket}: Props) => {
                         {cards.length > 4 && (
                             <button
                                 className="rounded-md border border-base-300 bg-base-200 hover:bg-base-300 hover:cursor-pointer flex items-center justify-center text-xl font-bold"
+                                title="Развернуть"
                                 onClick={() => tableModalRef.current?.open()}
                             >
                                 +{cards.length - 4}
