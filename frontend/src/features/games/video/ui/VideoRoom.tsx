@@ -1,5 +1,13 @@
 import {useEffect, useRef, useState} from "react"
-import {RemoteParticipant, RemoteTrack, Room, RoomEvent, Track,} from "livekit-client"
+import {
+    LocalTrackPublication, Participant,
+    RemoteParticipant,
+    RemoteTrack,
+    RemoteTrackPublication,
+    Room,
+    RoomEvent,
+    Track, TrackPublication,
+} from "livekit-client"
 import {getVideoToken} from "../api/videoApi.ts"
 import {RemoteVideo} from "./RemoteVideo.tsx"
 import {PiMicrophoneFill, PiMicrophoneSlashFill, PiVideoCameraFill, PiVideoCameraSlashFill,} from "react-icons/pi"
@@ -123,6 +131,126 @@ export const VideoRoom = ({
         setIsCameraEnabled(nextState)
     }
 
+    const handleLocalTrackPublished = (publication: LocalTrackPublication) => {
+        const track = publication.track
+
+        if (
+            track?.kind === "video" &&
+            videoRef.current
+        ) {
+            track.attach(videoRef.current)
+        }
+    }
+
+    // Debug handlers. Keep for LiveKit diagnostics.
+    // const handleParticipantConnected = (participant: RemoteParticipant) => {
+    //     console.log("PARTICIPANT CONNECTED", participant.identity)
+    // }
+    //
+    // const handleTrackPublished = (publication: RemoteTrackPublication, participant: RemoteParticipant) => {
+    //     console.log("TRACK PUBLISHED", participant.identity, publication.kind)
+    // }
+
+    const handleTrackSubscribed = (
+        track: RemoteTrack,
+        _: RemoteTrackPublication,
+        participant: RemoteParticipant
+    ) => {
+        // console.log("TRACK SUBSCRIBED", participant.identity, track.kind)
+
+        if (track.kind === "audio") {
+            const audio = track.attach()
+
+            document.body.appendChild(audio)
+
+            audio.play().catch(() => {
+                // Автовоспроизведение может быть заблокировано браузером.
+            })
+
+            return
+        }
+
+        setRemoteParticipants(prev => {
+            // Проверяем наличие участника, чтобы не добавить его дважды.
+            if (prev.some(p => p.id === participant.sid)) {
+                return prev
+            }
+
+            return [
+                ...prev,
+                {
+                    id: participant.sid,
+                    name: participant.identity,
+                    track,
+                    isCameraEnabled: true,
+                    isMicEnabled: true,
+                },
+            ]
+        })
+    }
+
+    const handleTrackMuted = (
+        publication: TrackPublication,
+        participant: Participant
+    ) => {
+        setRemoteParticipants(prev =>
+            prev.map(p => {
+                if (p.id !== participant.sid) {
+                    return p
+                }
+
+                return {
+                    ...p,
+                    isCameraEnabled:
+                        publication.kind === "video"
+                            ? false
+                            : p.isCameraEnabled,
+
+                    isMicEnabled:
+                        publication.kind === "audio"
+                            ? false
+                            : p.isMicEnabled,
+                }
+            })
+        )
+    }
+
+    const handleTrackUnmuted = (
+        publication: TrackPublication,
+        participant: Participant
+    ) => {
+        setRemoteParticipants(prev =>
+            prev.map(p => {
+                if (p.id !== participant.sid) {
+                    return p
+                }
+
+                return {
+                    ...p,
+                    isCameraEnabled:
+                        publication.kind === "video"
+                            ? true
+                            : p.isCameraEnabled,
+
+                    isMicEnabled:
+                        publication.kind === "audio"
+                            ? true
+                            : p.isMicEnabled,
+                }
+            })
+        )
+    }
+
+    const handleParticipantDisconnected = (
+        participant: RemoteParticipant
+    ) => {
+        setRemoteParticipants(prev =>
+            prev.filter(
+                p => p.id !== participant.sid
+            )
+        )
+    }
+
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const [hasOverflow, setHasOverflow] =
@@ -160,11 +288,23 @@ export const VideoRoom = ({
                 const room = new Room()
                 roomRef.current = room
 
+                // Important! Register handlers before room.connect()
+                room.on(RoomEvent.LocalTrackPublished, handleLocalTrackPublished)
+                // Debug handlers. Keep for LiveKit diagnostics.
+                // room.on(RoomEvent.ParticipantConnected, handleParticipantConnected)
+                // room.on(RoomEvent.TrackPublished, handleTrackPublished)
+                room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
+                room.on(RoomEvent.TrackMuted, handleTrackMuted)
+                room.on(RoomEvent.TrackUnmuted, handleTrackUnmuted)
+                room.on(RoomEvent.ParticipantDisconnected, handleParticipantDisconnected)
+
                 await room.connect(
                     import.meta.env.VITE_LIVEKIT_URL!,
                     token
                 )
 
+                // Если в комнате уже есть участники, их опубликованные треки не вызовут
+                // RoomEvent.TrackSubscribed повторно. Поэтому добавляем их вручную.
                 room.remoteParticipants.forEach(addRemoteParticipant)
 
                 try {
@@ -173,7 +313,7 @@ export const VideoRoom = ({
                     setIsCameraEnabled(true)
                     setIsMicEnabled(true)
                 } catch (error) {
-                    console.error("LIVEKIT CONNECT ERROR", error)
+                    console.error("Failed to enable camera and microphone", error)
 
                     // TODO: заменить на показ сообщения в Toast
                     alert(
@@ -182,133 +322,8 @@ export const VideoRoom = ({
 
                     return
                 }
-
-                for (const publication of room.localParticipant.videoTrackPublications.values()) {
-                    const track = publication.videoTrack
-
-                    if (
-                        track &&
-                        videoRef.current
-                    ) {
-                        track.attach(videoRef.current)
-                    }
-                }
-
-                room.on(
-                    RoomEvent.LocalTrackPublished,
-                    publication => {
-                        const track = publication.track
-
-                        if (
-                            track?.kind === "video" &&
-                            videoRef.current
-                        ) {
-                            track.attach(videoRef.current)
-                        }
-                    }
-                )
-
-                room.on(
-                    RoomEvent.TrackSubscribed,
-                    (track, _, participant) => {
-
-                        if (track.kind === "audio") {
-                            track.attach()
-                            return
-                        }
-
-                        if (track.kind === "video") {
-                            setRemoteParticipants(prev => {
-                                const exists = prev.some(
-                                    p => p.id === participant.sid
-                                )
-
-                                if (exists) return prev
-
-                                return [
-                                    ...prev,
-                                    {
-                                        id: participant.sid,
-                                        name: participant.identity,
-                                        track,
-                                        isCameraEnabled: true,
-                                        isMicEnabled: true,
-                                    },
-                                ]
-                            })
-                        }
-                    }
-                )
-
-                room.on(
-                    RoomEvent.TrackMuted,
-                    (publication, participant) => {
-                        setRemoteParticipants(prev =>
-                            prev.map(p => {
-                                if (p.id !== participant.sid) {
-                                    return p
-                                }
-
-                                return {
-                                    ...p,
-                                    isCameraEnabled:
-                                        publication.kind === "video"
-                                            ? false
-                                            : p.isCameraEnabled,
-
-                                    isMicEnabled:
-                                        publication.kind === "audio"
-                                            ? false
-                                            : p.isMicEnabled,
-                                }
-                            })
-                        )
-                    }
-                )
-
-                room.on(
-                    RoomEvent.TrackUnmuted,
-                    (publication, participant) => {
-                        setRemoteParticipants(prev =>
-                            prev.map(p => {
-                                if (p.id !== participant.sid) {
-                                    return p
-                                }
-
-                                return {
-                                    ...p,
-                                    isCameraEnabled:
-                                        publication.kind === "video"
-                                            ? true
-                                            : p.isCameraEnabled,
-
-                                    isMicEnabled:
-                                        publication.kind === "audio"
-                                            ? true
-                                            : p.isMicEnabled,
-                                }
-                            })
-                        )
-                    }
-                )
-
-                room.on(
-                    RoomEvent.ParticipantDisconnected,
-                    participant => {
-                        setRemoteParticipants(prev =>
-                            prev.filter(
-                                p =>
-                                    p.id !==
-                                    participant.sid
-                            )
-                        )
-                    }
-                )
             } catch (error) {
-                console.error(
-                    "LIVEKIT CONNECT ERROR",
-                    error
-                )
+                console.error("LIVEKIT CONNECT ERROR", error)
             }
         }
 
