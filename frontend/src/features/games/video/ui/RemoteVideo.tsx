@@ -7,6 +7,7 @@ import {IoStar} from "react-icons/io5";
 
 type Props = {
     track: RemoteTrack
+    participantId: string
     participantName: string
     isCameraEnabled: boolean
     isMicEnabled: boolean
@@ -14,11 +15,14 @@ type Props = {
 
 export const RemoteVideo = ({
                                 track,
+                                participantId,
                                 participantName,
                                 isCameraEnabled,
                                 isMicEnabled,
                             }: Props) => {
-    const {isHost} = useAppSelector(selectGame)
+    const { hostId } = useAppSelector(selectGame)
+    const isHost = participantId === hostId
+
     const videoRef = useRef<HTMLVideoElement>(null)
 
     useEffect(() => {
@@ -49,9 +53,11 @@ export const RemoteVideo = ({
                 <div className="absolute inset-0 bg-black rounded-lg z-2"/>
             )}
 
-            <div className="absolute top-2 left-2 z-3">
-                {!isHost && <IoStar fill="#fde3a2" title="Ведущий"/>}
-            </div>
+            {isHost && (
+                <div className="absolute top-2 left-2 z-3">
+                    <IoStar fill="#fde3a2" title="Ведущий"/>
+                </div>
+            )}
 
             <div className="absolute bottom-0 left-0 bg-black/60 text-white px-2 py-1 rounded-tr-lg rounded-bl-lg text-sm font-medium z-3">
                 {participantName}

@@ -21,6 +21,14 @@ export const getVideoToken = async (req, res) => {
             })
         }
 
+        const player = game.players.find(p => p.name === participantName)
+
+        if (!player) {
+            return res.status(404).json({
+                message: "Player not found"
+            })
+        }
+
         const apiKey = process.env.LIVEKIT_API_KEY
         const apiSecret = process.env.LIVEKIT_API_SECRET
 
@@ -31,13 +39,14 @@ export const getVideoToken = async (req, res) => {
         }
 
         // Создаем токен
-        const at = new AccessToken(apiKey, apiSecret, {
-            identity: participantName, // Имя игрока в видеокомнате
-            ttl: "2h" // Время жизни токена
+        const accessToken = new AccessToken(apiKey, apiSecret, {
+            identity: player.playerId,
+            name: participantName,
+            ttl: "3h" // Время жизни токена
         })
 
         // Настраиваем права для видео и аудио
-        at.addGrant({
+        accessToken.addGrant({
             roomJoin: true,
             room: gameId,      // Используем gameId как имя комнаты LiveKit
             canPublish: true,  // Может передавать камеру и микрофон
@@ -45,7 +54,7 @@ export const getVideoToken = async (req, res) => {
         })
 
         // Генерируем JWT
-        const token = await at.toJwt()
+        const token = await accessToken.toJwt()
 
         // Отдаем токен на фронтенд
         return res.json({token})

@@ -1,12 +1,13 @@
 import {useEffect, useRef, useState} from "react"
 import {
-    LocalTrackPublication, Participant,
+    LocalTrackPublication,
+    Participant,
     RemoteParticipant,
     RemoteTrack,
     RemoteTrackPublication,
     Room,
     RoomEvent,
-    Track, TrackPublication,
+    TrackPublication,
 } from "livekit-client"
 import {getVideoToken} from "../api/videoApi.ts"
 import {RemoteVideo} from "./RemoteVideo.tsx"
@@ -18,7 +19,8 @@ type Props = {
 }
 
 type ParticipantType = {
-    id: string
+    sid: string
+    playerId: string
     name: string
     track: RemoteTrack
     isMicEnabled: boolean
@@ -52,56 +54,6 @@ export const VideoRoom = ({
 
     const [isCameraEnabled, setIsCameraEnabled] =
         useState(false)
-
-    const addRemoteParticipant = (
-        participant: RemoteParticipant
-    ) => {
-        participant.trackPublications.forEach(
-            publication => {
-                const track = publication.track
-
-                if (
-                    !track ||
-                    track.kind !== "video"
-                ) {
-                    return
-                }
-
-                const videoPublication =
-                    participant.getTrackPublication(
-                        Track.Source.Camera
-                    )
-
-                const audioPublication =
-                    participant.getTrackPublication(
-                        Track.Source.Microphone
-                    )
-
-                setRemoteParticipants(prev => {
-                    const exists = prev.some(
-                        p => p.id === participant.sid
-                    )
-
-                    if (exists) return prev
-
-                    return [
-                        ...prev,
-                        {
-                            id: participant.sid,
-                            name: participant.identity,
-                            track,
-
-                            isCameraEnabled:
-                                !videoPublication?.isMuted,
-
-                            isMicEnabled:
-                                !audioPublication?.isMuted,
-                        },
-                    ]
-                })
-            }
-        )
-    }
 
     const toggleMicrophone = async () => {
         const room = roomRef.current
@@ -144,11 +96,11 @@ export const VideoRoom = ({
 
     // Debug handlers. Keep for LiveKit diagnostics.
     // const handleParticipantConnected = (participant: RemoteParticipant) => {
-    //     console.log("PARTICIPANT CONNECTED", participant.identity)
+    //     console.log("PARTICIPANT CONNECTED", participant.name)
     // }
     //
     // const handleTrackPublished = (publication: RemoteTrackPublication, participant: RemoteParticipant) => {
-    //     console.log("TRACK PUBLISHED", participant.identity, publication.kind)
+    //     console.log("TRACK PUBLISHED", participant.name, publication.kind)
     // }
 
     const handleTrackSubscribed = (
@@ -156,7 +108,7 @@ export const VideoRoom = ({
         _: RemoteTrackPublication,
         participant: RemoteParticipant
     ) => {
-        // console.log("TRACK SUBSCRIBED", participant.identity, track.kind)
+        // console.log("TRACK SUBSCRIBED", participant.name, track.kind)
 
         if (track.kind === "audio") {
             const audio = track.attach()
@@ -172,15 +124,16 @@ export const VideoRoom = ({
 
         setRemoteParticipants(prev => {
             // Проверяем наличие участника, чтобы не добавить его дважды.
-            if (prev.some(p => p.id === participant.sid)) {
+            if (prev.some(p => p.sid === participant.sid)) {
                 return prev
             }
 
             return [
                 ...prev,
                 {
-                    id: participant.sid,
-                    name: participant.identity,
+                    sid: participant.sid,
+                    playerId: participant.identity,
+                    name: participant.name ?? participant.identity,
                     track,
                     isCameraEnabled: true,
                     isMicEnabled: true,
@@ -195,7 +148,7 @@ export const VideoRoom = ({
     ) => {
         setRemoteParticipants(prev =>
             prev.map(p => {
-                if (p.id !== participant.sid) {
+                if (p.sid !== participant.sid) {
                     return p
                 }
 
@@ -221,7 +174,7 @@ export const VideoRoom = ({
     ) => {
         setRemoteParticipants(prev =>
             prev.map(p => {
-                if (p.id !== participant.sid) {
+                if (p.sid !== participant.sid) {
                     return p
                 }
 
@@ -246,7 +199,7 @@ export const VideoRoom = ({
     ) => {
         setRemoteParticipants(prev =>
             prev.filter(
-                p => p.id !== participant.sid
+                p => p.sid !== participant.sid
             )
         )
     }
@@ -303,9 +256,6 @@ export const VideoRoom = ({
                     token
                 )
 
-                // Если в комнате уже есть участники, их опубликованные треки не вызовут
-                // RoomEvent.TrackSubscribed повторно. Поэтому добавляем их вручную.
-                room.remoteParticipants.forEach(addRemoteParticipant)
 
                 try {
                     await room.localParticipant.enableCameraAndMicrophone()
@@ -396,7 +346,8 @@ export const VideoRoom = ({
                 >
                     {remoteParticipants.map(p => (
                         <RemoteVideo
-                            key={p.id}
+                            key={p.sid}
+                            participantId={p.playerId}
                             participantName={p.name}
                             track={p.track}
                             isCameraEnabled={p.isCameraEnabled}
