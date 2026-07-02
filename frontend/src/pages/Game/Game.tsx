@@ -63,14 +63,29 @@ export const Game = () => {
         }
     }, [showJoinForm])
 
+    // TODO: убрать мигание страницы с игрой в момент загрузки
     useEffect(() => {
         if (!gameId) return
-        if (authToken || playerId) {
-            dispatch(getGameThunk(gameId))
-            return
-        }
-        setShowJoinForm(true)
+
+        dispatch(getGameThunk(gameId))
     }, [gameId])
+
+    useEffect(() => {
+        if (status !== "succeeded") return
+
+        if (!authToken && !playerId) {
+            setShowJoinForm(true)
+        }
+    }, [status, authToken, playerId])
+
+    // useEffect(() => {
+    //     if (!gameId) return
+    //     if (authToken || playerId) {
+    //         dispatch(getGameThunk(gameId))
+    //         return
+    //     }
+    //     setShowJoinForm(true)
+    // }, [gameId])
 
     if (status === "not_found") {
         return <NotFound title={"Игра не найдена"} description={"Такой игры нет, или она закончилась"}/>
